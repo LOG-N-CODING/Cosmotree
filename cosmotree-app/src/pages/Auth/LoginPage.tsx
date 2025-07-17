@@ -25,29 +25,29 @@ const LoginPage = () => {
 
   return (
     <div 
-      className="min-h-screen bg-cover bg-center flex items-center justify-center"
+      className="min-h-screen bg-cover bg-center flex items-center justify-center p-4"
       style={{
         backgroundImage: `url('/images/main-sec.png')`
       }}
     >
       {/* Logo positioned top-left */}
-      <div className="absolute top-8 left-5">
+      <div className="absolute top-4 md:top-8 left-4 md:left-5">
         <Logo />
       </div>
 
       {/* Main Form Container */}
       <motion.div
-        className="bg-white bg-opacity-50 backdrop-blur-xl border border-gray-400 rounded-3xl p-0"
+        className="bg-white bg-opacity-50 backdrop-blur-xl border border-gray-400 rounded-2xl md:rounded-3xl p-0 w-full max-w-md md:max-w-lg lg:max-w-2xl"
         style={{
-          width: '811px',
-          height: '600px'
+          height: 'auto',
+          minHeight: '500px'
         }}
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
         {/* Form Content */}
-        <div className="flex flex-col items-center justify-center h-full px-60 py-32">
+        <div className="flex flex-col items-center justify-center h-full px-6 md:px-12 lg:px-20 xl:px-30 py-8 md:py-16 lg:py-32">
           <motion.div
             className="w-full max-w-sm"
             initial={{ opacity: 0 }}
@@ -55,8 +55,8 @@ const LoginPage = () => {
             transition={{ delay: 0.3, duration: 0.6 }}
           >
             {/* Header */}
-            <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold text-black mb-8">
+            <div className="text-center mb-6 md:mb-8">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-black mb-4 md:mb-8">
                 Welcome back
               </h1>
             </div>
@@ -75,7 +75,7 @@ const LoginPage = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="Email"
-                  className="w-full h-16 px-4 bg-white border-0 rounded-2xl text-gray-500 font-semibold text-base focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  className="w-full h-12 md:h-14 lg:h-16 px-4 bg-white border-0 rounded-xl md:rounded-2xl text-gray-500 font-semibold text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-gray-300"
                   required
                 />
               </motion.div>
@@ -92,7 +92,7 @@ const LoginPage = () => {
                   value={formData.password}
                   onChange={handleInputChange}
                   placeholder="Password"
-                  className="w-full h-16 px-4 bg-white border-0 rounded-2xl text-gray-500 font-semibold text-base focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  className="w-full h-12 md:h-14 lg:h-16 px-4 bg-white border-0 rounded-xl md:rounded-2xl text-gray-500 font-semibold text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-gray-300"
                   required
                 />
               </motion.div>

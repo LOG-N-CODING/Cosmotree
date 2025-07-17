@@ -1,6 +1,7 @@
+import { motion } from 'framer-motion';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import './Quizzes.css';
 
 // 퀴즈 타입 정의
 interface Quiz {
@@ -105,6 +106,16 @@ const quizzes: Quiz[] = [
     score: 0,
     status: 'available',
     icon: '🧠'
+  },
+  {
+    id: 10,
+    title: 'Quantum Universe',
+    module: 'Module9',
+    questions: 20,
+    difficulty: 'Advanced',
+    score: 0,
+    status: 'available',
+    icon: '🧠'
   }
 ];
 
@@ -134,7 +145,7 @@ const QuizCard: React.FC<QuizCardProps> = ({ quiz, index }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, duration: 0.5 }}
-      className="bg-white border border-gray-300 rounded-[20px] p-6 hover:shadow-lg transition-shadow duration-300"
+      className="bg-white border border-gray-300 rounded-[20px] p-4 md:p-6 quiz-card"
     >
       {/* 상단 섹션 */}
       <div className="flex justify-between items-start mb-4">
@@ -204,22 +215,27 @@ const QuizCard: React.FC<QuizCardProps> = ({ quiz, index }) => {
 // 메인 퀴즈 페이지 컴포넌트
 const Quizzes: React.FC = () => {
   return (
-    <div className="min-h-screen bg-white">
-
+    <div 
+      className="min-h-screen quizzes-page relative"
+      style={{
+        paddingTop: '120px',
+        backgroundImage: 'url(/images/quizzes-bg.png)'
+      }}
+    >
       {/* 메인 콘텐츠 */}
-      <div className="relative z-10 pt-8 pb-20">
+      <div className="relative z-10 pb-12 md:pb-20">
         {/* 헤더 섹션 */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16 px-4"
+          className="text-start mb-12 md:mb-16 px-4 pt-4 md:pt-8"
         >
-          <div className="max-w-4xl mx-auto">
-            <h1 className="text-4xl font-bold text-black mb-2">
+          <div className="max-w-7xl px-4 md:px-5 mx-auto">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2">
               Quizzes
             </h1>
-            <p className="text-xl text-black">
+            <p className="text-lg md:text-xl text-white">
               Test your knowledge with module-based quizzes and get instant feedback
             </p>
           </div>
@@ -227,7 +243,7 @@ const Quizzes: React.FC = () => {
 
         {/* 퀴즈 그리드 */}
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {quizzes.map((quiz, index) => (
               <QuizCard key={quiz.id} quiz={quiz} index={index} />
             ))}

@@ -1,7 +1,6 @@
-import React from 'react';
 import { motion } from 'framer-motion';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import Header from '../components/layout/Header';
 
 // Learning Module Card Component
 interface LearningModuleProps {
@@ -210,7 +209,7 @@ const Learn: React.FC = () => {
       
       {/* Background Planet Image */}
       <motion.div 
-        className="fixed top-0 right-0 w-1/2 h-screen overflow-hidden pointer-events-none opacity-30"
+        className="fixed top-0 right-0 w-1/3 md:w-1/2 h-screen overflow-hidden pointer-events-none opacity-20 md:opacity-30"
         animate={{
           y: [0, -20, 0],
         }}
@@ -224,22 +223,22 @@ const Learn: React.FC = () => {
         <img 
           src="/images/planet.png" 
           alt="Planet Background" 
-          className="object-cover w-[600px] h-auto"
+          className="object-cover w-[400px] md:w-[600px] h-auto"
         />
       </motion.div>
 
       {/* Main Content */}
-      <div className="relative z-10 pt-32 pb-20">
-        <div className="max-w-6xl mx-auto px-6">
+      <div className="relative z-10 pt-20 md:pt-28 lg:pt-32 pb-12 md:pb-20">
+        <div className="max-w-6xl mx-auto px-4 md:px-6">
           {/* Page Header */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="mb-12 max-w-2xl"
+            className="mb-8 md:mb-12 max-w-2xl"
           >
-            <h1 className="text-4xl font-bold text-black mb-3">Learning Modules</h1>
-            <p className="text-xl text-gray-600">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-black mb-2 md:mb-3">Learning Modules</h1>
+            <p className="text-lg md:text-xl text-gray-600">
               Progress through structured astronomy modules at your own pace
             </p>
           </motion.div>
@@ -249,7 +248,7 @@ const Learn: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8"
           >
             {learningModules.map((module, index) => (
               <motion.div

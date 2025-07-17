@@ -1,18 +1,15 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import Header from '../components/layout/Header';
 
 const Dashboard = () => {
   return (
     <div className="min-h-screen bg-white">
 
-      <div className="p-10 space-y-8">
+      <div className="p-4 md:p-6 lg:p-10 space-y-6 md:space-y-8">
         {/* Top Section - Learning Progress and Quick Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
           {/* Learning Progress Summary */}
           <motion.div 
-            className="lg:col-span-2 bg-gray-100 rounded-3xl p-8 shadow-lg"
+            className="lg:col-span-2 bg-gray-100 rounded-2xl md:rounded-3xl p-4 md:p-6 lg:p-8 shadow-lg"
             style={{
               backgroundImage: `url('/images/main-sec.png')`,
               backgroundSize: 'cover',
@@ -22,15 +19,15 @@ const Dashboard = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <h2 className="text-xl font-semibold text-black mb-8">Learning Progress Summary</h2>
+            <h2 className="text-lg md:text-xl font-semibold text-black mb-6 md:mb-8">Learning Progress Summary</h2>
             
             {/* Progress Visualization */}
-            <div className="flex gap-9 mb-8">
+            <div className="flex gap-3 md:gap-6 lg:gap-9 mb-6 md:mb-8 overflow-x-auto">
               {/* Rocket Icons for completed modules */}
-              <div className="bg-white rounded-2xl p-4 shadow-sm">
-                <div className="w-6 h-6 bg-black rounded">🚀</div>
+              <div className="bg-white rounded-xl md:rounded-2xl p-2 md:p-4 shadow-sm flex-shrink-0">
+                <div className="w-4 h-4 md:w-6 md:h-6 bg-black rounded">🚀</div>
               </div>
-              <div className="bg-white rounded-2xl p-4 shadow-sm">
+              <div className="bg-white rounded-xl md:rounded-2xl p-2 md:p-4 shadow-sm flex-shrink-0">
                 <div className="w-6 h-6 bg-black rounded">🚀</div>
               </div>
               {/* Empty progress slots */}

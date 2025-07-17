@@ -26,35 +26,35 @@ const SignupPage = () => {
 
   return (
     <div 
-      className="min-h-screen bg-cover bg-center flex items-center justify-center"
+      className="min-h-screen bg-cover bg-center flex items-center justify-center p-4"
       style={{
         backgroundImage: `url('/images/main-sec.png')`
       }}
     >
       {/* Logo positioned top-left */}
-      <div className="absolute top-8 left-5">
+      <div className="absolute top-4 md:top-8 left-4 md:left-5">
         <Link to="/" className="flex items-center gap-3">
           <img 
             src="/images/logo.png" 
             alt="Cosmotree Logo" 
-            className="h-10 rounded-lg" 
+            className="h-8 md:h-10 rounded-lg" 
           />
         </Link>
       </div>
 
       {/* Main Form Container */}
       <motion.div
-        className="bg-white bg-opacity-50 backdrop-blur-xl border border-gray-400 rounded-3xl p-0"
+        className="bg-white bg-opacity-50 backdrop-blur-xl border border-gray-400 rounded-2xl md:rounded-3xl p-0 w-full max-w-md md:max-w-lg lg:max-w-2xl"
         style={{
-          width: '811px',
-          height: '717px'
+          height: 'auto',
+          minHeight: '600px'
         }}
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
         {/* Form Content */}
-        <div className="flex flex-col items-center justify-center h-full px-60 py-32">
+        <div className="flex flex-col items-center justify-center h-full px-6 md:px-12 lg:px-20 xl:px-30 py-8 md:py-16 lg:py-32">
           <motion.div
             className="w-full max-w-sm"
             initial={{ opacity: 0 }}

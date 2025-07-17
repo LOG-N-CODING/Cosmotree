@@ -9,6 +9,8 @@ import Dashboard from './pages/Dashboard';
 import Learn from './pages/Learn';
 import LearnDetail from './pages/Learn/Detail';
 import Quizzes from './pages/Quizzes';
+import QuizDetail from './pages/Quizzes/QuizDetail';
+import MyPage from './pages/MyPage';
 
 function App() {
   return (
@@ -31,7 +33,7 @@ function App() {
         {/* Learn route with header only */}
         <Route path="/learn" element={
           <>
-            <div className="px-10 pt-10 space-y-8">
+            <div className="px-4 sm:px-6 md:px-8 lg:px-10 pt-6 sm:pt-8 md:pt-10 space-y-6 sm:space-y-8">
               <Header mode='dark' fixed={false} />
             </div>
             <Learn />
@@ -43,11 +45,22 @@ function App() {
 
         {/* Quizzes route with header only */}
         <Route path="/quizzes" element={
-            <>
-            <div className="px-10 pt-10 space-y-8">
+          <>
+            <Header mode='dark' fixed={true} />
+            <Quizzes />
+          </>
+        } />
+
+        {/* Quiz Detail route without header/footer */}
+        <Route path="/quiz/:id" element={<QuizDetail />} />
+
+        {/* MyPage route with header only */}
+        <Route path="/mypage" element={
+          <>
+            <div className="px-4 sm:px-6 md:px-8 lg:px-10 pt-6 sm:pt-8 md:pt-10 space-y-6 sm:space-y-8">
               <Header mode='dark' fixed={false} />
             </div>
-            <Learn />
+            <MyPage />
           </>
         } />
 

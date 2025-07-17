@@ -1,7 +1,4 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import Footer from '../components/layout/Footer';
-import Header from '../components/layout/Header';
 
 const Home = () => {
   return (
@@ -9,7 +6,7 @@ const Home = () => {
 
       {/* Main Section */}
       <motion.section 
-        className="relative h-[720px] bg-cover bg-center" 
+        className="relative h-[500px] md:h-[720px] bg-cover bg-center" 
         style={{
           backgroundImage: `url('/images/main-sec.png')`
         }}
@@ -18,10 +15,10 @@ const Home = () => {
         transition={{ duration: 1.5 }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-        <div className="absolute inset-0 flex items-center justify-center px-5">
+        <div className="absolute inset-0 flex items-center justify-center px-4 md:px-5">
           <div className="text-center text-white max-w-4xl">
             <motion.h1 
-              className="text-8xl font-serif font-light mb-6 leading-none tracking-wide"
+              className="text-4xl md:text-6xl lg:text-8xl font-serif font-light mb-4 md:mb-6 leading-none tracking-wide"
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 1, delay: 0.5 }}
@@ -29,7 +26,7 @@ const Home = () => {
               Cosmotree
             </motion.h1>
             <motion.p 
-              className="text-2xl font-light leading-relaxed tracking-wide"
+              className="text-lg md:text-xl lg:text-2xl font-light leading-relaxed tracking-wide px-4"
               initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 1, delay: 1 }}
@@ -42,7 +39,7 @@ const Home = () => {
       
       {/* Why Cosmotree Section */}
       <motion.section 
-        className="py-25 px-0 bg-white"
+        className="py-16 md:py-25 px-4 md:px-0 bg-white"
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
@@ -51,13 +48,13 @@ const Home = () => {
         <div className="max-w-7xl mx-auto text-center">
           {/* Section Header */}
           <motion.div 
-            className="mb-17"
+            className="mb-12 md:mb-17"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-7xl font-gowun font-normal leading-none tracking-tight text-black">
+            <h2 className="text-4xl md:text-6xl lg:text-7xl font-gowun font-normal leading-none tracking-tight text-black">
               Why Cosmotree?
             </h2>
           </motion.div>
@@ -70,20 +67,20 @@ const Home = () => {
             transition={{ duration: 0.6, delay: 0.4 }}
             viewport={{ once: true }}
           >
-            <h3 className="text-base font-rethink text-amber-900 mb-6 text-center leading-tight tracking-tight">
+            <h3 className="text-sm md:text-base font-rethink text-amber-900 mb-4 md:mb-6 text-center leading-tight tracking-tight">
               Key Value Points
             </h3>
-            <p className="text-3xl font-gowun text-black text-center leading-relaxed tracking-tight">
+            <p className="text-xl md:text-2xl lg:text-3xl font-gowun text-black text-center leading-relaxed tracking-tight px-4">
               accessibility, self-paced curriculum, real-world connection, collaborative learning
             </p>
           </motion.div>
 
           {/* Three Feature Cards */}
           <div className="flex justify-center">
-            <div className="grid grid-cols-3 gap-10 h-[298px] w-[1102px]">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10 w-full max-w-[1102px]">
               {/* Card 1 */}
               <motion.div 
-                className="bg-white border border-gray-300 rounded-2xl shadow-lg flex flex-col justify-center items-center gap-10 px-5 py-0"
+                className="bg-white border border-gray-300 rounded-2xl shadow-lg flex flex-col justify-center items-center gap-6 md:gap-10 px-5 py-6 md:py-0 h-auto md:h-[298px]"
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.6 }}
@@ -91,18 +88,18 @@ const Home = () => {
                 whileHover={{ scale: 1.05, y: -10 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <div className="text-base font-rethink text-amber-900 leading-tight tracking-tight">1.</div>
-                <h4 className="text-3xl font-gowun text-black leading-relaxed tracking-tight text-center">
+                <div className="text-sm md:text-base font-rethink text-amber-900 leading-tight tracking-tight">1.</div>
+                <h4 className="text-xl md:text-2xl lg:text-3xl font-gowun text-black leading-relaxed tracking-tight text-center">
                   Structured Learning Modules
                 </h4>
-                <p className="text-base font-rethink text-black leading-tight tracking-tight text-center">
+                <p className="text-sm md:text-base font-rethink text-black leading-tight tracking-tight text-center">
                   Lorem ipsum dolor sit amet consectetur. Integer risus mattis eget sed porttitor risus fermentum blandit.
                 </p>
               </motion.div>
 
               {/* Card 2 */}
               <motion.div 
-                className="bg-white border border-gray-300 rounded-2xl shadow-lg flex flex-col justify-center items-center gap-10 px-5 py-0"
+                className="bg-white border border-gray-300 rounded-2xl shadow-lg flex flex-col justify-center items-center gap-6 md:gap-10 px-5 py-6 md:py-0 h-auto md:h-[298px]"
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.8 }}
@@ -110,18 +107,18 @@ const Home = () => {
                 whileHover={{ scale: 1.05, y: -10 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <div className="text-base font-rethink text-amber-900 leading-tight tracking-tight">2.</div>
-                <h4 className="text-3xl font-gowun text-black leading-relaxed tracking-tight text-center">
+                <div className="text-sm md:text-base font-rethink text-amber-900 leading-tight tracking-tight">2.</div>
+                <h4 className="text-xl md:text-2xl lg:text-3xl font-gowun text-black leading-relaxed tracking-tight text-center">
                   Interactive Quizzes
                 </h4>
-                <p className="text-base font-rethink text-black leading-tight tracking-tight text-center">
+                <p className="text-sm md:text-base font-rethink text-black leading-tight tracking-tight text-center">
                   Engage with interactive astronomy quizzes to test your knowledge and reinforce learning concepts.
                 </p>
               </motion.div>
 
               {/* Card 3 */}
               <motion.div 
-                className="bg-white border border-gray-300 rounded-2xl shadow-lg flex flex-col justify-center items-center gap-10 px-5 py-0"
+                className="bg-white border border-gray-300 rounded-2xl shadow-lg flex flex-col justify-center items-center gap-6 md:gap-10 px-5 py-6 md:py-0 h-auto md:h-[298px] md:col-span-1 lg:col-span-1"
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 1.0 }}
@@ -129,11 +126,11 @@ const Home = () => {
                 whileHover={{ scale: 1.05, y: -10 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <div className="text-base font-rethink text-amber-900 leading-tight tracking-tight">3.</div>
-                <h4 className="text-3xl font-gowun text-black leading-relaxed tracking-tight text-center">
+                <div className="text-sm md:text-base font-rethink text-amber-900 leading-tight tracking-tight">3.</div>
+                <h4 className="text-xl md:text-2xl lg:text-3xl font-gowun text-black leading-relaxed tracking-tight text-center">
                   Virtual Observatory
                 </h4>
-                <p className="text-base font-rethink text-black leading-tight tracking-tight text-center">
+                <p className="text-sm md:text-base font-rethink text-black leading-tight tracking-tight text-center">
                   Explore the cosmos through our virtual observatory with real astronomical data and imagery.
                 </p>
               </motion.div>
@@ -144,16 +141,16 @@ const Home = () => {
 
       {/* Call to Action Section */}
       <motion.section 
-        className="flex justify-center mb-20"
+        className="flex justify-center mb-12 md:mb-20 px-4"
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true, margin: "-100px" }}
       >
-        <div className="grid grid-cols-2 h-[464px] w-[1341px]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full max-w-[1341px] h-auto lg:h-[464px]">
           {/* Left side - Image */}
           <motion.div 
-            className="bg-cover bg-center bg-gray-200 rounded-l-2xl" 
+            className="bg-cover bg-center bg-gray-200 rounded-t-2xl lg:rounded-l-2xl lg:rounded-tr-none h-64 lg:h-auto" 
             style={{
               backgroundImage: `url('/images/main-sec-01.png')`
             }}
@@ -166,14 +163,14 @@ const Home = () => {
           
           {/* Right side - Content */}
           <motion.div 
-            className="rounded-r-2xl flex flex-col justify-center items-center gap-10 p-6"
+            className="rounded-b-2xl lg:rounded-r-2xl lg:rounded-bl-none flex flex-col justify-center items-center gap-6 lg:gap-10 p-6 lg:p-8 min-h-[300px] lg:min-h-0"
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
             viewport={{ once: true }}
           >
             <motion.h3 
-              className="text-5xl font-gowun text-black text-center leading-none tracking-tight"
+              className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-gowun text-black text-center leading-none tracking-tight"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
@@ -182,7 +179,7 @@ const Home = () => {
               Start Your Cosmic Journey Today
             </motion.h3>
             <motion.button 
-              className="bg-transparent text-black px-6 py-3 rounded-lg text-7xl font-gowun leading-none tracking-tight hover:bg-black hover:text-white transition-colors"
+              className="bg-transparent text-black px-4 md:px-6 py-2 md:py-3 rounded-lg text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-gowun leading-none tracking-tight hover:bg-black hover:text-white transition-colors"
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.8 }}
