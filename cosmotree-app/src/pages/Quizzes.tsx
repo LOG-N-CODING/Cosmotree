@@ -25,7 +25,7 @@ const quizzes: Quiz[] = [
     difficulty: 'Beginner',
     score: 90,
     status: 'completed',
-    icon: '🧠'
+    icon: '🧠',
   },
   {
     id: 2,
@@ -35,7 +35,7 @@ const quizzes: Quiz[] = [
     difficulty: 'Beginner',
     score: 85,
     status: 'completed',
-    icon: '🧠'
+    icon: '🧠',
   },
   {
     id: 3,
@@ -45,7 +45,7 @@ const quizzes: Quiz[] = [
     difficulty: 'Beginner',
     score: 95,
     status: 'completed',
-    icon: '🧠'
+    icon: '🧠',
   },
   {
     id: 4,
@@ -55,7 +55,7 @@ const quizzes: Quiz[] = [
     difficulty: 'Intermediate',
     score: 0,
     status: 'available',
-    icon: '🧠'
+    icon: '🧠',
   },
   {
     id: 5,
@@ -65,7 +65,7 @@ const quizzes: Quiz[] = [
     difficulty: 'Intermediate',
     score: 0,
     status: 'available',
-    icon: '🧠'
+    icon: '🧠',
   },
   {
     id: 6,
@@ -75,7 +75,7 @@ const quizzes: Quiz[] = [
     difficulty: 'Intermediate',
     score: 0,
     status: 'available',
-    icon: '🧠'
+    icon: '🧠',
   },
   {
     id: 7,
@@ -85,7 +85,7 @@ const quizzes: Quiz[] = [
     difficulty: 'Advanced',
     score: 0,
     status: 'available',
-    icon: '🧠'
+    icon: '🧠',
   },
   {
     id: 8,
@@ -95,7 +95,7 @@ const quizzes: Quiz[] = [
     difficulty: 'Advanced',
     score: 0,
     status: 'available',
-    icon: '🧠'
+    icon: '🧠',
   },
   {
     id: 9,
@@ -105,7 +105,7 @@ const quizzes: Quiz[] = [
     difficulty: 'Advanced',
     score: 0,
     status: 'available',
-    icon: '🧠'
+    icon: '🧠',
   },
   {
     id: 10,
@@ -115,8 +115,8 @@ const quizzes: Quiz[] = [
     difficulty: 'Advanced',
     score: 0,
     status: 'available',
-    icon: '🧠'
-  }
+    icon: '🧠',
+  },
 ];
 
 // 난이도별 태그 스타일
@@ -154,7 +154,9 @@ const QuizCard: React.FC<QuizCardProps> = ({ quiz, index }) => {
           <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
             <span className="text-xl">{quiz.icon}</span>
           </div>
-          <span className={`px-2 py-1 rounded text-sm font-semibold border ${getDifficultyStyle(quiz.difficulty)}`}>
+          <span
+            className={`px-2 py-1 rounded text-sm font-semibold border ${getDifficultyStyle(quiz.difficulty)}`}
+          >
             {quiz.difficulty}
           </span>
         </div>
@@ -162,9 +164,7 @@ const QuizCard: React.FC<QuizCardProps> = ({ quiz, index }) => {
 
       {/* 퀴즈 정보 */}
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-black mb-1">
-          {quiz.title}
-        </h3>
+        <h3 className="text-lg font-semibold text-black mb-1">{quiz.title}</h3>
         <p className="text-sm text-black">
           {quiz.module} | {quiz.questions} questions
         </p>
@@ -192,8 +192,17 @@ const QuizCard: React.FC<QuizCardProps> = ({ quiz, index }) => {
             className="w-full bg-black text-white py-4 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors hover:bg-gray-800"
           >
             Start Quiz
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" fill="currentColor"/>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"
+                fill="currentColor"
+              />
             </svg>
           </Link>
         ) : (
@@ -202,8 +211,17 @@ const QuizCard: React.FC<QuizCardProps> = ({ quiz, index }) => {
             className="w-full bg-green-600 text-white py-4 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors hover:bg-green-700"
           >
             Retake Quiz
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" fill="currentColor"/>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"
+                fill="currentColor"
+              />
             </svg>
           </Link>
         )}
@@ -215,11 +233,11 @@ const QuizCard: React.FC<QuizCardProps> = ({ quiz, index }) => {
 // 메인 퀴즈 페이지 컴포넌트
 const Quizzes: React.FC = () => {
   return (
-    <div 
+    <div
       className="min-h-screen quizzes-page relative"
       style={{
         paddingTop: '120px',
-        backgroundImage: 'url(/images/quizzes-bg.png)'
+        backgroundImage: 'url(/images/quizzes-bg.png)',
       }}
     >
       {/* 메인 콘텐츠 */}
@@ -232,9 +250,7 @@ const Quizzes: React.FC = () => {
           className="text-start mb-12 md:mb-16 px-4 pt-4 md:pt-8"
         >
           <div className="max-w-7xl px-4 md:px-5 mx-auto">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2">
-              Quizzes
-            </h1>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2">Quizzes</h1>
             <p className="text-lg md:text-xl text-white">
               Test your knowledge with module-based quizzes and get instant feedback
             </p>

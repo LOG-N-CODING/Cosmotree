@@ -42,14 +42,16 @@ const sampleQuizData: QuizData = {
       type: 'multiple-choice',
       options: ['The Moon', 'The Sun', 'Mars', 'Venus'],
       correctAnswer: 0,
-      explanation: 'The Moon is Earth\'s natural satellite and the closest celestial body to our planet, located about 384,400 kilometers away.'
+      explanation:
+        "The Moon is Earth's natural satellite and the closest celestial body to our planet, located about 384,400 kilometers away.",
     },
     {
       id: 2,
       question: 'What is Astronomy?',
       type: 'text',
       correctAnswer: 'The scientific study of celestial objects and phenomena',
-      explanation: 'Astronomy is the scientific study of celestial objects (such as stars, planets, comets, and galaxies) and phenomena that originate outside the Earth\'s atmosphere.'
+      explanation:
+        "Astronomy is the scientific study of celestial objects (such as stars, planets, comets, and galaxies) and phenomena that originate outside the Earth's atmosphere.",
     },
     {
       id: 3,
@@ -57,15 +59,16 @@ const sampleQuizData: QuizData = {
       type: 'multiple-choice',
       options: ['Venus', 'Mars', 'Jupiter', 'Saturn'],
       correctAnswer: 1,
-      explanation: 'Mars is known as the Red Planet due to iron oxide (rust) on its surface, which gives it a reddish appearance.'
-    }
-  ]
+      explanation:
+        'Mars is known as the Red Planet due to iron oxide (rust) on its surface, which gives it a reddish appearance.',
+    },
+  ],
 };
 
 const QuizDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
+
   const [quizData, setQuizData] = useState<QuizData | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<AnswerState[]>([]);
@@ -80,13 +83,13 @@ const QuizDetail: React.FC = () => {
         // 실제 환경에서는 API 호출로 대체
         await new Promise(resolve => setTimeout(resolve, 500));
         setQuizData(sampleQuizData);
-        
+
         // 답변 상태 초기화
         const initialAnswers = sampleQuizData.questions.map(q => ({
           questionId: q.id,
           selectedAnswer: null,
           isCorrect: null,
-          isSubmitted: false
+          isSubmitted: false,
         }));
         setAnswers(initialAnswers);
       } catch (error) {
@@ -117,9 +120,9 @@ const QuizDetail: React.FC = () => {
       customClass: {
         popup: 'swal-custom-popup',
         confirmButton: 'swal-custom-confirm',
-        cancelButton: 'swal-custom-cancel'
-      }
-    }).then((result) => {
+        cancelButton: 'swal-custom-cancel',
+      },
+    }).then(result => {
       if (result.isConfirmed) {
         navigate('/quizzes');
       }
@@ -134,7 +137,7 @@ const QuizDetail: React.FC = () => {
     const newAnswers = [...answers];
     newAnswers[currentQuestionIndex] = {
       ...newAnswers[currentQuestionIndex],
-      selectedAnswer: optionIndex
+      selectedAnswer: optionIndex,
     };
     setAnswers(newAnswers);
   };
@@ -145,7 +148,7 @@ const QuizDetail: React.FC = () => {
     const newAnswers = [...answers];
     newAnswers[currentQuestionIndex] = {
       ...newAnswers[currentQuestionIndex],
-      selectedAnswer: value
+      selectedAnswer: value,
     };
     setAnswers(newAnswers);
   };
@@ -154,28 +157,29 @@ const QuizDetail: React.FC = () => {
   const handleSubmitAnswer = () => {
     const currentQuestion = quizData?.questions[currentQuestionIndex];
     const currentAnswer = answers[currentQuestionIndex];
-    
+
     if (!currentQuestion || !currentAnswer || currentAnswer.selectedAnswer === null) {
       return;
     }
 
     let isCorrect = false;
-    
+
     if (currentQuestion.type === 'multiple-choice') {
       isCorrect = currentAnswer.selectedAnswer === currentQuestion.correctAnswer;
     } else {
       // 주관식의 경우 간단한 키워드 매칭
       const userAnswer = (currentAnswer.selectedAnswer as string).toLowerCase().trim();
       const correctAnswer = (currentQuestion.correctAnswer as string).toLowerCase().trim();
-      isCorrect = userAnswer.includes(correctAnswer.split(' ')[0]) || 
-                 correctAnswer.includes(userAnswer.split(' ')[0]);
+      isCorrect =
+        userAnswer.includes(correctAnswer.split(' ')[0]) ||
+        correctAnswer.includes(userAnswer.split(' ')[0]);
     }
-    
+
     const newAnswers = [...answers];
     newAnswers[currentQuestionIndex] = {
       ...newAnswers[currentQuestionIndex],
       isCorrect,
-      isSubmitted: true
+      isSubmitted: true,
     };
     setAnswers(newAnswers);
   };
@@ -190,7 +194,7 @@ const QuizDetail: React.FC = () => {
       const correctCount = answers.filter(answer => answer.isCorrect).length;
       const totalQuestions = answers.length;
       const score = Math.round((correctCount / totalQuestions) * 100);
-      
+
       Swal.fire({
         title: 'Quiz Completed!',
         html: `
@@ -201,7 +205,7 @@ const QuizDetail: React.FC = () => {
         `,
         icon: score >= 70 ? 'success' : 'info',
         confirmButtonText: 'Back to Quizzes',
-        confirmButtonColor: '#1E1E1E'
+        confirmButtonColor: '#1E1E1E',
       }).then(() => {
         navigate('/quizzes');
       });
@@ -223,16 +227,16 @@ const QuizDetail: React.FC = () => {
   return (
     <div className="min-h-screen bg-white relative">
       {/* 배경 이미지 */}
-      <div 
+      <div
         className="absolute inset-0 w-full h-full"
         style={{
           backgroundImage: 'url(/images/quizzes-detail-bg.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
         }}
       />
-      
+
       {/* 헤더 */}
       <div className="relative z-10 px-6 pt-6">
         <div className="max-w-7xl mx-auto">
@@ -243,7 +247,13 @@ const QuizDetail: React.FC = () => {
               className="flex items-center gap-2 px-4 py-3 bg-transparent text-white hover:bg-white hover:bg-opacity-10 rounded-lg transition-colors"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path
+                  d="M15 18L9 12L15 6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
               Back to Modules
             </button>
@@ -260,10 +270,10 @@ const QuizDetail: React.FC = () => {
                   </span>
                 </div>
               </div>
-              
+
               {/* 진행률 바 */}
               <div className="w-full max-w-4xl h-4 bg-gray-300 rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-gray-400 transition-all duration-300"
                   style={{ width: `${progress}%` }}
                 />
@@ -280,9 +290,7 @@ const QuizDetail: React.FC = () => {
             <div className="space-y-9">
               {/* 질문 */}
               <div className="text-center">
-                <h2 className="text-2xl font-bold text-black">
-                  {currentQuestion.question}
-                </h2>
+                <h2 className="text-2xl font-bold text-black">{currentQuestion.question}</h2>
               </div>
 
               {/* 답변 옵션 */}
@@ -291,11 +299,14 @@ const QuizDetail: React.FC = () => {
                   // 객관식 답변
                   currentQuestion.options?.map((option, index) => {
                     let buttonStyle = 'bg-white border border-gray-400 text-black hover:bg-gray-50';
-                    
+
                     if (currentAnswer?.isSubmitted) {
                       if (index === currentQuestion.correctAnswer) {
                         buttonStyle = 'bg-green-100 border border-green-500 text-black';
-                      } else if (index === currentAnswer.selectedAnswer && !currentAnswer.isCorrect) {
+                      } else if (
+                        index === currentAnswer.selectedAnswer &&
+                        !currentAnswer.isCorrect
+                      ) {
                         buttonStyle = 'bg-red-100 border border-red-500 text-black';
                       } else {
                         buttonStyle = 'bg-gray-100 border border-gray-400 text-black';
@@ -319,20 +330,33 @@ const QuizDetail: React.FC = () => {
                           </div>
                           <span className="text-lg font-semibold">{option}</span>
                         </div>
-                        
+
                         {/* 정답/오답 아이콘 */}
                         {currentAnswer?.isSubmitted && (
                           <div className="ml-auto">
                             {index === currentQuestion.correctAnswer ? (
                               <div className="w-9 h-9 bg-green-500 rounded-full flex items-center justify-center">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                  <path d="M9 12L11 14L15 10" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                  <path
+                                    d="M9 12L11 14L15 10"
+                                    stroke="white"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
                                 </svg>
                               </div>
-                            ) : index === currentAnswer.selectedAnswer && !currentAnswer.isCorrect ? (
+                            ) : index === currentAnswer.selectedAnswer &&
+                              !currentAnswer.isCorrect ? (
                               <div className="w-9 h-9 bg-red-500 rounded-full flex items-center justify-center">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                  <path d="M18 6L6 18M6 6L18 18" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                  <path
+                                    d="M18 6L6 18M6 6L18 18"
+                                    stroke="white"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
                                 </svg>
                               </div>
                             ) : null}
@@ -346,42 +370,60 @@ const QuizDetail: React.FC = () => {
                   <div className="space-y-4">
                     <textarea
                       value={textAnswer}
-                      onChange={(e) => handleTextAnswerChange(e.target.value)}
+                      onChange={e => handleTextAnswerChange(e.target.value)}
                       disabled={currentAnswer?.isSubmitted}
                       placeholder="답변을 입력해주세요..."
                       className="w-full p-4 border border-gray-400 rounded-xl resize-none h-32 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                    
+
                     {/* 주관식 답변 결과 */}
                     {currentAnswer?.isSubmitted && (
                       <div className="space-y-4">
                         {/* Your Answer 섹션 */}
                         <div>
                           <h3 className="text-lg font-medium text-black mb-2">Your answer</h3>
-                          <div className={`p-4 rounded-lg border flex items-center gap-3 ${
-                            currentAnswer.isCorrect 
-                              ? 'bg-green-100 border-green-500' 
-                              : 'bg-red-100 border-red-500'
-                          }`}>
-                            <div className={`w-9 h-9 rounded-full flex items-center justify-center ${
-                              currentAnswer.isCorrect ? 'bg-green-500' : 'bg-red-500'
-                            }`}>
+                          <div
+                            className={`p-4 rounded-lg border flex items-center gap-3 ${
+                              currentAnswer.isCorrect
+                                ? 'bg-green-100 border-green-500'
+                                : 'bg-red-100 border-red-500'
+                            }`}
+                          >
+                            <div
+                              className={`w-9 h-9 rounded-full flex items-center justify-center ${
+                                currentAnswer.isCorrect ? 'bg-green-500' : 'bg-red-500'
+                              }`}
+                            >
                               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                                 {currentAnswer.isCorrect ? (
-                                  <path d="M9 12L11 14L15 10" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                  <path
+                                    d="M9 12L11 14L15 10"
+                                    stroke="white"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
                                 ) : (
-                                  <path d="M18 6L6 18M6 6L18 18" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                  <path
+                                    d="M18 6L6 18M6 6L18 18"
+                                    stroke="white"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
                                 )}
                               </svg>
                             </div>
-                            <span className={`font-medium ${
-                              currentAnswer.isCorrect ? 'text-green-700' : 'text-red-700'
-                            }`}>
+                            <span
+                              className={`font-medium ${
+                                currentAnswer.isCorrect ? 'text-green-700' : 'text-red-700'
+                              }`}
+                            >
                               {currentAnswer.isCorrect ? 'Correct!' : 'Incorrect'}
                             </span>
                           </div>
                         </div>
-                        
+
                         {/* 정답 표시 (틀렸을 때만) */}
                         {!currentAnswer.isCorrect && (
                           <div className="bg-gray-100 border border-gray-400 rounded-xl p-4">
@@ -408,7 +450,9 @@ const QuizDetail: React.FC = () => {
                 {!currentAnswer?.isSubmitted ? (
                   <button
                     onClick={handleSubmitAnswer}
-                    disabled={currentAnswer?.selectedAnswer === null || currentAnswer?.selectedAnswer === ''}
+                    disabled={
+                      currentAnswer?.selectedAnswer === null || currentAnswer?.selectedAnswer === ''
+                    }
                     className="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                   >
                     Submit Answer
@@ -418,9 +462,17 @@ const QuizDetail: React.FC = () => {
                     onClick={handleNextQuestion}
                     className="bg-black border border-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center gap-3"
                   >
-                    {currentQuestionIndex < quizData.questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
+                    {currentQuestionIndex < quizData.questions.length - 1
+                      ? 'Next Question'
+                      : 'Finish Quiz'}
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                      <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path
+                        d="M9 18L15 12L9 6"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                   </button>
                 )}

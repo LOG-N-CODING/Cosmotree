@@ -11,69 +11,110 @@ import LearnDetail from './pages/Learn/Detail';
 import Quizzes from './pages/Quizzes';
 import QuizDetail from './pages/Quizzes/QuizDetail';
 import MyPage from './pages/MyPage';
+import { useAuth, AuthProvider } from './context/AuthContext';
+import { ProtectedRoute } from './components/layout/ProtectedRoute';
+import AdminPage from './pages/Adimin/AdminPage';
 
-function App() {
+function AppContent() {
+  const { isAdmin } = useAuth();
+
   return (
-    <Router>
-      <Routes>
-        {/* Auth routes without header/footer */}
-        <Route path="/auth/signup" element={<SignupPage />} />
-        <Route path="/auth/login" element={<LoginPage />} />
-        
-        {/* Dashboard route without header/footer */}
-        <Route path="/dashboard" element={
+    <Routes>
+      {/* Auth routes without header/footer */}
+      <Route path="/auth/signup" element={<SignupPage />} />
+      <Route path="/auth/login" element={<LoginPage />} />
+
+      {/* Dashboard route without header/footer */}
+      <Route
+        path="/dashboard"
+        element={
           <>
             <div className="px-10 pt-10 space-y-8">
-              <Header mode='dark' fixed={false} />
+              <Header mode="dark" fixed={false} />
             </div>
             <Dashboard />
           </>
-        } />
+        }
+      />
 
-        {/* Learn route with header only */}
-        <Route path="/learn" element={
+      {/* Learn route with header only */}
+      <Route
+        path="/learn"
+        element={
           <>
             <div className="px-4 sm:px-6 md:px-8 lg:px-10 pt-6 sm:pt-8 md:pt-10 space-y-6 sm:space-y-8">
-              <Header mode='dark' fixed={false} />
+              <Header mode="dark" fixed={false} />
             </div>
             <Learn />
           </>
-        } />
+        }
+      />
 
-        {/* Learn Detail route with header only */}
-        <Route path="/learn/:moduleId" element={<LearnDetail />} />
+      {/* Learn Detail route with header only */}
+      <Route path="/learn/:moduleId" element={<LearnDetail />} />
 
-        {/* Quizzes route with header only */}
-        <Route path="/quizzes" element={
+      {/* Quizzes route with header only */}
+      <Route
+        path="/quizzes"
+        element={
           <>
-            <Header mode='dark' fixed={true} />
+            <Header mode="dark" fixed={true} />
             <Quizzes />
           </>
-        } />
+        }
+      />
 
-        {/* Quiz Detail route without header/footer */}
-        <Route path="/quiz/:id" element={<QuizDetail />} />
+      {/* Quiz Detail route without header/footer */}
+      <Route path="/quiz/:id" element={<QuizDetail />} />
 
-        {/* MyPage route with header only */}
-        <Route path="/mypage" element={
+      {/* MyPage route with header only */}
+      <Route
+        path="/mypage"
+        element={
           <>
             <div className="px-4 sm:px-6 md:px-8 lg:px-10 pt-6 sm:pt-8 md:pt-10 space-y-6 sm:space-y-8">
-              <Header mode='dark' fixed={false} />
+              <Header mode="dark" fixed={false} />
             </div>
             <MyPage />
           </>
-        } />
+        }
+      />
 
-        {/* Home route with header and footer */}
-        <Route path="/" element={
+      {/* Home route with header and footer */}
+      <Route
+        path="/"
+        element={
           <>
-            <Header mode='light' fixed={true} />
+            <Header mode="light" fixed={true} />
             <Home />
-            <Footer />
+            {/* 관리자일 때는 숨기고, 일반 유저일 때만 노출 */}
+            {!isAdmin && <Footer />}
           </>
-        } />
-      </Routes>
-    </Router>
+        }
+      />
+      {/* Admin Page */}
+      <Route
+        path="admin"
+        element={
+          <>
+            {/* <ProtectedRoute adminOnly={true}> */}
+            <Header mode="light" fixed={true} />
+            <AdminPage />
+            {/* </ProtectedRoute> */}
+          </>
+        }
+      />
+    </Routes>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
   );
 }
 

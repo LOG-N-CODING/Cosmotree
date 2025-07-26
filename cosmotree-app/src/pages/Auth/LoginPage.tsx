@@ -1,33 +1,60 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../../components/UI/Logo';
+import { getDoc, doc } from 'firebase/firestore';
+import { db } from '../../config/firebase';
+import { useAuth } from '../../context/AuthContext';
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+  const { signIn } = useAuth();
+
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
+    setError('');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log('Login data:', formData);
+    setIsLoading(true);
+    setError('');
+
+    try {
+      // ① UserCredential을 직접 받는다
+      const credential = await signIn(formData.email, formData.password);
+      const uid = credential.uid;
+
+      // ② Firestore에서 권한 확인
+      const snap = await getDoc(doc(db, 'users', uid));
+      const data = snap.data();
+
+      if (data?.isAdmin === 1) {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
+    } catch (err: any) {
+      console.error(err);
+      setError('Invalid email or password. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div 
+    <div
       className="min-h-screen bg-cover bg-center flex items-center justify-center p-4"
       style={{
-        backgroundImage: `url('/images/main-sec.png')`
+        backgroundImage: `url('/images/main-sec.png')`,
       }}
     >
       {/* Logo positioned top-left */}
@@ -40,7 +67,7 @@ const LoginPage = () => {
         className="bg-white bg-opacity-50 backdrop-blur-xl border border-gray-400 rounded-2xl md:rounded-3xl p-0 w-full max-w-md md:max-w-lg lg:max-w-2xl"
         style={{
           height: 'auto',
-          minHeight: '500px'
+          minHeight: '500px',
         }}
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -122,11 +149,9 @@ const LoginPage = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7, duration: 0.5 }}
             >
-              <span className="text-black font-semibold text-base">
-                Don't have an account?
-              </span>
-              <Link 
-                to="/auth/signup" 
+              <span className="text-black font-semibold text-base">Don't have an account?</span>
+              <Link
+                to="/auth/signup"
                 className="text-black font-semibold text-base hover:underline"
               >
                 Sign up
@@ -140,10 +165,7 @@ const LoginPage = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8, duration: 0.5 }}
             >
-              <a 
-                href="#" 
-                className="text-black font-semibold text-sm hover:underline"
-              >
+              <a href="#" className="text-black font-semibold text-sm hover:underline">
                 Forgot password?
               </a>
             </motion.div>
