@@ -1,53 +1,132 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { setDoc, doc, serverTimestamp } from 'firebase/firestore';
+import { db, auth } from '../../config/firebase';
+import { useAuth } from '../../context/AuthContext';
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
-    password: ''
+    password: '',
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [passwordStrength, setPasswordStrength] = useState({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    special: false,
   });
 
+  const navigate = useNavigate();
+  const { signUp } = useAuth();
+
+  // 공통 onChange: 모든 input(name)→formData 동기화
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
+    setError('');
+
+    if (name === 'password') {
+      checkPasswordStrength(value);
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const checkPasswordStrength = (password: string) => {
+    setPasswordStrength({
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /\d/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    });
+  };
+
+  const getPasswordStrengthScore = () => Object.values(passwordStrength).filter(Boolean).length;
+
+  const getPasswordStrengthColor = () => {
+    const score = getPasswordStrengthScore();
+    if (score <= 2) return 'bg-red-500';
+    if (score <= 3) return 'bg-yellow-500';
+    if (score <= 4) return 'bg-blue-500';
+    return 'bg-green-500';
+  };
+  // formData에 있는 네 필드만 검사
+  const validateForm = () => {
+    const { firstName, lastName, email } = formData;
+
+    if (!firstName || !lastName) {
+      setError('Please enter both first and last name.');
+      return false;
+    }
+    if (!email) {
+      setError('Please enter your email address.');
+      return false;
+    }
+    if (getPasswordStrengthScore() < 3) {
+      setError('Please choose a stronger password.');
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle signup logic here
-    console.log('Signup data:', formData);
+    if (!validateForm()) return;
+
+    try {
+      setIsLoading(true);
+      setError('');
+      const { firstName, lastName, email, password } = formData;
+
+      // 1) 계정 생성
+      const user = await signUp(email, password);
+
+      // 2) 유저 정보 저장
+      await setDoc(doc(db, 'users', user.uid), {
+        email: user.email,
+        name: `${firstName} ${lastName}`,
+        isAdmin: 0,
+        createdAt: serverTimestamp(),
+      });
+
+      // 3) 자동 로그인
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate('/');
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div 
+    <div
       className="min-h-screen bg-cover bg-center flex items-center justify-center p-4"
-      style={{
-        backgroundImage: `url('/images/main-sec.png')`
-      }}
+      style={{ backgroundImage: `url('/images/main-sec.png')` }}
     >
       {/* Logo positioned top-left */}
       <div className="absolute top-4 md:top-8 left-4 md:left-5">
         <Link to="/" className="flex items-center gap-3">
-          <img 
-            src="/images/logo.png" 
-            alt="Cosmotree Logo" 
-            className="h-8 md:h-10 rounded-lg" 
-          />
+          <img src="/images/logo.png" alt="Cosmotree Logo" className="h-8 md:h-10 rounded-lg" />
         </Link>
       </div>
 
-      {/* Main Form Container */}
+      {/* Form Container */}
       <motion.div
         className="bg-white bg-opacity-50 backdrop-blur-xl border border-gray-400 rounded-2xl md:rounded-3xl p-0 w-full max-w-md md:max-w-lg lg:max-w-2xl"
         style={{
           height: 'auto',
-          minHeight: '600px'
+          minHeight: '600px',
         }}
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -63,9 +142,7 @@ const SignupPage = () => {
           >
             {/* Header */}
             <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold text-black mb-8">
-                Create an account
-              </h1>
+              <h1 className="text-4xl font-bold text-black mb-8">Create an account</h1>
             </div>
 
             {/* Form */}
@@ -137,6 +214,7 @@ const SignupPage = () => {
                   required
                 />
               </motion.div>
+              {error && <p className="text-red-500 text-center text-sm">{error}</p>}
 
               {/* Submit Button */}
               <motion.div
@@ -163,13 +241,8 @@ const SignupPage = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.9, duration: 0.5 }}
             >
-              <span className="text-black font-semibold text-base">
-                Already have an account?
-              </span>
-              <Link 
-                to="/auth/login" 
-                className="text-black font-semibold text-base hover:underline"
-              >
+              <span className="text-black font-semibold text-base">Already have an account?</span>
+              <Link to="/auth/login" className="text-black font-semibold text-base hover:underline">
                 Login
               </Link>
             </motion.div>

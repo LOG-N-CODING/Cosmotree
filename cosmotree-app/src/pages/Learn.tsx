@@ -20,14 +20,18 @@ const LearningModule: React.FC<LearningModuleProps> = ({
   difficulty,
   progress,
   status,
-  planetColor
+  planetColor,
 }) => {
   const getDifficultyColor = (level: string) => {
     switch (level) {
-      case 'Beginner': return 'bg-green-100 text-green-800';
-      case 'Intermediate': return 'bg-yellow-100 text-yellow-800';
-      case 'Advanced': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'Beginner':
+        return 'bg-green-100 text-green-800';
+      case 'Intermediate':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'Advanced':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -51,21 +55,33 @@ const LearningModule: React.FC<LearningModuleProps> = ({
         status === 'locked' ? 'opacity-60' : ''
       }`}
     >
-      {status === 'locked' && (
-        <div className="absolute inset-0 bg-white/75 rounded-3xl z-10" />
-      )}
-      
+      {status === 'locked' && <div className="absolute inset-0 bg-white/75 rounded-3xl z-10" />}
+
       <div className="space-y-6">
         {/* Header Section */}
         <div className="space-y-3">
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: planetColor }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="white"/>
+              <div
+                className="w-10 h-10 rounded-lg flex items-center justify-center"
+                style={{ backgroundColor: planetColor }}
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                    fill="white"
+                  />
                 </svg>
               </div>
-              <span className={`px-3 py-1 rounded text-sm font-semibold ${getDifficultyColor(difficulty)}`}>
+              <span
+                className={`px-3 py-1 rounded text-sm font-semibold ${getDifficultyColor(difficulty)}`}
+              >
                 {difficulty}
               </span>
             </div>
@@ -83,7 +99,7 @@ const LearningModule: React.FC<LearningModuleProps> = ({
           <div className="flex justify-end">
             <span className="text-gray-700 font-medium">{progress}% Complete</span>
           </div>
-          
+
           {/* Progress Bar */}
           <div className="w-full bg-gray-200 rounded-full h-3">
             <motion.div
@@ -101,8 +117,17 @@ const LearningModule: React.FC<LearningModuleProps> = ({
               className={`w-full ${getButtonColor()} text-white py-4 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors`}
             >
               {getButtonText()}
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" fill="currentColor"/>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"
+                  fill="currentColor"
+                />
               </svg>
             </Link>
           ) : (
@@ -128,7 +153,7 @@ const Learn: React.FC = () => {
       difficulty: 'Beginner',
       progress: 100,
       status: 'completed',
-      planetColor: '#FFB366'
+      planetColor: '#FFB366',
     },
     {
       id: '2',
@@ -137,7 +162,7 @@ const Learn: React.FC = () => {
       difficulty: 'Intermediate',
       progress: 25,
       status: 'available',
-      planetColor: '#66B3FF'
+      planetColor: '#66B3FF',
     },
     {
       id: '3',
@@ -146,7 +171,7 @@ const Learn: React.FC = () => {
       difficulty: 'Intermediate',
       progress: 0,
       status: 'locked',
-      planetColor: '#FF6B9D'
+      planetColor: '#FF6B9D',
     },
     {
       id: '4',
@@ -155,7 +180,7 @@ const Learn: React.FC = () => {
       difficulty: 'Intermediate',
       progress: 0,
       status: 'locked',
-      planetColor: '#9D66FF'
+      planetColor: '#9D66FF',
     },
     {
       id: '5',
@@ -164,7 +189,7 @@ const Learn: React.FC = () => {
       difficulty: 'Advanced',
       progress: 0,
       status: 'locked',
-      planetColor: '#66FF9D'
+      planetColor: '#66FF9D',
     },
     {
       id: '6',
@@ -173,7 +198,7 @@ const Learn: React.FC = () => {
       difficulty: 'Advanced',
       progress: 0,
       status: 'locked',
-      planetColor: '#FFD766'
+      planetColor: '#FFD766',
     },
     {
       id: '7',
@@ -182,7 +207,7 @@ const Learn: React.FC = () => {
       difficulty: 'Advanced',
       progress: 0,
       status: 'locked',
-      planetColor: '#FF6666'
+      planetColor: '#FF6666',
     },
     {
       id: '8',
@@ -191,7 +216,7 @@ const Learn: React.FC = () => {
       difficulty: 'Beginner',
       progress: 100,
       status: 'completed',
-      planetColor: '#66FFFF'
+      planetColor: '#66FFFF',
     },
     {
       id: '9',
@@ -200,15 +225,14 @@ const Learn: React.FC = () => {
       difficulty: 'Beginner',
       progress: 100,
       status: 'completed',
-      planetColor: '#B366FF'
-    }
+      planetColor: '#B366FF',
+    },
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
-      
       {/* Background Planet Image */}
-      <motion.div 
+      <motion.div
         className="fixed top-0 right-0 w-1/3 md:w-1/2 h-screen overflow-hidden pointer-events-none opacity-20 md:opacity-30"
         animate={{
           y: [0, -20, 0],
@@ -216,13 +240,13 @@ const Learn: React.FC = () => {
         transition={{
           duration: 4,
           repeat: Infinity,
-          repeatType: "loop",
-          ease: "easeInOut"
+          repeatType: 'loop',
+          ease: 'easeInOut',
         }}
       >
-        <img 
-          src="/images/planet.png" 
-          alt="Planet Background" 
+        <img
+          src="/images/planet.png"
+          alt="Planet Background"
           className="object-cover w-[400px] md:w-[600px] h-auto"
         />
       </motion.div>
@@ -237,7 +261,9 @@ const Learn: React.FC = () => {
             transition={{ duration: 0.6 }}
             className="mb-8 md:mb-12 max-w-2xl"
           >
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-black mb-2 md:mb-3">Learning Modules</h1>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-black mb-2 md:mb-3">
+              Learning Modules
+            </h1>
             <p className="text-lg md:text-xl text-gray-600">
               Progress through structured astronomy modules at your own pace
             </p>
@@ -261,8 +287,6 @@ const Learn: React.FC = () => {
               </motion.div>
             ))}
           </motion.div>
-
-
         </div>
       </div>
     </div>
