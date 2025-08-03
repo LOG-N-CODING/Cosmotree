@@ -4,13 +4,13 @@ import { useSearchParams } from 'react-router-dom';
 
 import { UserList } from '../../components/layout/Admin/UserList';
 import { Sidebar } from '../../components/layout/Admin/Sidebar';
+import { LearnList } from '../../components/layout/Admin/LearnList';
+import { QuizList } from '../../components/layout/Admin/QuizList';
 
 export default function AdminPage() {
   const [searchParams] = useSearchParams();
   const defaultSection = (searchParams.get('section') as any) || 'Users';
-  const [section, setSection] = useState<'Users' | 'Words' | 'Phrases' | 'Quizzes' | 'AdminTest'>(
-    defaultSection
-  );
+  const [section, setSection] = useState<'Users' | 'Learn' | 'Quiz'>(defaultSection);
 
   useEffect(() => {
     const sec = searchParams.get('section') as any;
@@ -18,13 +18,15 @@ export default function AdminPage() {
   }, [searchParams]);
 
   return (
-    <div className="flex mt-[120px]">
+    <div className="flex">
       <div className="hidden lg:flex lg:flex-col lg:w-64 lg:bg-gray-100 lg:shadow">
         <Sidebar onSelect={sec => setSection(sec)} />
       </div>
       {/* 4) 메인 컨텐츠 */}
       <main className="flex-1 bg-white min-h-screen px-4 sm:px-6 lg:px-8">
         <div className="max-w-screen-lg mx-auto pt-16">{section === 'Users' && <UserList />}</div>
+        <div className="max-w-screen-lg mx-auto pt-16">{section === 'Learn' && <LearnList />}</div>
+        <div className="max-w-screen-lg mx-auto pt-16">{section === 'Quiz' && <QuizList />}</div>
       </main>
     </div>
   );
