@@ -23,7 +23,7 @@ export const QuizList: React.FC = () => {
   const [quizType, setQuizType] = useState<QuizType>('MultipleChoice');
   const [viewType, setViewType] = useState<QuizType>('MultipleChoice');
   const [question, setQuestion] = useState('');
-  const [choices, setChoices] = useState<string[]>(Array(5).fill(''));
+  const [choices, setChoices] = useState<string[]>(Array(4).fill(''));
   const [answer, setAnswer] = useState('');
   const [shortAnswer, setShortAnswer] = useState('');
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
