@@ -1,46 +1,164 @@
-# Getting Started with Create React App
+# Cosmotree - Space Learning Platform
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Cosmotree는 우주 탐험과 천문학 학습에 중점을 둔 인터랙티브 교육 플랫폼입니다. React, TypeScript, 그리고 최신 웹 기술로 구축되었습니다.
 
-## Available Scripts
+## 주요 기능
 
-In the project directory, you can run:
+- **인터랙티브 대시보드**: 애니메이션 컴포넌트로 학습 진행률 추적
+- **커스텀 아이콘 시스템**: Figma 디자인에서 추출한 SVG 아이콘
+- **반응형 디자인**: Tailwind CSS를 활용한 모바일 퍼스트 접근
+- **부드러운 애니메이션**: 향상된 UX를 위한 Framer Motion
+
+## 🎨 Icon 시스템 사용 가이드
+
+### 사용 가능한 아이콘
+
+| 아이콘명 | 크기 | 설명 | 미리보기 |
+|---------|------|------|----------|
+| `rocket` | 24x24 | 우주 탐험 테마 | 🚀 |
+| `planet` | 27x27 | 행성 요소 | 🪐 |
+| `moonStars` | 51x50 | 밤하늘 요소 | 🌙⭐ |
+| `book` | 22x27 | 학습 리소스 | 📚 |
+| `arrowBack` | 16x16 | 뒤로가기 화살표 | ⬅️ |
+| `arrow` | 16x16 | 일반 화살표 | ➡️ |
+
+### 기본 사용법
+
+```tsx
+import Icon from '../components/UI/Icon';
+
+// 기본 사용
+<Icon name="rocket" size={24} />
+
+// 커스텀 스타일링과 함께
+<Icon name="moonStars" size={48} className="text-blue-500" />
+
+// 화살표 회전 (뒤로가기를 앞으로가기로)
+<Icon name="arrowBack" size={20} className="rotate-180" />
+```
+
+### 고급 사용 예제
+
+```tsx
+// 대시보드의 진행률 표시
+<div className="bg-white rounded-xl p-4 shadow-sm">
+  <Icon name="rocket" size={20} className="text-blue-600" />
+</div>
+
+// 카드 장식
+<div className="bg-gray-100 rounded-full p-3">
+  <Icon name="planet" size={32} />
+</div>
+
+// 버튼 아이콘
+<button className="flex items-center gap-2">
+  <span>Continue Learning</span>
+  <Icon name="arrowBack" size={16} className="rotate-180" />
+</button>
+
+// 다양한 크기로 사용
+<Icon name="book" size={16} />  {/* 작은 크기 */}
+<Icon name="book" size={24} />  {/* 중간 크기 */}
+<Icon name="book" size={48} />  {/* 큰 크기 */}
+```
+
+### Props 옵션
+
+```tsx
+interface IconProps {
+  name: IconName;           // 필수: 아이콘 이름
+  size?: number | string;   // 선택: 크기 (기본값: 24)
+  className?: string;       // 선택: CSS 클래스
+  alt?: string;            // 선택: 접근성을 위한 alt 텍스트
+}
+```
+
+### 스타일링 팁
+
+```tsx
+// Tailwind CSS 클래스와 함께 사용
+<Icon name="moonStars" className="text-yellow-400 hover:text-yellow-500 transition-colors" />
+
+// 애니메이션 효과
+<Icon name="rocket" className="animate-pulse" />
+
+// 회전 효과
+<Icon name="arrowBack" className="rotate-180 transition-transform hover:rotate-90" />
+
+// 크기 반응형
+<Icon name="planet" className="w-6 h-6 md:w-8 md:h-8" />
+```
+
+### TypeScript 지원
+
+```tsx
+import { IconName, iconInfo } from '../assets/icons';
+
+// 타입 안전한 아이콘 이름 사용
+const iconName: IconName = 'rocket';
+
+// 아이콘 메타데이터 접근
+const rocketInfo = iconInfo.rocket;
+console.log(rocketInfo.description); // "Rocket launch icon for space exploration themes"
+```
+
+## 프로젝트 구조
+
+```
+src/assets/
+├── icons/
+│   ├── index.ts           # TypeScript exports와 메타데이터
+│   ├── rocket-icon.svg
+│   ├── arrow-back.svg
+│   ├── moon-stars.svg
+│   ├── planet.svg
+│   └── book.svg
+└── images/
+    └── index.ts           # 이미지 exports와 메타데이터
+
+src/components/
+├── UI/
+│   └── Icon.tsx           # 재사용 가능한 Icon 컴포넌트
+└── AssetShowcase.tsx      # 모든 아이콘 데모
+```
+
+## 개발 스크립트
 
 ### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+개발 모드에서 앱을 실행합니다.\
+[http://localhost:3000](http://localhost:3000)에서 브라우저로 확인할 수 있습니다.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+페이지는 편집 시 자동으로 새로고침됩니다.\
+콘솔에서 린트 에러도 확인할 수 있습니다.
 
 ### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+인터랙티브 감시 모드에서 테스트를 실행합니다.\
+[테스트 실행](https://facebook.github.io/create-react-app/docs/running-tests)에 대한 자세한 정보를 확인하세요.
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+프로덕션용 앱을 `build` 폴더에 빌드합니다.\
+프로덕션 모드에서 React를 올바르게 번들링하고 최적의 성능을 위해 빌드를 최적화합니다.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 기술 스택
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **React 18** - UI 라이브러리
+- **TypeScript** - 타입 안전성
+- **Tailwind CSS** - 유틸리티 기반 CSS 프레임워크
+- **Framer Motion** - 애니메이션 라이브러리
+- **Firebase** - 백엔드 서비스
+- **Create React App** - 프로젝트 설정
 
-### `npm run eject`
+## 기여하기
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+1. 이 저장소를 포크합니다
+2. 기능 브랜치를 생성합니다 (`git checkout -b feature/AmazingFeature`)
+3. 변경사항을 커밋합니다 (`git commit -m 'Add some AmazingFeature'`)
+4. 브랜치에 푸시합니다 (`git push origin feature/AmazingFeature`)
+5. Pull Request를 생성합니다
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 라이센스
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+이 프로젝트는 MIT 라이센스 하에 배포됩니다. 자세한 내용은 `LICENSE` 파일을 참조하세요.

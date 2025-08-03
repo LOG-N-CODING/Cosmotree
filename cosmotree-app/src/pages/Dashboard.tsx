@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import Icon from '../components/UI/Icon';
 
 const Dashboard = () => {
   return (
@@ -26,10 +27,10 @@ const Dashboard = () => {
             <div className="flex gap-3 md:gap-6 lg:gap-9 mb-6 md:mb-8 overflow-x-auto">
               {/* Rocket Icons for completed modules */}
               <div className="bg-white rounded-xl md:rounded-2xl p-2 md:p-4 shadow-sm flex-shrink-0">
-                <div className="w-4 h-4 md:w-6 md:h-6 bg-black rounded">🚀</div>
+                <Icon name="rocket" size={20} className="md:w-6 md:h-6" />
               </div>
               <div className="bg-white rounded-xl md:rounded-2xl p-2 md:p-4 shadow-sm flex-shrink-0">
-                <div className="w-6 h-6 bg-black rounded">🚀</div>
+                <Icon name="rocket" size={24} />
               </div>
               {/* Empty progress slots */}
               {Array.from({ length: 8 }).map((_, i) => (
@@ -56,7 +57,7 @@ const Dashboard = () => {
                 transition={{ duration: 0.2 }}
               >
                 <div className="bg-gray-100 rounded-full p-3">
-                  <div className="w-8 h-8 text-xl">🪐</div>
+                  <Icon name="planet" size={32} />
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-black text-lg">Moon Phases & Lunar Cycles</h3>
@@ -71,7 +72,7 @@ const Dashboard = () => {
                 transition={{ duration: 0.2 }}
               >
                 <div className="bg-gray-100 rounded-full p-3">
-                  <div className="w-8 h-8 text-xl">🪐</div>
+                  <Icon name="book" size={32} />
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-black text-lg">Quizzes Completed</h3>
@@ -97,41 +98,41 @@ const Dashboard = () => {
 
             {/* Moon Icon */}
             <div className="flex justify-center mb-8">
-              <div className="w-16 h-16 text-4xl">🌙</div>
+              <Icon name="moonStars" size={64} />
             </div>
 
             {/* Action Buttons */}
             <div className="space-y-4">
               <motion.button
-                className="w-full bg-white border border-black rounded-lg p-4 flex justify-between items-center hover:bg-gray-50"
+                className="w-full bg-white p-4 flex justify-between items-center hover:bg-gray-50"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
                 <span className="text-black font-medium">Continue Learning</span>
-                <div className="w-10 h-10 border border-black rounded flex items-center justify-center">
-                  <span className="text-black">→</span>
+                <div className="w-10 h-10ex items-center justify-center">
+                  <Icon name="arrowBack" size={20} className="rotate-180" />
                 </div>
               </motion.button>
 
               <motion.button
-                className="w-full bg-white border border-black rounded-lg p-4 flex justify-between items-center hover:bg-gray-50"
+                className="w-full bg-white p-4 flex justify-between items-center hover:bg-gray-50"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
                 <span className="text-black font-medium">Take a Quiz</span>
-                <div className="w-10 h-10 border border-black rounded flex items-center justify-center">
-                  <span className="text-black">→</span>
+                <div className="w-10 h-10ex items-center justify-center">
+                  <Icon name="arrowBack" size={20} className="rotate-180" />
                 </div>
               </motion.button>
 
               <motion.button
-                className="w-full bg-white border border-black rounded-lg p-4 flex justify-between items-center hover:bg-gray-50"
+                className="w-full bg-white p-4 flex justify-between items-center hover:bg-gray-50"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
                 <span className="text-black font-medium">View Achievements</span>
-                <div className="w-10 h-10 border border-black rounded flex items-center justify-center">
-                  <span className="text-black">→</span>
+                <div className="w-10 h-10ex items-center justify-center">
+                  <Icon name="arrowBack" size={20} className="rotate-180" />
                 </div>
               </motion.button>
             </div>

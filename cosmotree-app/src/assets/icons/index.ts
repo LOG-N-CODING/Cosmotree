@@ -1,0 +1,68 @@
+// SVG Icons
+import RocketIcon from './rocket-icon.svg';
+import ArrowBack from './arrow-back.svg';
+import MoonStars from './moon-stars.svg';
+import PlanetIcon from './planet.svg';
+import BookIcon from './book.svg';
+
+// Icon metadata for TypeScript support
+export interface IconInfo {
+  name: string;
+  component: string;
+  size: string;
+  description: string;
+}
+
+export const iconInfo: Record<string, IconInfo> = {
+  rocket: {
+    name: 'Rocket',
+    component: 'RocketIcon',
+    size: '24x24',
+    description: 'Rocket launch icon for space exploration themes'
+  },
+  arrowBack: {
+    name: 'Arrow Back',
+    component: 'ArrowBack',
+    size: '16x16',
+    description: 'Navigation back arrow icon'
+  },
+  arrow: {
+    name: 'Arrow',
+    component: 'ArrowBack',
+    size: '16x16', 
+    description: 'General purpose arrow icon (uses arrow-back.svg)'
+  },
+  moonStars: {
+    name: 'Moon & Stars',
+    component: 'MoonStars',
+    size: '51x50',
+    description: 'Night sky with moon and stars icon'
+  },
+  planet: {
+    name: 'Planet',
+    component: 'PlanetIcon',
+    size: '27x27',
+    description: 'Planet icon for cosmic themes'
+  },
+  book: {
+    name: 'Book',
+    component: 'BookIcon',
+    size: '22x27',
+    description: 'Learning and education book icon'
+  }
+};
+
+// Export all icons
+export {
+  RocketIcon,
+  ArrowBack,
+  MoonStars,
+  PlanetIcon,
+  BookIcon
+};
+
+// Export icon names for easy reference
+export type IconName = keyof typeof iconInfo;
+
+// Ensure this file is treated as a module
+export {};
