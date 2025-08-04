@@ -48,7 +48,7 @@ const Header: React.FC<HeaderProps> = ({ mode = 'light', fixed = false }) => {
     return (
       <>
         <nav
-          className={`${fixed ? 'fixed' : ''} top-4 md:top-10 left-4 md:left-10 right-4 md:right-10 z-50 backdrop-blur rounded-xl ${
+          className={` top-4 md:top-10 left-4 md:left-10 right-4 md:right-10 z-50 backdrop-blur rounded-xl ${
             mode === 'light'
               ? 'bg-gray-200 bg-opacity-50'
               : 'bg-black bg-opacity-50 backdrop-blur-lg'
