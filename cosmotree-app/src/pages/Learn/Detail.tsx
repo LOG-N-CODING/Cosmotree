@@ -57,25 +57,28 @@ Interdum et turpis vitae enim non iaculis nibh aenean in. Dui scelerisque lacus 
   };
 
   const getDifficultyColor = (level: string) => {
-    switch (level) {
-      case 'Beginner':
-        return 'bg-green-100 text-green-800';
-      case 'Intermediate':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'Advanced':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
+    return 'bg-gray-200 text-gray-800';
+    // switch (level) {
+    //   case 'Beginner':
+    //     return 'bg-green-100 text-green-800';
+    //   case 'Intermediate':
+    //     return 'bg-yellow-100 text-yellow-800';
+    //   case 'Advanced':
+    //     return 'bg-red-100 text-red-800';
+    //   default:
+    //     return 'bg-gray-100 text-gray-800';
+    // }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
       {/* Header */}
-      <Header mode="light" />
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 pt-6 sm:pt-8 md:pt-10 space-y-6 sm:space-y-8">
+        <Header mode="dark" fixed={false} />
+      </div>
 
       {/* Main Content */}
-      <div className="pt-32 pb-20">
+      <div className="pt-16 pb-20">
         <div className="max-w-7xl mx-auto px-6">
           {/* Top Section */}
           <motion.div
@@ -107,6 +110,59 @@ Interdum et turpis vitae enim non iaculis nibh aenean in. Dui scelerisque lacus 
 
               <div className="bg-gray-800 text-white px-3 py-1 rounded-lg text-sm font-semibold">
                 Lesson {moduleData.currentLesson} of {moduleData.totalLessons}
+              </div>
+            </div>
+
+            {/* Module Info */}
+            <div className="flex gap-4 my-6">
+              <div className="flex-1">
+                <h1 className="text-3xl font-bold text-black mb-2">{moduleData.title}</h1>
+                <p className="text-gray-600 mb-4">{moduleData.description}</p>
+                <span
+                  className={`inline-block px-3 py-1 rounded text-sm font-semibold ${getDifficultyColor(moduleData.difficulty)}`}
+                >
+                  {moduleData.difficulty}
+                </span>
+              </div>
+
+              {/* Topics Covered */}
+              <div className="w-80">
+                <button
+                  onClick={() => setIsTopicsExpanded(!isTopicsExpanded)}
+                  className="w-full flex items-center justify-between gap-2 bg-white border border-gray-300 px-4 py-3 rounded-lg font-medium text-black hover:bg-gray-50 transition-colors"
+                >
+                  Topics Covered
+                  <motion.svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    animate={{ rotate: isTopicsExpanded ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <path
+                      d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"
+                      fill="currentColor"
+                    />
+                  </motion.svg>
+                </button>
+
+                {isTopicsExpanded && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mt-2 bg-white border border-gray-300 rounded-lg p-4"
+                  >
+                    <ul className="space-y-2 text-sm text-gray-600">
+                      <li>• Basic concepts of astronomy</li>
+                      <li>• Solar system overview</li>
+                      <li>• Stars and galaxies</li>
+                      <li>• Space exploration history</li>
+                    </ul>
+                  </motion.div>
+                )}
               </div>
             </div>
 
@@ -184,58 +240,7 @@ Interdum et turpis vitae enim non iaculis nibh aenean in. Dui scelerisque lacus 
               className="lg:col-span-3"
             >
               <div className="space-y-8">
-                {/* Module Info */}
-                <div className="flex gap-4">
-                  <div className="flex-1">
-                    <h1 className="text-3xl font-bold text-black mb-2">{moduleData.title}</h1>
-                    <p className="text-gray-600 mb-4">{moduleData.description}</p>
-                    <span
-                      className={`inline-block px-3 py-1 rounded text-sm font-semibold ${getDifficultyColor(moduleData.difficulty)}`}
-                    >
-                      {moduleData.difficulty}
-                    </span>
-                  </div>
-
-                  {/* Topics Covered */}
-                  <div className="w-80">
-                    <button
-                      onClick={() => setIsTopicsExpanded(!isTopicsExpanded)}
-                      className="w-full flex items-center justify-between gap-2 bg-white border border-gray-300 px-4 py-3 rounded-lg font-medium text-black hover:bg-gray-50 transition-colors"
-                    >
-                      Topics Covered
-                      <motion.svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        animate={{ rotate: isTopicsExpanded ? 180 : 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <path
-                          d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"
-                          fill="currentColor"
-                        />
-                      </motion.svg>
-                    </button>
-
-                    {isTopicsExpanded && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="mt-2 bg-white border border-gray-300 rounded-lg p-4"
-                      >
-                        <ul className="space-y-2 text-sm text-gray-600">
-                          <li>• Basic concepts of astronomy</li>
-                          <li>• Solar system overview</li>
-                          <li>• Stars and galaxies</li>
-                          <li>• Space exploration history</li>
-                        </ul>
-                      </motion.div>
-                    )}
-                  </div>
-                </div>
+                
 
                 {/* Lesson Content */}
                 <div className="bg-white rounded-3xl border border-gray-200 shadow-lg p-8">
