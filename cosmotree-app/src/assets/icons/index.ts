@@ -6,6 +6,7 @@ import PlanetIcon from './planet.svg';
 import BookIcon from './book.svg';
 import NeurologyIcon from './neurologyIcon.svg';
 import Stars2Icon from './stars2Icon.svg';
+import LibraryBooksIcon from './libraryBooksIcon.svg';
 
 // Icon metadata for TypeScript support
 export interface IconInfo {
@@ -63,6 +64,12 @@ export const iconInfo: Record<string, IconInfo> = {
     component: 'Stars2Icon', 
     size: '21x20',
     description: 'Two stars rating icon for scoring and evaluation'
+  },
+  libraryBooks: {
+    name: 'Library Books',
+    component: 'LibraryBooksIcon',
+    size: '20x20',
+    description: 'Books library icon for learning and educational content'
   }
 };
 
@@ -74,7 +81,8 @@ export {
   PlanetIcon,
   BookIcon,
   NeurologyIcon,
-  Stars2Icon
+  Stars2Icon,
+  LibraryBooksIcon
 };
 
 // Export icon names for easy reference
