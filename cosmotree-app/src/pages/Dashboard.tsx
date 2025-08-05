@@ -1,6 +1,12 @@
 import { motion } from 'framer-motion';
 import React from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { FreeMode, Mousewheel } from 'swiper/modules';
 import Icon from '../components/UI/Icon';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/free-mode';
 
 const Dashboard = () => {
   return (
@@ -160,88 +166,173 @@ const Dashboard = () => {
         >
           <h2 className="text-xl font-semibold text-black mb-8">Resource Library</h2>
 
-          {/* Resource Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Resource Cards Slider */}
+          <Swiper
+            modules={[FreeMode, Mousewheel]}
+            spaceBetween={24}
+            slidesPerView="auto"
+            freeMode={true}
+            mousewheel={true}
+            grabCursor={true}
+            className="resource-swiper"
+          >
             {/* Astronomy 101 Card */}
-            <motion.div
-              className="bg-blue-100 rounded-3xl p-6 border border-gray-300 shadow-sm"
-              whileHover={{ scale: 1.02, y: -5 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="bg-gray-100 rounded-full p-3 w-fit mb-4">
-                <div className="w-8 h-8 text-xl">📚</div>
-              </div>
-              <h3 className="font-semibold text-black text-lg mb-2">
-                Astronomy 101: Essential terms and ideas
-              </h3>
-              <p className="text-black text-base mb-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              </p>
-              <span className="bg-black text-white px-2 py-1 rounded text-sm font-semibold">
-                Guide
-              </span>
-            </motion.div>
+            <SwiperSlide style={{ width: '300px' }}>
+              <motion.div
+                className="bg-white rounded-3xl p-6 border border-gray-300 shadow-sm flex flex-col h-[180px]"
+                whileHover={{ scale: 1.02, y: -5 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <div className="rounded-full py-4 ps-2 pe-6 w-fit">
+                    <Icon name="book" size={24} />
+                  </div>
+                  <div className="flex-1 pt-2">
+                    <h3 className="font-semibold text-black text-base mb-2 line-clamp-1" title="Astronomy 101: Essential terms">
+                      Astronomy 101: Essential terms
+                    </h3>
+                    <p className="text-black text-sm line-clamp-2 mb-2">
+                      Basic concepts and terminology
+                    </p>
+                    <span className="bg-black text-white px-2 py-2 rounded text-xs font-semibold">
+                      Guide
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            </SwiperSlide>
 
             {/* Astrobiology Card */}
-            <motion.div
-              className="bg-yellow-100 rounded-3xl p-6 border border-gray-300 shadow-sm"
-              whileHover={{ scale: 1.02, y: -5 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="bg-gray-100 rounded-full p-3 w-fit mb-4">
-                <div className="w-8 h-8 text-xl">📚</div>
-              </div>
-              <h3 className="font-semibold text-black text-lg mb-2">
-                Astrobiology: Life in the Universe
-              </h3>
-              <p className="text-black text-base mb-4">
-                Explores the potential for life beyond Earth.
-              </p>
-              <span className="bg-black text-white px-2 py-1 rounded text-sm font-semibold">
-                Research
-              </span>
-            </motion.div>
+            <SwiperSlide style={{ width: '300px' }}>
+              <motion.div
+                className="bg-white rounded-3xl p-6 border border-gray-300 shadow-sm flex flex-col h-[180px]"
+                
+                whileHover={{ scale: 1.02, y: -5 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <div className="rounded-full py-4 ps-2 pe-6 w-fit">
+                    <Icon name="book" size={24} />
+                  </div>
+                  <div className="flex-1 pt-2">
+                    <h3 className="font-semibold text-black text-base mb-2 line-clamp-1" title="Astrobiology: Life in Universe">
+                      Astrobiology: Life in Universe
+                    </h3>
+                    <p className="text-black text-sm line-clamp-2 mb-2">
+                      Life beyond Earth exploration
+                    </p>
+                    <span className="bg-black text-white px-2 py-2 rounded text-xs font-semibold">
+                      Research
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            </SwiperSlide>
 
             {/* Black Holes Card */}
-            <motion.div
-              className="bg-white rounded-3xl p-6 border border-gray-300 shadow-sm"
-              whileHover={{ scale: 1.02, y: -5 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="bg-gray-100 rounded-full p-3 w-fit mb-4">
-                <div className="w-8 h-8 text-xl">📚</div>
-              </div>
-              <h3 className="font-semibold text-black text-lg mb-2">
-                Black Holes: Mysteries of the Cosmos
-              </h3>
-              <p className="text-black text-base mb-4">
-                Understanding these enigmatic regions of spacetime.
-              </p>
-              <span className="bg-black text-white px-2 py-1 rounded text-sm font-semibold">
-                Theory
-              </span>
-            </motion.div>
+            <SwiperSlide style={{ width: '300px' }}>
+              <motion.div
+                className="bg-white rounded-3xl p-6 border border-gray-300 shadow-sm flex flex-col h-[180px]"
+                whileHover={{ scale: 1.02, y: -5 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <div className="rounded-full py-4 ps-2 pe-6 w-fit">
+                    <Icon name="book" size={24} />
+                  </div>
+                  <div className="flex-1 pt-2">
+                    <h3 className="font-semibold text-black text-base mb-2 line-clamp-1" title="Black Holes: Cosmic Mysteries">
+                      Black Holes: Cosmic Mysteries
+                    </h3>
+                    <p className="text-black text-sm line-clamp-2 mb-2">
+                      Enigmatic spacetime regions
+                    </p>
+                    <span className="bg-black text-white px-2 py-2 rounded text-xs font-semibold">
+                      Theory
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            </SwiperSlide>
 
             {/* Big Bang Card */}
-            <motion.div
-              className="bg-white rounded-3xl p-6 border border-gray-300 shadow-sm"
-              whileHover={{ scale: 1.02, y: -5 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="bg-gray-100 rounded-full p-3 w-fit mb-4">
-                <div className="w-8 h-8 text-xl">📚</div>
-              </div>
-              <h3 className="font-semibold text-black text-lg mb-2">
-                The Big Bang: Origins of the Universe
-              </h3>
-              <p className="text-black text-base mb-4">
-                Examining the birth and expansion of everything we know.
-              </p>
-              <span className="bg-black text-white px-2 py-1 rounded text-sm font-semibold">
-                Concept
-              </span>
-            </motion.div>
-          </div>
+            <SwiperSlide style={{ width: '300px' }}>
+              <motion.div
+                className="bg-white rounded-3xl p-6 border border-gray-300 shadow-sm flex flex-col h-[180px]"
+                whileHover={{ scale: 1.02, y: -5 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <div className="rounded-full py-4 ps-2 pe-6 w-fit">
+                    <Icon name="book" size={24} />
+                  </div>
+                  <div className="flex-1 pt-2">
+                    <h3 className="font-semibold text-black text-base mb-2 line-clamp-1" title="Big Bang: Universe Origins">
+                      Big Bang: Universe Origins
+                    </h3>
+                    <p className="text-black text-sm line-clamp-2 mb-2">
+                      Birth and expansion of cosmos
+                    </p>
+                    <span className="bg-black text-white px-2 py-2 rounded text-xs font-semibold">
+                      Concept
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            </SwiperSlide>
+
+            {/* Solar System Card */}
+            <SwiperSlide style={{ width: '300px' }}>
+              <motion.div
+                className="bg-white rounded-3xl p-6 border border-gray-300 shadow-sm flex flex-col h-[180px]"
+                whileHover={{ scale: 1.02, y: -5 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <div className="rounded-full py-4 ps-2 pe-6 w-fit">
+                    <Icon name="book" size={24} />
+                  </div>
+                  <div className="flex-1 pt-2">
+                    <h3 className="font-semibold text-black text-base mb-2 line-clamp-1" title="Solar System Exploration">
+                      Solar System Exploration
+                    </h3>
+                    <p className="text-black text-sm line-clamp-2 mb-2">
+                      Planets, moons, and more
+                    </p>
+                    <span className="bg-black text-white px-2 py-2 rounded text-xs font-semibold">
+                      Discovery
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            </SwiperSlide>
+
+            {/* Stellar Evolution Card */}
+            <SwiperSlide style={{ width: '300px' }}>
+              <motion.div
+                className="bg-white rounded-3xl p-6 border border-gray-300 shadow-sm flex flex-col h-[180px]"
+                whileHover={{ scale: 1.02, y: -5 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <div className="rounded-full py-4 ps-2 pe-6 w-fit">
+                    <Icon name="book" size={24} />
+                  </div>
+                  <div className="flex-1 pt-2">
+                    <h3 className="font-semibold text-black text-base mb-2 line-clamp-1" title="Stellar Evolution">
+                      Stellar Evolution
+                    </h3>
+                    <p className="text-black text-sm line-clamp-2 mb-2">
+                      Life cycle of stars
+                    </p>
+                    <span className="bg-black text-white px-2 py-2 rounded text-xs font-semibold">
+                      Process
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            </SwiperSlide>
+          </Swiper>
         </motion.div>
       </div>
     </div>
