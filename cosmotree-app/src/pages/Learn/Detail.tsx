@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Header from '../../components/layout/Header';
+import Icon from '../../components/UI/Icon';
 
 // Lesson interface
 interface Lesson {
@@ -72,10 +73,38 @@ Interdum et turpis vitae enim non iaculis nibh aenean in. Dui scelerisque lacus 
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
-      {/* Header */}
-      <div className="px-4 sm:px-6 md:px-8 lg:px-10 pt-6 sm:pt-8 md:pt-10 space-y-6 sm:space-y-8">
-        <Header mode="dark" fixed={false} />
+       {/* Header */}
+      <div className="">
+        <Header mode="dark" fixed={true} />
       </div>
+
+      {/* Hero Section with Background Image */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="relative h-[420px] bg-cover bg-center bg-no-repeat flex items-center justify-center"
+        style={{
+          backgroundImage: 'url(/images/learn-detail-hero-bg.jpg)',
+        }}
+      >
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+        
+        {/* Title Content */}
+        <div className="relative z-10 text-center px-4">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-white text-2xl md:text-3xl lg:text-4xl font-bold"
+          >
+            {moduleData.title}
+          </motion.h1>
+        </div>
+
+
+      </motion.div>
 
       {/* Main Content */}
       <div className="pt-16 pb-20">
@@ -129,7 +158,7 @@ Interdum et turpis vitae enim non iaculis nibh aenean in. Dui scelerisque lacus 
               <div className="w-80">
                 <button
                   onClick={() => setIsTopicsExpanded(!isTopicsExpanded)}
-                  className="w-full flex items-center justify-between gap-2 bg-white border border-gray-300 px-4 py-3 rounded-lg font-medium text-black hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-center justify-between gap-2 bg-transparent border border-gray-300 px-4 py-3 rounded-lg font-medium text-black hover:bg-gray-50 transition-colors"
                 >
                   Topics Covered
                   <motion.svg
@@ -153,7 +182,7 @@ Interdum et turpis vitae enim non iaculis nibh aenean in. Dui scelerisque lacus 
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="mt-2 bg-white border border-gray-300 rounded-lg p-4"
+                    className="mt-2 bg-transparent border border-gray-300 rounded-lg p-4"
                   >
                     <ul className="space-y-2 text-sm text-gray-600">
                       <li>• Basic concepts of astronomy</li>
@@ -192,7 +221,7 @@ Interdum et turpis vitae enim non iaculis nibh aenean in. Dui scelerisque lacus 
               transition={{ duration: 0.6, delay: 0.2 }}
               className="lg:col-span-1"
             >
-              <div className="bg-white rounded-3xl border border-gray-200 shadow-lg p-6">
+              <div className="bg-transparent rounded-3xl border border-gray-200 shadow-lg p-6">
                 <h3 className="text-xl font-bold text-black mb-6">Lessons</h3>
                 <div className="space-y-4">
                   {moduleData.lessons.map((lesson, index) => (
@@ -201,31 +230,20 @@ Interdum et turpis vitae enim non iaculis nibh aenean in. Dui scelerisque lacus 
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.1 }}
-                      className={`flex items-center gap-4 p-4 rounded-xl border transition-colors cursor-pointer ${
+                      className={`flex justify-between items-center gap-4 p-4 rounded-xl border transition-colors cursor-pointer ${
                         lesson.isActive
                           ? 'bg-gray-800 border-gray-800 text-white'
-                          : 'bg-white border-gray-200 text-black hover:bg-gray-50'
+                          : 'bg-transparent border-gray-200 text-black hover:bg-gray-50'
                       }`}
                     >
-                      <div
-                        className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                          lesson.isActive ? 'bg-gray-600' : 'bg-gray-100'
-                        }`}
-                      >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"
-                            fill={lesson.isActive ? 'white' : '#1C1B1F'}
-                          />
-                        </svg>
-                      </div>
                       <span className="font-semibold text-sm">{lesson.title}</span>
+                        <div
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                          lesson.isActive ? 'bg-white' : 'bg-gray-100'
+                        }`}
+                        >
+                        <Icon name="libraryBooks" size={20} />
+                        </div>
                     </motion.div>
                   ))}
                 </div>
@@ -243,7 +261,7 @@ Interdum et turpis vitae enim non iaculis nibh aenean in. Dui scelerisque lacus 
                 
 
                 {/* Lesson Content */}
-                <div className="bg-white rounded-3xl border border-gray-200 shadow-lg p-8">
+                <div className="bg-transparent rounded-3xl border border-gray-200 shadow-lg p-8">
                   <h2 className="text-2xl font-bold text-black mb-6">What is Astronomy?</h2>
                   <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed">
                     {moduleData.content.split('\n\n').map((paragraph, index) => (
@@ -256,7 +274,7 @@ Interdum et turpis vitae enim non iaculis nibh aenean in. Dui scelerisque lacus 
 
                 {/* Navigation Buttons */}
                 <div className="flex justify-between items-center">
-                  <button className="flex items-center gap-2 bg-white border border-gray-300 text-gray-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+                  <button className="flex items-center gap-2 bg-transparent border border-gray-300 text-gray-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors">
                     <svg
                       width="16"
                       height="16"

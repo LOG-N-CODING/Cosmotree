@@ -165,9 +165,9 @@ const LoginPage = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8, duration: 0.5 }}
             >
-              <a href="#" className="text-black font-semibold text-sm hover:underline">
+              <Link to="/auth/forgot-password" className="text-black font-semibold text-sm hover:underline">
                 Forgot password?
-              </a>
+              </Link>
             </motion.div>
           </motion.div>
         </div>

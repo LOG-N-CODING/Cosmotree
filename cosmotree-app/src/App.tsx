@@ -14,6 +14,8 @@ import MyPage from './pages/MyPage';
 import { useAuth, AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/layout/ProtectedRoute';
 import AdminPage from './pages/Adimin/AdminPage';
+import ForgotPasswordPage from './pages/Auth/ForgotPasswordPage';
+import FindEmailPage from './pages/Auth/FindEmailPage';
 
 function AppContent() {
   const { isAdmin } = useAuth();
@@ -23,6 +25,10 @@ function AppContent() {
       {/* Auth routes without header/footer */}
       <Route path="/auth/signup" element={<SignupPage />} />
       <Route path="/auth/login" element={<LoginPage />} />
+      <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/auth/find-email" element={<FindEmailPage />} />
+
+      {/* Protected routes with header/footer */}
 
       {/* Dashboard route without header/footer */}
       <Route

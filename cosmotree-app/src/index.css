@@ -26,6 +26,42 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
+/* Hide scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Line clamp utilities */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Swiper styles */
+.resource-swiper {
+  padding: 10px 0 !important;
+  background: white !important;
+  overflow-y: visible !important;
+}
+
+.resource-swiper .swiper-slide {
+  height: auto !important;
+  background: transparent !important;
+}
+
+.resource-swiper .swiper-wrapper {
+  background: white !important;
+}
+
+
+
 /* Stars Animation */
 .stars,
 .twinkling {
