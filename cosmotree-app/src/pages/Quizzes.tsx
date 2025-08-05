@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Icon from '../components/UI/Icon';
 import './Quizzes.css';
 
 // 퀴즈 타입 정의
@@ -25,7 +26,7 @@ const quizzes: Quiz[] = [
     difficulty: 'Beginner',
     score: 90,
     status: 'completed',
-    icon: '🧠',
+    icon: 'neurology',
   },
   {
     id: 2,
@@ -35,7 +36,7 @@ const quizzes: Quiz[] = [
     difficulty: 'Beginner',
     score: 85,
     status: 'completed',
-    icon: '🧠',
+    icon: 'neurology',
   },
   {
     id: 3,
@@ -45,7 +46,7 @@ const quizzes: Quiz[] = [
     difficulty: 'Beginner',
     score: 95,
     status: 'completed',
-    icon: '🧠',
+    icon: 'neurology',
   },
   {
     id: 4,
@@ -55,7 +56,7 @@ const quizzes: Quiz[] = [
     difficulty: 'Intermediate',
     score: 0,
     status: 'available',
-    icon: '🧠',
+    icon: 'neurology',
   },
   {
     id: 5,
@@ -65,7 +66,7 @@ const quizzes: Quiz[] = [
     difficulty: 'Intermediate',
     score: 0,
     status: 'available',
-    icon: '🧠',
+    icon: 'neurology',
   },
   {
     id: 6,
@@ -75,7 +76,7 @@ const quizzes: Quiz[] = [
     difficulty: 'Intermediate',
     score: 0,
     status: 'available',
-    icon: '🧠',
+    icon: 'neurology',
   },
   {
     id: 7,
@@ -85,7 +86,7 @@ const quizzes: Quiz[] = [
     difficulty: 'Advanced',
     score: 0,
     status: 'available',
-    icon: '🧠',
+    icon: 'neurology',
   },
   {
     id: 8,
@@ -95,7 +96,7 @@ const quizzes: Quiz[] = [
     difficulty: 'Advanced',
     score: 0,
     status: 'available',
-    icon: '🧠',
+    icon: 'neurology',
   },
   {
     id: 9,
@@ -105,7 +106,7 @@ const quizzes: Quiz[] = [
     difficulty: 'Advanced',
     score: 0,
     status: 'available',
-    icon: '🧠',
+    icon: 'neurology',
   },
   {
     id: 10,
@@ -115,7 +116,7 @@ const quizzes: Quiz[] = [
     difficulty: 'Advanced',
     score: 0,
     status: 'available',
-    icon: '🧠',
+    icon: 'neurology',
   },
 ];
 
@@ -150,9 +151,9 @@ const QuizCard: React.FC<QuizCardProps> = ({ quiz, index }) => {
       {/* 상단 섹션 */}
       <div className="flex justify-between items-start mb-4">
         {/* 아이콘과 태그 */}
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-            <span className="text-xl">{quiz.icon}</span>
+        <div className="flex justify-between items-center gap-2 mb-4 w-full">
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+            <Icon name={quiz.icon as any} size={24} />
           </div>
           <span
             className={`px-2 py-1 rounded text-sm font-semibold border ${getDifficultyStyle(quiz.difficulty)}`}
@@ -176,7 +177,7 @@ const QuizCard: React.FC<QuizCardProps> = ({ quiz, index }) => {
         <div className="flex justify-between items-center py-5 gap-4 w-full">
           <div className="flex items-center items-center gap-1">
             <div className="w-6 h-6 flex items-center justify-center">
-              <span className="text-lg">⭐</span>
+              <Icon name="stars2" size={18} />
             </div>
             <span className="text-sm text-black">Score</span>
           </div>
@@ -208,7 +209,7 @@ const QuizCard: React.FC<QuizCardProps> = ({ quiz, index }) => {
         ) : (
           <Link
             to={`/quiz/${quiz.id}`}
-            className="w-full bg-green-600 text-white py-4 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors hover:bg-green-700"
+            className="w-full bg-transparent border-2 border-black text-black py-4 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors hover:bg-black hover:text-white"
           >
             Retake Quiz
             <svg

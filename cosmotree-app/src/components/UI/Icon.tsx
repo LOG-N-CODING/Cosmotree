@@ -5,6 +5,8 @@ import {
   MoonStars, 
   PlanetIcon, 
   BookIcon,
+  NeurologyIcon,
+  Stars2Icon,
   IconName,
   iconInfo 
 } from '../../assets/icons';
@@ -23,7 +25,9 @@ const iconMap: Record<IconName, string> = {
   arrow: ArrowBack,
   moonStars: MoonStars,
   planet: PlanetIcon,
-  book: BookIcon
+  book: BookIcon,
+  neurology: NeurologyIcon,
+  stars2: Stars2Icon
 };
 
 const Icon: React.FC<IconProps> = ({ 

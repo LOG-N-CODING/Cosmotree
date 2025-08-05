@@ -4,6 +4,8 @@ import ArrowBack from './arrow-back.svg';
 import MoonStars from './moon-stars.svg';
 import PlanetIcon from './planet.svg';
 import BookIcon from './book.svg';
+import NeurologyIcon from './neurologyIcon.svg';
+import Stars2Icon from './stars2Icon.svg';
 
 // Icon metadata for TypeScript support
 export interface IconInfo {
@@ -49,6 +51,18 @@ export const iconInfo: Record<string, IconInfo> = {
     component: 'BookIcon',
     size: '22x27',
     description: 'Learning and education book icon'
+  },
+  neurology: {
+    name: 'Neurology',
+    component: 'NeurologyIcon',
+    size: '21x21',
+    description: 'Neurology brain science icon for medical and science themes'
+  },
+  stars2: {
+    name: 'Stars 2',
+    component: 'Stars2Icon', 
+    size: '21x20',
+    description: 'Two stars rating icon for scoring and evaluation'
   }
 };
 
@@ -58,7 +72,9 @@ export {
   ArrowBack,
   MoonStars,
   PlanetIcon,
-  BookIcon
+  BookIcon,
+  NeurologyIcon,
+  Stars2Icon
 };
 
 // Export icon names for easy reference
