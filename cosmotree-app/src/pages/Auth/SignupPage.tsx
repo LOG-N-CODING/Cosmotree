@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { setDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '../../config/firebase';
 import { useAuth } from '../../context/AuthContext';
@@ -86,20 +86,32 @@ const SignupPage = () => {
       setIsLoading(true);
       setError('');
       const { firstName, lastName, email, password } = formData;
+      const fullName = `${firstName} ${lastName}`.trim();
 
       // 1) 계정 생성
-      const user = await signUp(email, password);
+      const user = await signUp(email, password); // user: FirebaseUser
 
-      // 2) 유저 정보 저장
+      // 2) Auth 프로필에 displayName 세팅
+      // (signUp이 userCredential.user를 반환한다고 가정)
+      await updateProfile(user, { displayName: fullName });
+
+      // 필요시 이메일 인증 메일 발송
+      // await sendEmailVerification(user);
+
+      // 3) Firestore에도 별도로 저장(선택)
       await setDoc(doc(db, 'users', user.uid), {
         email: user.email,
-        name: `${firstName} ${lastName}`,
+        name: fullName,
         isAdmin: 0,
         createdAt: serverTimestamp(),
       });
 
-      // 3) 자동 로그인
+      // 4) 자동 로그인 (이미 signUp이 로그인 상태라면 생략 가능)
       await signInWithEmailAndPassword(auth, email, password);
+
+      // (옵션) 새로고침 없이 최신 프로필을 확실히 쓰고 싶으면:
+      // await auth.currentUser?.reload();
+
       navigate('/');
     } catch (err: any) {
       console.error(err);

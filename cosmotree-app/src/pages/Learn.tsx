@@ -1,19 +1,51 @@
+// src/pages/Learn.tsx
 import { motion } from 'framer-motion';
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '../components/UI/Icon';
+import { collection, doc, getDocs, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { db } from '../config/firebase';
+import { useAuth } from '../context/AuthContext';
 
-// Learning Module Card Component
+// ===== Types from Firestore =====
+type Difficulty = 'Beginner' | 'Intermediate' | 'Advanced';
+
+type Lesson = {
+  title: string;
+  content: string;
+};
+
+type ModuleDoc = {
+  id: string;
+  title: string; // e.g. "Introduction to Astronomy"
+  subtitle?: string; // e.g. "Basic concepts and history of astronomy"
+  difficulty: Difficulty;
+  imageUrl?: string;
+  lessons: Lesson[];
+  createdAt?: any; // Timestamp
+};
+
+// 각 모듈별 유저 진행도 (가정): users/{uid}/moduleProgress/{moduleId} -> { lastCompletedLesson: number }
+type UserModuleProgress = {
+  lastCompletedLesson: number; // 0-based index, e.g. 2 means lesson #3 completed
+};
+
+// ===== Card Props =====
 interface LearningModuleProps {
   id: string;
   title: string;
   description: string;
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
-  progress: number;
-  img: string;
+  difficulty: Difficulty;
+  progress: number; // 0~100
   status: 'available' | 'locked' | 'completed';
   planetColor: string;
+  img: string;
 }
+
+const getDifficultyColor = (level: Difficulty) => {
+  // Keep neutral for now (you can switch to colored pills later)
+  return 'bg-gray-100 text-gray-800';
+};
 
 const LearningModule: React.FC<LearningModuleProps> = ({
   id,
@@ -25,24 +57,10 @@ const LearningModule: React.FC<LearningModuleProps> = ({
   planetColor,
   img,
 }) => {
-  const getDifficultyColor = (level: string) => {
-    return 'bg-gray-100 text-gray-800';
-    // switch (level) {
-    //   case 'Beginner':
-    //     return 'bg-green-100 text-green-800';
-    //   case 'Intermediate':
-    //     return 'bg-yellow-100 text-yellow-800';
-    //   case 'Advanced':
-    //     return 'bg-red-100 text-red-800';
-    //   default:
-    //     return 'bg-gray-100 text-gray-800';
-    // }
-  };
-
   const getButtonText = () => {
     if (status === 'completed') return 'Review';
     if (status === 'locked') return 'Complete previous module';
-    return 'Continue Learning';
+    return progress > 0 ? 'Continue Learning' : 'Start Learning';
   };
 
   const getButtonColor = () => {
@@ -60,13 +78,13 @@ const LearningModule: React.FC<LearningModuleProps> = ({
       }`}
       style={{
         boxShadow: '0px 4px 60px 0px rgba(0, 0, 0, 0.15)',
-        width: '357px'
+        width: '357px',
       }}
     >
       {status === 'locked' && <div className="absolute inset-0 bg-white/75 rounded-3xl z-10" />}
 
       <div className="space-y-7">
-        {/* Header Section */}
+        {/* Header */}
         <div className="space-y-3">
           <div className="flex justify-between items-start">
             <div className="flex items-center justify-between gap-3 w-full">
@@ -92,13 +110,12 @@ const LearningModule: React.FC<LearningModuleProps> = ({
           </div>
         </div>
 
-        {/* Progress Section */}
+        {/* Progress */}
         <div className="space-y-4">
           <div className="flex justify-end">
             <span className="text-gray-700 font-medium">{progress}% Complete</span>
           </div>
 
-          {/* Progress Bar */}
           <div className="w-full bg-gray-200 rounded-full h-3">
             <motion.div
               className="bg-gray-800 h-3 rounded-full"
@@ -108,20 +125,14 @@ const LearningModule: React.FC<LearningModuleProps> = ({
             />
           </div>
 
-          {/* Action Button */}
+          {/* Action */}
           {status !== 'locked' ? (
             <Link
               to={`/learn/${id}`}
               className={`w-full ${getButtonColor()} text-white py-4 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors`}
             >
               {getButtonText()}
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"
                   fill="currentColor"
@@ -131,7 +142,7 @@ const LearningModule: React.FC<LearningModuleProps> = ({
           ) : (
             <button
               className={`w-full ${getButtonColor()} text-white py-4 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors`}
-              disabled={true}
+              disabled
             >
               {getButtonText()}
             </button>
@@ -143,113 +154,122 @@ const LearningModule: React.FC<LearningModuleProps> = ({
 };
 
 const Learn: React.FC = () => {
-  const learningModules: LearningModuleProps[] = [
-    {
-      id: '1',
-      title: 'Our Solar System',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      difficulty: 'Beginner',
-      progress: 100,
-      status: 'completed',
-      planetColor: 'transparent',
-      img: '/images/module-1.png',
-    },
-    {
-      id: '2',
-      title: 'Our Solar System',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      difficulty: 'Intermediate',
-      progress: 25,
-      status: 'available',
-      planetColor: 'transparent',
-      img: '/images/module-2.png',
-    },
-    {
-      id: '3',
-      title: 'Our Solar System',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      difficulty: 'Intermediate',
-      progress: 0,
-      status: 'locked',
-      planetColor: 'transparent',
-      img: '/images/module-3.png',
-    },
-    {
-      id: '4',
-      title: 'Our Solar System',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      difficulty: 'Intermediate',
-      progress: 0,
-      status: 'locked',
-      planetColor: 'transparent',
-      img: '/images/module-4.png',
-    },
-    {
-      id: '5',
-      title: 'Our Solar System',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      difficulty: 'Advanced',
-      progress: 0,
-      status: 'locked',
-      planetColor: 'transparent',
-      img: '/images/module-5.png',
-    },
-    {
-      id: '6',
-      title: 'Our Solar System',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      difficulty: 'Advanced',
-      progress: 0,
-      status: 'locked',
-      planetColor: 'transparent',
-      img: '/images/module-6.png',
-    },
-    {
-      id: '7',
-      title: 'Our Solar System',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      difficulty: 'Advanced',
-      progress: 0,
-      status: 'locked',
-      planetColor: 'transparent',
-      img: '/images/module-7.png',
-    },
-    {
-      id: '8',
-      title: 'Our Solar System',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      difficulty: 'Beginner',
-      progress: 100,
-      status: 'completed',
-      planetColor: 'transparent',
-      img: '/images/module-8.png',
-    },
-    {
-      id: '9',
-      title: 'Our Solar System',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      difficulty: 'Beginner',
-      progress: 100,
-      status: 'completed',
-      planetColor: 'transparent',
-      img: '/images/module-1.png',
-    },
-  ];
+  const { user } = useAuth(); // expect { uid }
+  const [modules, setModules] = useState<ModuleDoc[]>([]);
+  const [progressMap, setProgressMap] = useState<Record<string, number>>({}); // moduleId -> lastCompletedLesson (0-based)
+  const [loading, setLoading] = useState(true);
+
+  // Fetch modules (ordered by createdAt if exists)
+  useEffect(() => {
+    const run = async () => {
+      try {
+        const col = collection(db, 'modules'); // <-- 컬렉션 이름 맞춰줘
+        const q = query(col, orderBy('createdAt', 'asc'));
+        const snap = await getDocs(q);
+        const list: ModuleDoc[] = snap.docs.map(d => {
+          const data = d.data() as any;
+          return {
+            id: d.id,
+            title: data.title,
+            subtitle: data.subtitle ?? '',
+            difficulty: (data.difficulty ?? 'Beginner') as Difficulty,
+            imageUrl: data.imageUrl ?? '',
+            lessons: Array.isArray(data.lessons) ? data.lessons : [],
+            createdAt: data.createdAt,
+          };
+        });
+        setModules(list);
+      } finally {
+        setLoading(false);
+      }
+    };
+    run();
+  }, []);
+
+  // Live subscribe to user's module progress (users/{uid}/moduleProgress/*)
+  useEffect(() => {
+    if (!user?.uid) return;
+
+    const colRef = collection(db, 'users', user.uid, 'moduleProgress');
+    // 실시간 반영
+    const unsub = onSnapshot(colRef, snap => {
+      const next: Record<string, number> = {};
+      snap.forEach(doc => {
+        const d = doc.data() as UserModuleProgress;
+        if (typeof d.lastCompletedLesson === 'number') {
+          next[doc.id] = d.lastCompletedLesson;
+        }
+      });
+      setProgressMap(next);
+    });
+
+    return () => unsub();
+  }, [user?.uid]);
+
+  const cards: LearningModuleProps[] = useMemo(() => {
+    if (!modules.length) return [];
+
+    return modules.map((m, idx) => {
+      const total = m.lessons?.length ?? 0;
+      const last = progressMap[m.id]; // 0-based
+      const completedCount =
+        typeof last === 'number'
+          ? Math.min(total, Math.max(0, last + 1)) // last=0 -> 1개 완료
+          : 0;
+
+      const progress = total > 0 ? Math.round((completedCount / total) * 100) : 0;
+
+      const isCompleted = total > 0 && completedCount >= total;
+      const prevCompleted =
+        idx === 0
+          ? true
+          : (() => {
+              // 이전 모듈이 완료되었는지 확인
+              const prev = modules[idx - 1];
+              const prevTotal = prev.lessons?.length ?? 0;
+              const prevLast = progressMap[prev.id];
+              const prevCompletedCount =
+                typeof prevLast === 'number' ? Math.min(prevTotal, Math.max(0, prevLast + 1)) : 0;
+              return prevTotal > 0 && prevCompletedCount >= prevTotal;
+            })();
+
+      const status: 'available' | 'locked' | 'completed' = isCompleted
+        ? 'completed'
+        : prevCompleted
+          ? 'available'
+          : 'locked';
+
+      // 카드 설명: subtitle 우선, 없으면 첫 레슨 content의 앞부분
+      const description =
+        (m.subtitle && String(m.subtitle)) ||
+        (m.lessons?.[0]?.content
+          ? String(m.lessons[0].content).split('---')[0].slice(0, 160) + '...'
+          : 'Start this module to begin learning.');
+
+      // 이미지: 필드 비었으면 플레이스홀더
+      const img =
+        m.imageUrl && m.imageUrl.trim() ? m.imageUrl : `/images/module-${(idx % 8) + 1}.png`; // 너가 갖고있는 샘플 이미지 활용
+
+      return {
+        id: m.id,
+        title: m.title,
+        description,
+        difficulty: m.difficulty,
+        progress,
+        status,
+        planetColor: 'transparent',
+        img,
+      };
+    });
+  }, [modules, progressMap]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
-      {/* Background Planet Image */}
+      {/* Background Planet */}
       <motion.div
         className="fixed top-0 right-0 w-1/3 md:w-1/2 h-screen overflow-hidden pointer-events-none opacity-20 md:opacity-30"
-        animate={{
-          y: [0, -20, 0],
-        }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          repeatType: 'loop',
-          ease: 'easeInOut',
-        }}
+        animate={{ y: [0, -20, 0] }}
+        transition={{ duration: 4, repeat: Infinity, repeatType: 'loop', ease: 'easeInOut' }}
       >
         <img
           src="/images/planet.png"
@@ -258,10 +278,10 @@ const Learn: React.FC = () => {
         />
       </motion.div>
 
-      {/* Main Content */}
+      {/* Main */}
       <div className="relative z-10 pt-10 md:pt-14 lg:pt-16 pb-12 md:pb-20">
         <div className="max-w-6xl mx-auto px-4 md:px-6">
-          {/* Page Header */}
+          {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -276,24 +296,28 @@ const Learn: React.FC = () => {
             </p>
           </motion.div>
 
-          {/* Learning Modules Grid */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8"
-          >
-            {learningModules.map((module, index) => (
-              <motion.div
-                key={module.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <LearningModule {...module} />
-              </motion.div>
-            ))}
-          </motion.div>
+          {/* Grid */}
+          {loading ? (
+            <div className="text-gray-600">Loading modules…</div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8"
+            >
+              {cards.map((module, index) => (
+                <motion.div
+                  key={module.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <LearningModule {...module} />
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
         </div>
       </div>
     </div>

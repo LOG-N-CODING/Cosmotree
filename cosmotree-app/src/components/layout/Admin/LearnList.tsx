@@ -165,7 +165,7 @@ export const LearnList: React.FC = () => {
             onChange={e => setNewModule({ ...newModule, subtitle: e.target.value })}
           />
         </div>
-        <div>
+        {/* <div>
           <label className="block text-sm">Image File</label>
           <input
             type="file"
@@ -184,7 +184,7 @@ export const LearnList: React.FC = () => {
               className="mt-2 w-32 h-20 object-cover rounded"
             />
           )}
-        </div>
+        </div> */}
         <button className="bg-blue-600 text-white px-4 py-2 rounded" type="submit">
           Add Module
         </button>

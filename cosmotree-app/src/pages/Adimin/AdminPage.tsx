@@ -6,11 +6,12 @@ import { UserList } from '../../components/layout/Admin/UserList';
 import { Sidebar } from '../../components/layout/Admin/Sidebar';
 import { LearnList } from '../../components/layout/Admin/LearnList';
 import { QuizList } from '../../components/layout/Admin/QuizList';
+import { SeedList } from '../../components/layout/Admin/SeedList';
 
 export default function AdminPage() {
   const [searchParams] = useSearchParams();
   const defaultSection = (searchParams.get('section') as any) || 'Users';
-  const [section, setSection] = useState<'Users' | 'Learn' | 'Quiz'>(defaultSection);
+  const [section, setSection] = useState<'Users' | 'Learn' | 'Quiz' | 'Seed'>(defaultSection);
 
   useEffect(() => {
     const sec = searchParams.get('section') as any;
@@ -27,6 +28,7 @@ export default function AdminPage() {
         <div className="max-w-screen-lg mx-auto pt-16">{section === 'Users' && <UserList />}</div>
         <div className="max-w-screen-lg mx-auto pt-16">{section === 'Learn' && <LearnList />}</div>
         <div className="max-w-screen-lg mx-auto pt-16">{section === 'Quiz' && <QuizList />}</div>
+        <div className="max-w-screen-lg mx-auto pt-16">{section === 'Seed' && <SeedList />}</div>
       </main>
     </div>
   );

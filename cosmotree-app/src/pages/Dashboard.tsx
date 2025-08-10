@@ -34,23 +34,21 @@ const Dashboard = () => {
             <div className="flex items-center gap-0 md:gap-0 lg:gap-0 mb-6 md:mb-8 overflow-x-auto">
               {/* Rocket Icons for completed modules */}
               <div className="bg-white rounded-xl md:rounded-2xl p-2 md:p-4 shadow-sm flex-shrink-0">
-              <Icon name="rocket" size={20} className="md:w-6 md:h-6" />
+                <Icon name="rocket" size={20} className="md:w-6 md:h-6" />
               </div>
               {/* Divider */}
               <div className="w-7 h-0 border-t border-white mx-1 md:mx-2"></div>
               <div className="bg-white rounded-xl md:rounded-2xl p-2 md:p-4 shadow-sm flex-shrink-0">
-              <Icon name="rocket" size={24} />
+                <Icon name="rocket" size={24} />
               </div>
               {/* Divider */}
               <div className="w-7 h-0 border-t border-white mx-1 md:mx-2"></div>
               {/* Empty progress slots with dividers */}
               {Array.from({ length: 8 }).map((_, i) => (
-              <React.Fragment key={i}>
-                <div className="bg-white rounded-2xl w-16 h-16 shadow-sm flex-shrink-0"></div>
-                {i < 7 && (
-                <div className="w-7 h-0 border-t border-white mx-1 md:mx-2"></div>
-                )}
-              </React.Fragment>
+                <React.Fragment key={i}>
+                  <div className="bg-white rounded-2xl w-16 h-16 shadow-sm flex-shrink-0"></div>
+                  {i < 7 && <div className="w-7 h-0 border-t border-white mx-1 md:mx-2"></div>}
+                </React.Fragment>
               ))}
             </div>
 
@@ -63,7 +61,7 @@ const Dashboard = () => {
               <motion.div
                 className="bg-white rounded-3xl p-6 border border-gray-300 flex items-center gap-4"
                 style={{
-                  boxShadow: '0px 4px 60px 0px rgba(0, 0, 0, 0.15)'
+                  boxShadow: '0px 4px 60px 0px rgba(0, 0, 0, 0.15)',
                 }}
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
@@ -81,7 +79,7 @@ const Dashboard = () => {
               <motion.div
                 className="bg-white rounded-3xl p-6 border border-gray-300 flex items-center gap-4"
                 style={{
-                  boxShadow: '0px 4px 60px 0px rgba(0, 0, 0, 0.15)'
+                  boxShadow: '0px 4px 60px 0px rgba(0, 0, 0, 0.15)',
                 }}
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
@@ -109,14 +107,13 @@ const Dashboard = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <div className='flex items-center justify-around mb-0'>
+            <div className="flex items-center justify-around mb-0">
               <h2 className="text-xl font-normal text-white mb-8">Quick Actions</h2>
 
               {/* Moon Icon */}
               <div className="flex justify-center mb-8">
                 <Icon name="moonStars" size={64} />
               </div>
-
             </div>
 
             {/* Action Buttons */}
@@ -188,7 +185,10 @@ const Dashboard = () => {
                     <Icon name="book" size={24} />
                   </div>
                   <div className="flex-1 pt-2">
-                    <h3 className="font-semibold text-black text-base mb-2 line-clamp-1" title="Astronomy 101: Essential terms">
+                    <h3
+                      className="font-semibold text-black text-base mb-2 line-clamp-1"
+                      title="Astronomy 101: Essential terms"
+                    >
                       Astronomy 101: Essential terms
                     </h3>
                     <p className="text-black text-sm line-clamp-2 mb-2">
@@ -206,7 +206,6 @@ const Dashboard = () => {
             <SwiperSlide style={{ width: '300px' }}>
               <motion.div
                 className="bg-white rounded-3xl p-6 border border-gray-300 shadow-sm flex flex-col h-[180px]"
-                
                 whileHover={{ scale: 1.02, y: -5 }}
                 transition={{ duration: 0.3 }}
               >
@@ -215,7 +214,10 @@ const Dashboard = () => {
                     <Icon name="book" size={24} />
                   </div>
                   <div className="flex-1 pt-2">
-                    <h3 className="font-semibold text-black text-base mb-2 line-clamp-1" title="Astrobiology: Life in Universe">
+                    <h3
+                      className="font-semibold text-black text-base mb-2 line-clamp-1"
+                      title="Astrobiology: Life in Universe"
+                    >
                       Astrobiology: Life in Universe
                     </h3>
                     <p className="text-black text-sm line-clamp-2 mb-2">
@@ -241,7 +243,10 @@ const Dashboard = () => {
                     <Icon name="book" size={24} />
                   </div>
                   <div className="flex-1 pt-2">
-                    <h3 className="font-semibold text-black text-base mb-2 line-clamp-1" title="Black Holes: Cosmic Mysteries">
+                    <h3
+                      className="font-semibold text-black text-base mb-2 line-clamp-1"
+                      title="Black Holes: Cosmic Mysteries"
+                    >
                       Black Holes: Cosmic Mysteries
                     </h3>
                     <p className="text-black text-sm line-clamp-2 mb-2">
@@ -267,7 +272,10 @@ const Dashboard = () => {
                     <Icon name="book" size={24} />
                   </div>
                   <div className="flex-1 pt-2">
-                    <h3 className="font-semibold text-black text-base mb-2 line-clamp-1" title="Big Bang: Universe Origins">
+                    <h3
+                      className="font-semibold text-black text-base mb-2 line-clamp-1"
+                      title="Big Bang: Universe Origins"
+                    >
                       Big Bang: Universe Origins
                     </h3>
                     <p className="text-black text-sm line-clamp-2 mb-2">
@@ -293,12 +301,13 @@ const Dashboard = () => {
                     <Icon name="book" size={24} />
                   </div>
                   <div className="flex-1 pt-2">
-                    <h3 className="font-semibold text-black text-base mb-2 line-clamp-1" title="Solar System Exploration">
+                    <h3
+                      className="font-semibold text-black text-base mb-2 line-clamp-1"
+                      title="Solar System Exploration"
+                    >
                       Solar System Exploration
                     </h3>
-                    <p className="text-black text-sm line-clamp-2 mb-2">
-                      Planets, moons, and more
-                    </p>
+                    <p className="text-black text-sm line-clamp-2 mb-2">Planets, moons, and more</p>
                     <span className="bg-black text-white px-2 py-2 rounded text-xs font-semibold">
                       Discovery
                     </span>
@@ -319,12 +328,13 @@ const Dashboard = () => {
                     <Icon name="book" size={24} />
                   </div>
                   <div className="flex-1 pt-2">
-                    <h3 className="font-semibold text-black text-base mb-2 line-clamp-1" title="Stellar Evolution">
+                    <h3
+                      className="font-semibold text-black text-base mb-2 line-clamp-1"
+                      title="Stellar Evolution"
+                    >
                       Stellar Evolution
                     </h3>
-                    <p className="text-black text-sm line-clamp-2 mb-2">
-                      Life cycle of stars
-                    </p>
+                    <p className="text-black text-sm line-clamp-2 mb-2">Life cycle of stars</p>
                     <span className="bg-black text-white px-2 py-2 rounded text-xs font-semibold">
                       Process
                     </span>
