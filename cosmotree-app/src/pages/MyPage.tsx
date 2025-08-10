@@ -539,24 +539,48 @@ const MyPage: React.FC = () => {
                     className="bg-white border border-[#BDBDBD] rounded-[20px] shadow-[0px_4px_60px_0px_rgba(0,0,0,0.1)] p-4 md:p-6"
                   >
                     <div className="flex flex-col gap-[20px] md:gap-[25px]">
-                      {/* 제목, 설명, 상태 한 줄로 */}
-                      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-                        {/* 왼쪽 영역: 제목 + 설명 */}
-                        <div className="flex items-center gap-4 w-full overflow-hidden">
-                          <div className="flex flex-col md:flex-row items-center gap-2 flex-1 overflow-hidden">
-                            {/* 제목 */}
-                            <span className="text-[18px] md:text-[20px] font-bold text-black truncate">
+                      {/* 1) 상단 행 */}
+                      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 lg:gap-[467px]">
+                        {/* 왼쪽 영역 */}
+                        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-[19px] w-full lg:w-auto min-w-0">
+                          {/* 썸네일 박스 */}
+                          <div className="w-full md:w-[212px] h-[80px] md:h-[98px] bg-[#EEEEEE] border-b border-[#E4E4E4] rounded-[12px] flex items-center justify-center p-4 md:p-6">
+                            <div className="text-center min-w-0">
+                              {/* 썸네일 안의 타이틀/설명도 과도한 줄바꿈 방지 */}
+                              <div
+                                className="text-[18px] md:text-[20px] font-bold text-black mb-1 truncate"
+                                title={module.title}
+                              >
+                                {module.title}
+                              </div>
+                              <div
+                                className="text-[12px] md:text-[14px] text-black line-clamp-1"
+                                title={module.description}
+                              >
+                                {module.description}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 우측 텍스트 블록(원래 구조 유지) */}
+                          <div className="flex flex-col gap-1 min-w-0 md:max-w-[520px]">
+                            <div
+                              className="text-[18px] md:text-[20px] font-bold text-black truncate"
+                              title={module.title}
+                            >
                               {module.title}
-                            </span>
-                            {/* 설명 */}
-                            <span className="text-[12px] md:text-[14px] text-gray-700 truncate">
+                            </div>
+                            <div
+                              className="text-[12px] md:text-[14px] text-black text-opacity-80 line-clamp-2"
+                              title={module.description}
+                            >
                               {module.description}
-                            </span>
+                            </div>
                           </div>
                         </div>
 
-                        {/* 상태 */}
-                        <div className="bg-[#EEEEEE] rounded-lg px-2 py-1 shrink-0">
+                        {/* 상태 배지(오른쪽 고정) */}
+                        <div className="bg-[#EEEEEE] rounded-lg px-2 py-1 self-start lg:self-center shrink-0">
                           <span className="text-[12px] md:text-[14px] font-semibold text-black">
                             {module.status === 'completed'
                               ? 'Completed'
@@ -567,13 +591,18 @@ const MyPage: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* 진행률 바 */}
+                      {/* 2) 진행률 바 (우측에 % 같이 표시해 가독성 ↑) */}
                       <div className="w-full">
-                        <div className="w-full h-3 md:h-4 bg-[#D9D9D9] rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-[#333333] rounded-full transition-all duration-300"
-                            style={{ width: `${module.progress}%` }}
-                          />
+                        <div className="flex items-center gap-3">
+                          <div className="w-full h-3 md:h-4 bg-[#D9D9D9] rounded-full overflow-hidden min-w-0">
+                            <div
+                              className="h-full bg-[#333333] rounded-full transition-all duration-300"
+                              style={{ width: `${module.progress}%` }}
+                            />
+                          </div>
+                          <span className="text-[12px] md:text-[14px] text-black shrink-0">
+                            {module.progress}%
+                          </span>
                         </div>
                       </div>
                     </div>
