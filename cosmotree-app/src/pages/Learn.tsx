@@ -73,16 +73,17 @@ const LearningModule: React.FC<LearningModuleProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className={`bg-white rounded-3xl border border-gray-300 p-6 relative max-w-sm mx-auto ${
+      className={`bg-white rounded-3xl border border-gray-300 p-6 relative h-full flex flex-col ${
         status === 'locked' ? 'opacity-60' : ''
       }`}
       style={{
         boxShadow: '0px 4px 60px 0px rgba(0, 0, 0, 0.15)',
-        width: '357px',
+        minHeight: '480px',
       }}
     >
       {status === 'locked' && <div className="absolute inset-0 bg-white/75 rounded-3xl z-10" />}
 
+      {/* 상단 콘텐츠 */}
       <div className="space-y-7">
         {/* Header */}
         <div className="space-y-3">
@@ -105,49 +106,48 @@ const LearningModule: React.FC<LearningModuleProps> = ({
           {/* Content */}
           <div className="space-y-1">
             <img src={img} alt="Module" className="w-full h-32 object-cover rounded-lg mb-4" />
-            <h3 className="text-xl font-bold text-black">{title}</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
+            <h3 className="text-xl font-bold text-black line-clamp-2">{title}</h3>
+            <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">{description}</p>
           </div>
         </div>
+      </div>
 
-        {/* Progress */}
-        <div className="space-y-4">
-          <div className="flex justify-end">
-            <span className="text-gray-700 font-medium">{progress}% Complete</span>
-          </div>
-
-          <div className="w-full bg-gray-200 rounded-full h-3">
-            <motion.div
-              className="bg-gray-800 h-3 rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 1, delay: 0.2 }}
-            />
-          </div>
-
-          {/* Action */}
-          {status !== 'locked' ? (
-            <Link
-              to={`/learn/${id}`}
-              className={`w-full ${getButtonColor()} text-white py-4 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors`}
-            >
-              {getButtonText()}
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"
-                  fill="currentColor"
-                />
-              </svg>
-            </Link>
-          ) : (
-            <button
-              className={`w-full ${getButtonColor()} text-white py-4 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors`}
-              disabled
-            >
-              {getButtonText()}
-            </button>
-          )}
+      {/* 하단(Progress + 버튼) → 카드 바닥으로 */}
+      <div className="space-y-4 mt-auto">
+        <div className="flex justify-end">
+          <span className="text-gray-700 font-medium">{progress}% Complete</span>
         </div>
+        <div className="w-full bg-gray-200 rounded-full h-3">
+          <motion.div
+            className="bg-gray-800 h-3 rounded-full"
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 1, delay: 0.2 }}
+          />
+        </div>
+
+        {/* Action */}
+        {status !== 'locked' ? (
+          <Link
+            to={`/learn/${id}`}
+            className={`w-full ${getButtonColor()} text-white py-4 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors`}
+          >
+            {getButtonText()}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"
+                fill="currentColor"
+              />
+            </svg>
+          </Link>
+        ) : (
+          <button
+            className={`w-full ${getButtonColor()} text-white py-4 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors`}
+            disabled
+          >
+            {getButtonText()}
+          </button>
+        )}
       </div>
     </motion.div>
   );
@@ -159,31 +159,53 @@ const Learn: React.FC = () => {
   const [progressMap, setProgressMap] = useState<Record<string, number>>({}); // moduleId -> lastCompletedLesson (0-based)
   const [loading, setLoading] = useState(true);
 
-  // Fetch modules (ordered by createdAt if exists)
+  const DIFF_RANK: Record<Difficulty, number> = {
+    Beginner: 0,
+    Intermediate: 1,
+    Advanced: 2,
+  };
+
   useEffect(() => {
-    const run = async () => {
-      try {
-        const col = collection(db, 'modules'); // <-- 컬렉션 이름 맞춰줘
-        const q = query(col, orderBy('createdAt', 'asc'));
-        const snap = await getDocs(q);
-        const list: ModuleDoc[] = snap.docs.map(d => {
+    const colRef = collection(db, 'modules');
+    const unsub = onSnapshot(
+      colRef,
+      snap => {
+        const raw: ModuleDoc[] = snap.docs.map(d => {
           const data = d.data() as any;
           return {
             id: d.id,
-            title: data.title,
+            title: data.title ?? '',
             subtitle: data.subtitle ?? '',
             difficulty: (data.difficulty ?? 'Beginner') as Difficulty,
             imageUrl: data.imageUrl ?? '',
             lessons: Array.isArray(data.lessons) ? data.lessons : [],
-            createdAt: data.createdAt,
+            createdAt: data.createdAt, // Firestore Timestamp | undefined
           };
         });
-        setModules(list);
-      } finally {
+
+        // ✅ 클라이언트 정렬: 난이도 → createdAt
+        const sorted = [...raw].sort((a, b) => {
+          const ra = DIFF_RANK[a.difficulty] ?? 999;
+          const rb = DIFF_RANK[b.difficulty] ?? 999;
+          if (ra !== rb) return ra - rb;
+
+          const ta = a.createdAt?.seconds ?? 0;
+          const tb = b.createdAt?.seconds ?? 0;
+          return ta - tb;
+        });
+
+        console.log('modules (client-sorted): size=', snap.size, sorted);
+        setModules(sorted);
+        setLoading(false);
+      },
+      err => {
+        console.error('[onSnapshot modules] error:', err);
+        setModules([]);
         setLoading(false);
       }
-    };
-    run();
+    );
+
+    return () => unsub();
   }, []);
 
   // Live subscribe to user's module progress (users/{uid}/moduleProgress/*)
@@ -312,6 +334,7 @@ const Learn: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="h-full"
                 >
                   <LearningModule {...module} />
                 </motion.div>
