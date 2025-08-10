@@ -1,5 +1,13 @@
 import React, { useState, useEffect, FormEvent } from 'react';
-import { collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import {
+  collection,
+  addDoc,
+  onSnapshot,
+  doc,
+  updateDoc,
+  deleteDoc,
+  serverTimestamp,
+} from 'firebase/firestore';
 import { db } from '../../../config/firebase';
 
 export interface Lesson {
@@ -16,6 +24,19 @@ export interface Module {
   imageUrl: string;
   lessons: Lesson[];
 }
+
+const difficultyBadge = (d: Module['difficulty'] | undefined) => {
+  switch (d) {
+    case 'Beginner':
+      return 'bg-green-100 text-green-800 border border-green-200';
+    case 'Intermediate':
+      return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+    case 'Advanced':
+      return 'bg-red-100 text-red-800 border border-red-200';
+    default:
+      return 'bg-gray-100 text-gray-700 border border-gray-200';
+  }
+};
 
 export const LearnList: React.FC = () => {
   const [modules, setModules] = useState<Module[]>([]);
@@ -61,6 +82,7 @@ export const LearnList: React.FC = () => {
       subtitle: newModule.subtitle.trim(),
       imageUrl: url,
       lessons: [],
+      createdAt: serverTimestamp(), // ✅ 추가
     });
     setNewModule({ difficulty: 'Beginner', title: '', subtitle: '', imageFile: null });
     setModulePreview('');
@@ -212,6 +234,24 @@ export const LearnList: React.FC = () => {
                 }
                 className="block w-full border rounded p-2"
               />
+              {/* ✅ Difficulty (edit) */}
+              <div>
+                <label className="block text-sm mb-1">Difficulty</label>
+                <select
+                  className="mt-1 block w-full border rounded p-2"
+                  value={editingModule?.difficulty}
+                  onChange={e =>
+                    setEditingModule(prev =>
+                      prev ? { ...prev, difficulty: e.target.value as Module['difficulty'] } : null
+                    )
+                  }
+                >
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                </select>
+              </div>
+
               <div className="flex space-x-2">
                 <button className="bg-green-600 text-white px-3 py-1 rounded" type="submit">
                   Save
@@ -228,7 +268,14 @@ export const LearnList: React.FC = () => {
           ) : (
             <div>
               <div className="flex justify-between items-center">
-                <h3 className="text-xl font-medium">{mod.title}</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xl font-medium">{mod.title}</h3>
+                  {/* ✅ Difficulty badge */}
+                  <span className={`text-xs px-2 py-1 rounded ${difficultyBadge(mod.difficulty)}`}>
+                    {mod.difficulty || 'Unknown'}
+                  </span>
+                </div>
+
                 <div className="space-x-2">
                   <button onClick={() => handleStartEditModule(mod)} className="text-blue-500">
                     Edit
