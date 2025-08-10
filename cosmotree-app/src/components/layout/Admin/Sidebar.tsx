@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const categories = ['Users', 'Learn', 'Quiz'] as const;
+const categories = ['Users', 'Learn', 'Quiz', 'Seed'] as const;
 type Cat = (typeof categories)[number];
 
 export function Sidebar({ onSelect }: { onSelect: (c: Cat) => void }) {

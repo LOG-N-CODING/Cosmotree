@@ -1,97 +1,204 @@
+// src/pages/LearnDetail.tsx
 import { motion } from 'framer-motion';
-import React, { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import Header from '../../components/layout/Header';
 import Icon from '../../components/UI/Icon';
+import { useAuth } from '../../context/AuthContext';
+import { collection, doc, getDoc, onSnapshot, setDoc } from 'firebase/firestore';
+import { db } from '../../config/firebase';
 
-// Lesson interface
-interface Lesson {
-  id: string;
-  title: string;
-  completed: boolean;
-  isActive: boolean;
-}
+type Difficulty = 'Beginner' | 'Intermediate' | 'Advanced';
 
-// Module data interface
-interface Module {
-  id: string;
+interface FirestoreLesson {
   title: string;
-  description: string;
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
-  progress: number;
-  currentLesson: number;
-  totalLessons: number;
-  lessons: Lesson[];
   content: string;
 }
+interface FirestoreModule {
+  title: string;
+  subtitle?: string;
+  difficulty: Difficulty;
+  imageUrl?: string;
+  lessons: FirestoreLesson[];
+  createdAt?: any;
+}
+
+type UserModuleProgress = {
+  lastCompletedLesson: number; // 0-based
+};
 
 const LearnDetail: React.FC = () => {
   const { moduleId } = useParams<{ moduleId: string }>();
+  const { user } = useAuth();
+
+  const [moduleDoc, setModuleDoc] = useState<FirestoreModule | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // 진행도
+  const [lastCompleted, setLastCompleted] = useState<number | null>(null);
+
+  // 현재 레슨 인덱스(0-based)
+  const [currentIdx, setCurrentIdx] = useState(0);
+
+  // 사이드 토픽 토글
   const [isTopicsExpanded, setIsTopicsExpanded] = useState(false);
 
-  // Mock data - in real app, this would come from API
-  const moduleData: Module = {
-    id: moduleId || '1',
-    title: 'Introduction to Astronomy',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    difficulty: 'Beginner',
-    progress: 25,
-    currentLesson: 1,
-    totalLessons: 4,
-    lessons: [
-      { id: '1', title: 'What is Astronomy?', completed: false, isActive: true },
-      { id: '2', title: 'History of Astronomy', completed: false, isActive: false },
-      { id: '3', title: 'Modern Astronomy', completed: false, isActive: false },
-      { id: '4', title: 'Future of Space Exploration', completed: false, isActive: false },
-    ],
-    content: `Lorem ipsum dolor sit amet consectetur. Amet feugiat varius nunc nisi elementum convallis malesuada sollicitudin. Eu a in adipiscing sed. Adipiscing turpis in at neque suspendisse varius eu. Nulla fermentum tortor sem at aenean. Tincidunt placerat egestas sed lobortis condimentum at vitae lacus mi. A et id tellus malesuada amet. Mi duis sed eget etiam. Sagittis purus quis integer tempor eget eget risus sollicitudin dolor. Tempor turpis suspendisse sed id elementum. Dis volutpat convallis morbi convallis dui tempus ipsum convallis. Nunc enim eget eu tellus. Vitae arcu semper in varius risus ullamcorper.
+  const navigate = useNavigate();
 
-Sit nunc felis convallis in malesuada hac augue at. Ornare nec egestas viverra et mauris diam tortor. Lectus elit diam ac egestas scelerisque id ac at morbi. Integer morbi at tempus porttitor sed vel odio amet. Massa venenatis volutpat ac cursus netus.
+  // 모듈 로드
+  useEffect(() => {
+    let mounted = true;
+    const run = async () => {
+      if (!moduleId) return;
+      setLoading(true);
+      const ref = doc(db, 'modules', moduleId);
+      const snap = await getDoc(ref);
+      if (mounted) {
+        if (snap.exists()) {
+          const data = snap.data() as any;
+          const normalized: FirestoreModule = {
+            title: data.title,
+            subtitle: data.subtitle ?? '',
+            difficulty: (data.difficulty ?? 'Beginner') as Difficulty,
+            imageUrl: data.imageUrl ?? '',
+            lessons: Array.isArray(data.lessons) ? data.lessons : [],
+            createdAt: data.createdAt,
+          };
+          setModuleDoc(normalized);
+        } else {
+          setModuleDoc(null);
+        }
+        setLoading(false);
+      }
+    };
+    run();
+    return () => {
+      mounted = false;
+    };
+  }, [moduleId]);
 
-Nec vivamus varius tincidunt rhoncus viverra pulvinar pharetra habitant. Vitae feugiat aenean facilisis quis cursus sit turpis. Non varius nec non sed dui tellus at nibh nec. Nunc mauris neque est eu est quis. Lacinia mauris sem ipsum elit proin pretium nisl suspendisse quis. Enim nec ut felis ut eleifend sed viverra. Accumsan eget arcu rhoncus enim. Morbi amet ornare id id vel ut odio ac.
+  // 유저 진행도 구독(실시간)
+  useEffect(() => {
+    if (!user?.uid || !moduleId) return;
+    const progressRef = doc(db, 'users', user.uid, 'moduleProgress', moduleId);
+    const unsub = onSnapshot(progressRef, snap => {
+      if (snap.exists()) {
+        const d = snap.data() as UserModuleProgress;
+        if (typeof d.lastCompletedLesson === 'number') {
+          setLastCompleted(d.lastCompletedLesson);
+        } else {
+          setLastCompleted(null);
+        }
+      } else {
+        setLastCompleted(null);
+      }
+    });
+    return () => unsub();
+  }, [user?.uid, moduleId]);
 
-Sit tincidunt bibendum eu semper mauris metus ac fringilla. Sit aliquam urna consectetur hendrerit in ut. Sagittis nunc ac eu sed fermentum. Lectus luctus malesuada tempor ullamcorper pellentesque. Turpis congue purus lacus pulvinar vitae cursus.
+  // 시작 시점 결정: 진행도가 있으면 그 다음 레슨부터, 없으면 0
+  useEffect(() => {
+    if (!moduleDoc) return;
+    const total = moduleDoc.lessons?.length ?? 0;
+    if (total === 0) {
+      setCurrentIdx(0);
+      return;
+    }
+    if (typeof lastCompleted === 'number') {
+      const next = Math.min(lastCompleted + 1, total - 1);
+      setCurrentIdx(next);
+    } else {
+      setCurrentIdx(0);
+    }
+  }, [moduleDoc, lastCompleted]);
 
-Sit mattis magna et eget ut in dis viverra lorem. Rhoncus duis placerat vestibulum tincidunt. Orci nunc consectetur scelerisque tortor. Etiam malesuada nunc sapien gravida viverra. Venenatis scelerisque at diam fames risus. Molestie ut neque faucibus turpis dignissim velit vel. Quis adipiscing non facilisis mauris cursus suspendisse eu. Ultricies volutpat vivamus pellentesque vitae mauris velit pharetra interdum. Morbi venenatis dolor volutpat imperdiet sed. Massa nulla in duis gravida enim dui malesuada. Risus purus a dignissim justo ullamcorper in.
+  const totalLessons = moduleDoc?.lessons?.length ?? 0;
 
-Interdum et turpis vitae enim non iaculis nibh aenean in. Dui scelerisque lacus at sit sapien sit rhoncus enim. Lorem nam dui sit ultrices dui proin id nisi. Eu nisi tempus tortor nullam ac. Nisl quis scelerisque tortor sollicitudin ipsum et odio odio. Dignissim nunc malesuada purus ullamcorper lectus tortor in tristique. Hac mi aliquam viverra pellentesque fringilla aliquet sit viverra. Amet enim semper id curabitur nibh auctor ultrices dignissim. Facilisis tristique eu quisque ullamcorper. Velit a nulla senectus malesuada varius mattis. Velit duis in pellentesque nunc pharetra volutpat quisque iaculis ipsum.`,
+  const progressPercent = useMemo(() => {
+    if (!moduleDoc) return 0;
+    const total = totalLessons;
+    const completedCount =
+      typeof lastCompleted === 'number' ? Math.min(total, Math.max(0, lastCompleted + 1)) : 0;
+    return total > 0 ? Math.round((completedCount / total) * 100) : 0;
+  }, [moduleDoc, totalLessons, lastCompleted]);
+
+  const title = moduleDoc?.title ?? 'Module';
+  const difficulty = moduleDoc?.difficulty ?? 'Beginner';
+
+  // 현재 레슨
+  const currentLesson = useMemo(() => {
+    if (!moduleDoc) return null;
+    return moduleDoc.lessons?.[currentIdx] ?? null;
+  }, [moduleDoc, currentIdx]);
+
+  // 레슨 클릭 시 이동(진행 저장은 하지 않음 — Next에서만 저장)
+  const handleClickLesson = (index: number) => {
+    setCurrentIdx(index);
   };
 
-  const getDifficultyColor = (level: string) => {
-    return 'bg-gray-200 text-gray-800';
-    // switch (level) {
-    //   case 'Beginner':
-    //     return 'bg-green-100 text-green-800';
-    //   case 'Intermediate':
-    //     return 'bg-yellow-100 text-yellow-800';
-    //   case 'Advanced':
-    //     return 'bg-red-100 text-red-800';
-    //   default:
-    //     return 'bg-gray-100 text-gray-800';
-    // }
+  // Next 클릭: 진행 저장 후 다음 레슨으로
+  const handleNext = useCallback(async () => {
+    if (!user?.uid || !moduleId || !moduleDoc) return;
+
+    const willCompleteIdx = currentIdx;
+    const newLastCompleted =
+      typeof lastCompleted === 'number'
+        ? Math.max(lastCompleted, willCompleteIdx)
+        : willCompleteIdx;
+
+    const ref = doc(db, 'users', user.uid, 'moduleProgress', moduleId);
+    await setDoc(ref, { lastCompletedLesson: newLastCompleted } as UserModuleProgress, {
+      merge: true,
+    });
+
+    // 마지막 레슨이면 /learn으로 이동
+    if (currentIdx >= totalLessons - 1) {
+      navigate('/learn');
+      return;
+    }
+
+    // 다음 레슨으로 이동
+    const next = Math.min(currentIdx + 1, totalLessons - 1);
+    setCurrentIdx(next);
+  }, [user?.uid, moduleId, moduleDoc, currentIdx, totalLessons, lastCompleted, navigate]);
+
+  const handlePrev = () => {
+    const prev = Math.max(currentIdx - 1, 0);
+    setCurrentIdx(prev);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
+        <Header mode="dark" fixed />
+        <div className="max-w-7xl mx-auto px-6 pt-24 pb-20 text-gray-700">Loading…</div>
+      </div>
+    );
+  }
+
+  if (!moduleDoc) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
+        <Header mode="dark" fixed />
+        <div className="max-w-7xl mx-auto px-6 pt-24 pb-20 text-gray-700">Module not found.</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
-       {/* Header */}
-      <div className="">
-        <Header mode="dark" fixed={true} />
-      </div>
+      {/* Header */}
+      <Header mode="dark" fixed />
 
-      {/* Hero Section with Background Image */}
+      {/* Hero */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         className="relative h-[420px] bg-cover bg-center bg-no-repeat flex items-center justify-center"
-        style={{
-          backgroundImage: 'url(/images/learn-detail-hero-bg.jpg)',
-        }}
+        style={{ backgroundImage: 'url(/images/learn-detail-hero-bg.jpg)' }}
       >
-        {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-black bg-opacity-20"></div>
-        
-        {/* Title Content */}
+        <div className="absolute inset-0 bg-black bg-opacity-20" />
         <div className="relative z-10 text-center px-4">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -99,36 +206,27 @@ Interdum et turpis vitae enim non iaculis nibh aenean in. Dui scelerisque lacus 
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-white text-2xl md:text-3xl lg:text-4xl font-bold"
           >
-            {moduleData.title}
+            {title}
           </motion.h1>
         </div>
-
-
       </motion.div>
 
-      {/* Main Content */}
+      {/* Main */}
       <div className="pt-16 pb-20">
         <div className="max-w-7xl mx-auto px-6">
-          {/* Top Section */}
+          {/* Top */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="mb-8"
           >
-            {/* Navigation and Lesson Info */}
             <div className="flex justify-between items-center mb-6">
               <Link
                 to="/learn"
                 className="flex items-center gap-2 text-black hover:text-gray-700 font-medium transition-colors"
               >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path
                     d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
                     fill="currentColor"
@@ -138,26 +236,25 @@ Interdum et turpis vitae enim non iaculis nibh aenean in. Dui scelerisque lacus 
               </Link>
 
               <div className="bg-gray-800 text-white px-3 py-1 rounded-lg text-sm font-semibold">
-                Lesson {moduleData.currentLesson} of {moduleData.totalLessons}
+                Lesson {Math.min(currentIdx + 1, totalLessons)} of {totalLessons}
               </div>
             </div>
 
-            {/* Module Info */}
             <div className="flex gap-4 my-6">
               <div className="flex-1">
-                <h1 className="text-3xl font-bold text-black mb-2">{moduleData.title}</h1>
-                <p className="text-gray-600 mb-4">{moduleData.description}</p>
-                <span
-                  className={`inline-block px-3 py-1 rounded text-sm font-semibold ${getDifficultyColor(moduleData.difficulty)}`}
-                >
-                  {moduleData.difficulty}
+                <h1 className="text-3xl font-bold text-black mb-2">{title}</h1>
+                <p className="text-gray-600 mb-4">
+                  {moduleDoc.subtitle || 'Explore the module lessons at your own pace.'}
+                </p>
+                <span className="inline-block px-3 py-1 rounded text-sm font-semibold bg-gray-200 text-gray-800">
+                  {difficulty}
                 </span>
               </div>
 
-              {/* Topics Covered */}
+              {/* Topics (optional, 그냥 토글 UI 유지) */}
               <div className="w-80">
                 <button
-                  onClick={() => setIsTopicsExpanded(!isTopicsExpanded)}
+                  onClick={() => setIsTopicsExpanded(v => !v)}
                   className="w-full flex items-center justify-between gap-2 bg-transparent border border-gray-300 px-4 py-3 rounded-lg font-medium text-black hover:bg-gray-50 transition-colors"
                 >
                   Topics Covered
@@ -166,7 +263,6 @@ Interdum et turpis vitae enim non iaculis nibh aenean in. Dui scelerisque lacus 
                     height="16"
                     viewBox="0 0 24 24"
                     fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
                     animate={{ rotate: isTopicsExpanded ? 180 : 0 }}
                     transition={{ duration: 0.3 }}
                   >
@@ -185,36 +281,34 @@ Interdum et turpis vitae enim non iaculis nibh aenean in. Dui scelerisque lacus 
                     className="mt-2 bg-transparent border border-gray-300 rounded-lg p-4"
                   >
                     <ul className="space-y-2 text-sm text-gray-600">
-                      <li>• Basic concepts of astronomy</li>
-                      <li>• Solar system overview</li>
-                      <li>• Stars and galaxies</li>
-                      <li>• Space exploration history</li>
+                      <li>• Key ideas and terminology</li>
+                      <li>• Concepts from each lesson</li>
+                      <li>• Suggested next lessons</li>
                     </ul>
                   </motion.div>
                 )}
               </div>
             </div>
 
-            {/* Progress Section */}
+            {/* Progress */}
             <div className="flex justify-between items-center mb-4">
               <span className="text-lg font-medium text-black">Lessons Progress</span>
-              <span className="text-lg font-medium text-black">{moduleData.progress}%</span>
+              <span className="text-lg font-medium text-black">{progressPercent}%</span>
             </div>
 
-            {/* Progress Bar */}
             <div className="w-full bg-gray-200 rounded-full h-4 mb-8">
               <motion.div
                 className="bg-gray-800 h-4 rounded-full"
                 initial={{ width: 0 }}
-                animate={{ width: `${moduleData.progress}%` }}
+                animate={{ width: `${progressPercent}%` }}
                 transition={{ duration: 1, delay: 0.2 }}
               />
             </div>
           </motion.div>
 
-          {/* Content Grid */}
+          {/* Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Left Sidebar - Lessons */}
+            {/* Sidebar Lessons */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -224,28 +318,35 @@ Interdum et turpis vitae enim non iaculis nibh aenean in. Dui scelerisque lacus 
               <div className="bg-transparent rounded-3xl border border-gray-200 shadow-lg p-6">
                 <h3 className="text-xl font-bold text-black mb-6">Lessons</h3>
                 <div className="space-y-4">
-                  {moduleData.lessons.map((lesson, index) => (
-                    <motion.div
-                      key={lesson.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.1 }}
-                      className={`flex justify-between items-center gap-4 p-4 rounded-xl border transition-colors cursor-pointer ${
-                        lesson.isActive
-                          ? 'bg-gray-800 border-gray-800 text-white'
-                          : 'bg-transparent border-gray-200 text-black hover:bg-gray-50'
-                      }`}
-                    >
-                      <span className="font-semibold text-sm">{lesson.title}</span>
-                        <div
-                        className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                          lesson.isActive ? 'bg-white' : 'bg-gray-100'
+                  {moduleDoc.lessons.map((lesson, index) => {
+                    const isActive = index === currentIdx;
+                    const isCompleted = typeof lastCompleted === 'number' && index <= lastCompleted;
+                    return (
+                      <motion.button
+                        type="button"
+                        onClick={() => handleClickLesson(index)}
+                        key={`${index}-${lesson.title}`}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.05 }}
+                        className={`w-full text-left flex justify-between items-center gap-4 p-4 rounded-xl border transition-colors ${
+                          isActive
+                            ? 'bg-gray-800 border-gray-800 text-white'
+                            : 'bg-transparent border-gray-200 text-black hover:bg-gray-50'
                         }`}
+                      >
+                        <span className="font-semibold text-sm line-clamp-1">{lesson.title}</span>
+                        <div
+                          className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                            isActive ? 'bg-white' : 'bg-gray-100'
+                          }`}
+                          title={isCompleted ? 'Completed' : 'Not completed'}
                         >
-                        <Icon name="libraryBooks" size={20} />
+                          <Icon name={isCompleted ? 'check' : 'libraryBooks'} size={18} />
                         </div>
-                    </motion.div>
-                  ))}
+                      </motion.button>
+                    );
+                  })}
                 </div>
               </div>
             </motion.div>
@@ -258,30 +359,35 @@ Interdum et turpis vitae enim non iaculis nibh aenean in. Dui scelerisque lacus 
               className="lg:col-span-3"
             >
               <div className="space-y-8">
-                
-
                 {/* Lesson Content */}
                 <div className="bg-transparent rounded-3xl border border-gray-200 shadow-lg p-8">
-                  <h2 className="text-2xl font-bold text-black mb-6">What is Astronomy?</h2>
+                  <h2 className="text-2xl font-bold text-black mb-6">
+                    {currentLesson?.title || 'Lesson'}
+                  </h2>
                   <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed">
-                    {moduleData.content.split('\n\n').map((paragraph, index) => (
-                      <p key={index} className="mb-6">
-                        {paragraph}
-                      </p>
-                    ))}
+                    {(currentLesson?.content || '')
+                      .split('\n\n')
+                      .filter(Boolean)
+                      .map((p, i) => (
+                        <p key={i} className="mb-6">
+                          {p}
+                        </p>
+                      ))}
                   </div>
                 </div>
 
-                {/* Navigation Buttons */}
+                {/* Navigation */}
                 <div className="flex justify-between items-center">
-                  <button className="flex items-center gap-2 bg-transparent border border-gray-300 text-gray-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors">
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
+                  <button
+                    onClick={handlePrev}
+                    disabled={currentIdx === 0}
+                    className={`flex items-center gap-2 bg-transparent border border-gray-300 px-6 py-3 rounded-lg font-medium transition-colors ${
+                      currentIdx === 0
+                        ? 'text-gray-400 cursor-not-allowed'
+                        : 'text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                       <path
                         d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
                         fill="currentColor"
@@ -290,15 +396,12 @@ Interdum et turpis vitae enim non iaculis nibh aenean in. Dui scelerisque lacus 
                     Previous
                   </button>
 
-                  <button className="flex items-center gap-2 bg-gray-800 border border-gray-800 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-700 transition-colors">
-                    Next Lesson
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
+                  <button
+                    onClick={handleNext}
+                    className="flex items-center gap-2 bg-gray-800 border border-gray-800 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-700 transition-colors"
+                  >
+                    {currentIdx >= totalLessons - 1 ? 'Finish Module' : 'Next Lesson'}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                       <path
                         d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"
                         fill="currentColor"

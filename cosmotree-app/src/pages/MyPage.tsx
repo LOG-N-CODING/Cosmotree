@@ -1,30 +1,42 @@
-import React, { useState } from 'react';
+// src/pages/MyPage.tsx
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import {
+  collection,
+  doc,
+  getDocs,
+  onSnapshot,
+  orderBy,
+  query,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore';
+import { db } from '../config/firebase';
+import { useAuth } from '../context/AuthContext';
+import { getDownloadURL, ref, uploadBytesResumable, deleteObject } from 'firebase/storage';
+import { storage } from '../config/firebase';
+import { updateProfile } from 'firebase/auth';
 
-// Sample data - 실제로는 API에서 가져올 데이터
-const moduleProgressData = [
-  {
-    id: 1,
-    title: 'Our Solar System',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    status: 'completed',
-    progress: 100,
-  },
-  {
-    id: 2,
-    title: 'Our Solar System',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    status: 'in-progress',
-    progress: 67,
-  },
-  {
-    id: 3,
-    title: 'The Andromeda Galaxy',
-    description: 'Nullam quis risus eget urna mollis ornare vel eu leo.',
-    status: 'not-started',
-    progress: 0,
-  },
-];
+type Difficulty = 'Beginner' | 'Intermediate' | 'Advanced';
+type FirestoreLesson = { title: string; content: string };
+type FirestoreModule = {
+  id: string;
+  title: string;
+  subtitle?: string;
+  difficulty: Difficulty;
+  imageUrl?: string;
+  lessons: FirestoreLesson[];
+  createdAt?: any;
+};
+type UserModuleProgress = { lastCompletedLesson: number }; // 0-based
+
+type ModuleRow = {
+  id: string;
+  title: string;
+  description: string;
+  status: 'completed' | 'in-progress' | 'not-started';
+  progress: number;
+};
 
 const quizHistoryData = [
   {
@@ -66,25 +78,228 @@ const quizHistoryData = [
 ];
 
 const MyPage: React.FC = () => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'module' | 'quiz'>('module');
-  const [isEditMode, setIsEditMode] = useState(false);
 
-  const handleEditProfile = () => {
-    setIsEditMode(true);
+  // ---------- Profile state ----------
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [deletingPhoto, setDeletingPhoto] = useState(false);
+
+  const [name, setName] = useState(''); // editable
+  const [email, setEmail] = useState(''); // view-only (재인증 이슈로 수정 화면만 비활성)
+  const [photoURL, setPhotoURL] = useState<string>('');
+  const [photoPath, setPhotoPath] = useState<string>(''); // 삭제용 경로 저장
+
+  const [newFile, setNewFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string>('');
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Subscribe to user profile doc
+  useEffect(() => {
+    if (!user?.uid) return;
+    const refUser = doc(db, 'users', user.uid);
+    const unsub = onSnapshot(refUser, snap => {
+      const d = snap.data() as any;
+      setName(d?.name || user.displayName || '');
+      setEmail(d?.email || user.email || '');
+      setPhotoURL(d?.photoURL || user.photoURL || '');
+      setPhotoPath(d?.photoPath || '');
+      setProfileLoading(false);
+    });
+    return () => unsub();
+  }, [user?.uid]);
+
+  // ---------- Modules progress ----------
+  const [modules, setModules] = useState<FirestoreModule[]>([]);
+  const [progressMap, setProgressMap] = useState<Record<string, number>>({});
+  const [modulesLoading, setModulesLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    const run = async () => {
+      setModulesLoading(true);
+      const col = collection(db, 'modules');
+      const q = query(col, orderBy('createdAt', 'asc'));
+      const snap = await getDocs(q);
+      if (!mounted) return;
+      const list: FirestoreModule[] = snap.docs.map(d => {
+        const data = d.data() as any;
+        return {
+          id: d.id,
+          title: data.title,
+          subtitle: data.subtitle ?? '',
+          difficulty: (data.difficulty ?? 'Beginner') as Difficulty,
+          imageUrl: data.imageUrl ?? '',
+          lessons: Array.isArray(data.lessons) ? data.lessons : [],
+          createdAt: data.createdAt,
+        };
+      });
+      setModules(list);
+      setModulesLoading(false);
+    };
+    run();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!user?.uid) return;
+    const colRef = collection(db, 'users', user.uid, 'moduleProgress');
+    const unsub = onSnapshot(colRef, snap => {
+      const map: Record<string, number> = {};
+      snap.forEach(doc => {
+        const d = doc.data() as UserModuleProgress;
+        if (typeof d.lastCompletedLesson === 'number') {
+          map[doc.id] = d.lastCompletedLesson;
+        }
+      });
+      setProgressMap(map);
+    });
+    return () => unsub();
+  }, [user?.uid]);
+
+  const moduleRows: ModuleRow[] = useMemo(() => {
+    return modules.map(m => {
+      const total = m.lessons?.length ?? 0;
+      const last = progressMap[m.id];
+      const completedCount = typeof last === 'number' ? Math.min(total, Math.max(0, last + 1)) : 0;
+      const progress = total > 0 ? Math.round((completedCount / total) * 100) : 0;
+
+      let status: ModuleRow['status'] = 'not-started';
+      if (progress >= 100 && total > 0) status = 'completed';
+      else if (progress > 0) status = 'in-progress';
+
+      const description =
+        (m.subtitle && String(m.subtitle)) ||
+        (m.lessons?.[0]?.content
+          ? String(m.lessons[0].content).split('---')[0].slice(0, 120) + '...'
+          : 'Start this module to begin learning.');
+
+      return { id: m.id, title: m.title, description, status, progress };
+    });
+  }, [modules, progressMap]);
+
+  // ---------- Handlers: Profile photo ----------
+  const onPickFile = () => fileInputRef.current?.click();
+
+  const onFileChange: React.ChangeEventHandler<HTMLInputElement> = e => {
+    const f = e.target.files?.[0] || null;
+    setNewFile(f);
+    setUploadProgress(0);
+    if (f) {
+      const url = URL.createObjectURL(f);
+      setPreview(url);
+    } else {
+      setPreview('');
+    }
   };
 
-  const handleSaveProfile = () => {
-    setIsEditMode(false);
-    console.log('Profile saved');
+  const handleDeletePhoto = async () => {
+    if (!user?.uid) return;
+    try {
+      setDeletingPhoto(true);
+      // 기존 스토리지 파일 삭제(경로가 있을 때만)
+      if (photoPath) {
+        const storageRef = ref(storage, photoPath);
+        await deleteObject(storageRef);
+      }
+      // Firestore/ Auth 정리
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, { photoURL: '', photoPath: '' });
+      if (user) await updateProfile(user, { photoURL: '' });
+      setPhotoURL('');
+      setPhotoPath('');
+      setPreview('');
+      setNewFile(null);
+    } finally {
+      setDeletingPhoto(false);
+    }
+  };
+
+  // ---------- Handlers: Save profile (name + photo) ----------
+  const handleSaveProfile = async () => {
+    if (!user?.uid) return;
+    setSaving(true);
+    try {
+      let nextPhotoURL = photoURL;
+      let nextPhotoPath = photoPath;
+
+      // 새 파일 업로드
+      if (newFile) {
+        // 새 파일 먼저 업로드
+        const path = `users/${user.uid}/profile/${Date.now()}_${newFile.name}`;
+        const storageRef = ref(storage, path);
+        const task = uploadBytesResumable(storageRef, newFile);
+
+        await new Promise<void>((resolve, reject) => {
+          task.on(
+            'state_changed',
+            snap => {
+              const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
+              setUploadProgress(pct);
+            },
+            reject,
+            async () => {
+              nextPhotoURL = await getDownloadURL(task.snapshot.ref);
+              nextPhotoPath = path;
+              resolve();
+            }
+          );
+        });
+
+        // 이전 파일이 있으면 정리(성공적으로 새 파일 올린 후)
+        if (photoPath && photoPath !== nextPhotoPath) {
+          try {
+            await deleteObject(ref(storage, photoPath));
+          } catch {
+            // 이전 파일이 없어도 무시
+          }
+        }
+      }
+
+      // Firestore 저장
+      const userRef = doc(db, 'users', user.uid);
+      await setDoc(
+        userRef,
+        {
+          name: name || '',
+          email: email || user.email || '',
+          photoURL: nextPhotoURL || '',
+          photoPath: nextPhotoPath || '',
+        },
+        { merge: true }
+      );
+
+      // Auth 프로필 동기화(선택)
+      await updateProfile(user, {
+        displayName: name || user.displayName || '',
+        photoURL: nextPhotoURL || '',
+      });
+
+      setPhotoURL(nextPhotoURL);
+      setPhotoPath(nextPhotoPath);
+      setNewFile(null);
+      setPreview('');
+      setIsEditMode(false);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleCancelEdit = () => {
     setIsEditMode(false);
-    console.log('Edit cancelled');
+    setNewFile(null);
+    setPreview('');
+    setUploadProgress(0);
   };
 
+  const handleEditProfile = () => setIsEditMode(true);
+
   const handleQuizAction = (action: string, quizId: number) => {
-    // Handle quiz actions (start/retake)
     console.log(`${action} quiz ${quizId}`);
   };
 
@@ -105,10 +320,10 @@ const MyPage: React.FC = () => {
       {/* Profile Section */}
       <div className="flex justify-center mt-[40px] md:mt-[60px] px-4 md:px-0">
         <div className="w-full max-w-[1128px] flex flex-col lg:flex-row gap-8 lg:gap-[168px]">
-          {/* Profile Card */}
+          {/* Profile Card (View) */}
           <div className="w-full lg:w-[480px] h-auto lg:h-[485px] bg-white border border-[#BDBDBD] rounded-[20px] shadow-[0px_4px_60px_0px_rgba(0,0,0,0.1)] p-[24px] md:p-[36px]">
             <div className="flex flex-col gap-[30px] md:gap-[47px] h-full">
-              {/* Profile Header */}
+              {/* Header */}
               <div className="flex flex-col gap-[20px] md:gap-[32px]">
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                   <div className="flex items-center gap-1">
@@ -124,11 +339,19 @@ const MyPage: React.FC = () => {
                       Profile Information
                     </span>
                   </div>
-                  <div className="w-[80px] h-[80px] md:w-[100px] md:h-[100px] bg-[#D9D9D9] rounded-full"></div>
+                  <div className="w-[80px] h-[80px] md:w-[100px] md:h-[100px] bg-[#D9D9D9] rounded-full overflow-hidden flex items-center justify-center">
+                    {profileLoading ? (
+                      <div className="text-xs text-gray-500">Loading…</div>
+                    ) : photoURL ? (
+                      <img src={photoURL} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-xs text-gray-500">No Photo</span>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* Profile Info */}
+              {/* Info */}
               <div className="flex flex-col gap-4 items-center">
                 <div className="w-full max-w-[408px]">
                   <div className="bg-white rounded-lg px-4 py-2 w-full h-[56px] flex items-center gap-3">
@@ -139,7 +362,7 @@ const MyPage: React.FC = () => {
                       />
                     </svg>
                     <span className="text-[18px] md:text-[20px] font-bold text-black">
-                      Star Lee
+                      {profileLoading ? 'Loading…' : name || 'Unnamed'}
                     </span>
                   </div>
                 </div>
@@ -153,113 +376,114 @@ const MyPage: React.FC = () => {
                       />
                     </svg>
                     <span className="text-[18px] md:text-[20px] text-black">
-                      user@cosmotree.com
+                      {profileLoading ? 'Loading…' : email || user?.email || 'user@cosmotree.com'}
                     </span>
                   </div>
                 </div>
 
-                {/* Edit Profile Button */}
-                <div className="w-full max-w-[408px] h-[56px] mt-4">
+                <div className="w-full max-w-[408px] flex gap-3 mt-4">
                   <button
                     onClick={handleEditProfile}
-                    className="w-full h-full bg-black text-white rounded-lg text-[16px] font-medium hover:bg-gray-800 transition-colors"
+                    className="flex-1 h-[56px] bg-black text-white rounded-lg text-[16px] font-medium hover:bg-gray-800 transition-colors"
                   >
                     Edit Profile
+                  </button>
+                  <button
+                    onClick={handleDeletePhoto}
+                    disabled={deletingPhoto || !photoURL}
+                    className={`h-[56px] px-4 rounded-lg text-[16px] font-medium transition-colors ${
+                      deletingPhoto || !photoURL
+                        ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                        : 'bg-white border border-gray-300 text-black hover:bg-gray-50'
+                    }`}
+                  >
+                    {deletingPhoto ? 'Deleting…' : 'Delete Photo'}
                   </button>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Enhanced Profile Section for Edit Mode */}
+          {/* Edit Panel */}
           {isEditMode && (
-            <div className="w-full lg:w-[480px] h-auto lg:h-[565px] bg-white border border-[#BDBDBD] rounded-[20px] shadow-[0px_4px_60px_0px_rgba(0,0,0,0.1)] p-[24px] md:p-[36px]">
-              <div className="flex flex-col gap-[30px] md:gap-[47px] h-full">
-                {/* Profile Header */}
-                <div className="flex flex-col gap-[20px] md:gap-[32px]">
-                  <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <div className="flex items-center gap-1">
-                      <div className="w-[40px] h-[40px] p-2 flex items-center justify-center">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                          <path
-                            d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"
-                            fill="#1C1B1F"
-                          />
-                        </svg>
+            <div className="w-full lg:w-[480px] h-auto bg-white border border-[#BDBDBD] rounded-[20px] shadow-[0px_4px_60px_0px_rgba(0,0,0,0.1)] p-[24px] md:p-[36px]">
+              <div className="flex flex-col gap-6">
+                {/* Photo picker */}
+                <div className="flex items-center gap-4">
+                  <div className="w-[100px] h-[100px] rounded-full overflow-hidden bg-[#D9D9D9] flex items-center justify-center">
+                    {preview ? (
+                      <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+                    ) : photoURL ? (
+                      <img src={photoURL} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-xs text-gray-600">No Photo</span>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={onFileChange}
+                      className="hidden"
+                    />
+                    <button
+                      onClick={onPickFile}
+                      className="px-4 h-[40px] bg-black text-white rounded-lg text-sm hover:bg-gray-800"
+                    >
+                      {preview || !photoURL ? 'Upload Photo' : 'Change Photo'}
+                    </button>
+                    {(preview || newFile) && (
+                      <div className="text-xs text-gray-600">
+                        {uploadProgress > 0 && uploadProgress < 100
+                          ? `Uploading ${uploadProgress}%`
+                          : 'Ready to save'}
                       </div>
-                      <span className="text-[16px] md:text-[18px] text-black leading-[1.5]">
-                        Profile Information
-                      </span>
-                    </div>
-                    <div className="w-[80px] h-[80px] md:w-[100px] md:h-[100px] bg-[#D9D9D9] rounded-full"></div>
+                    )}
                   </div>
                 </div>
 
-                {/* Enhanced Profile Info with Edit Fields */}
-                <div className="flex flex-col gap-4 items-center">
-                  <div className="w-full max-w-[408px]">
-                    <div className="bg-white border border-[#CCCCCC] rounded-lg px-4 py-2 w-full h-[56px] flex items-center gap-3">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path
-                          d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 5.5V4H9V5.5L3 7V9H21ZM12 8C10.9 8 10 8.9 10 10V11H14V10C14 8.9 13.1 8 12 8ZM2 20V18H22V20H2Z"
-                          fill="#1C1B1F"
-                        />
-                      </svg>
-                      <input
-                        type="text"
-                        defaultValue="Star Lee"
-                        className="text-[18px] md:text-[20px] font-bold text-black bg-transparent border-none outline-none flex-1"
-                      />
-                    </div>
-                  </div>
+                {/* Name (editable) */}
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Display Name</label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    className="w-full h-[48px] px-3 border border-[#CCCCCC] rounded-lg outline-none"
+                    placeholder="Your name"
+                  />
+                </div>
 
-                  <div className="w-full max-w-[408px]">
-                    <div className="bg-white border border-[#CCCCCC] rounded-lg px-4 py-2 w-full h-[56px] flex items-center gap-3">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path
-                          d="M20 4H4C2.9 4 2.01 4.9 2.01 6L2 18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM20 8L12 13L4 8V6L12 11L20 6V8Z"
-                          fill="#1C1B1F"
-                        />
-                      </svg>
-                      <input
-                        type="email"
-                        defaultValue="user@cosmotree.com"
-                        className="text-[18px] md:text-[20px] text-black bg-transparent border-none outline-none flex-1"
-                      />
-                    </div>
-                  </div>
+                {/* Email (view-only) */}
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={email}
+                    readOnly
+                    className="w-full h-[48px] px-3 border border-[#EEEEEE] bg-[#FAFAFA] rounded-lg text-gray-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Email changes require re-authentication. Handle separately if needed.
+                  </p>
+                </div>
 
-                  <div className="w-full max-w-[408px]">
-                    <div className="bg-white border border-[#CCCCCC] rounded-lg px-4 py-2 w-full h-[56px] flex items-center gap-3">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path
-                          d="M18 8H17V6C17 3.24 14.76 1 12 1S7 3.24 7 6V8H6C4.9 8 4 8.9 4 10V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V10C20 8.9 19.1 8 18 8ZM12 19C10.9 19 10 18.1 10 17S10.9 15 12 15S14 15.9 14 17S13.1 19 12 19ZM15.1 8H8.9V6C8.9 4.29 10.29 2.9 12 2.9S15.1 4.29 15.1 6V8Z"
-                          fill="#1C1B1F"
-                        />
-                      </svg>
-                      <input
-                        type="password"
-                        placeholder="New password"
-                        className="text-[18px] md:text-[20px] text-[#AAAAAA] placeholder-[#AAAAAA] bg-transparent border-none outline-none flex-1"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Save/Cancel Buttons */}
-                  <div className="w-full max-w-[408px] flex gap-[13px] mt-4">
-                    <button
-                      onClick={handleSaveProfile}
-                      className="flex-1 h-[56px] bg-[#1E1E1E] text-white rounded-lg text-[16px] font-normal hover:bg-gray-800 transition-colors"
-                    >
-                      Save
-                    </button>
-                    <button
-                      onClick={handleCancelEdit}
-                      className="flex-1 h-[56px] bg-[#1E1E1E] border border-[#1E1E1E] text-white rounded-lg text-[16px] font-normal hover:bg-gray-800 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                  </div>
+                {/* Actions */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleSaveProfile}
+                    disabled={saving}
+                    className={`flex-1 h-[48px] rounded-lg text-white ${saving ? 'bg-gray-400' : 'bg-[#1E1E1E] hover:bg-gray-800'} transition-colors`}
+                  >
+                    {saving ? 'Saving…' : 'Save'}
+                  </button>
+                  <button
+                    onClick={handleCancelEdit}
+                    className="flex-1 h-[48px] rounded-lg border border-[#1E1E1E] text-[#1E1E1E] hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
                 </div>
               </div>
             </div>
@@ -267,7 +491,7 @@ const MyPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Tabs Section */}
+      {/* Tabs */}
       <div className="flex justify-center mt-[40px] md:mt-[67px] px-4 md:px-0">
         <div className="w-full max-w-[1128px] h-[64px] md:h-[74px] bg-white border border-[#BDBDBD] rounded-[100px] shadow-[0px_4px_60px_0px_rgba(0,0,0,0.1)] p-2">
           <div className="flex h-full">
@@ -293,7 +517,7 @@ const MyPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Content Section */}
+      {/* Content */}
       <div className="flex justify-center mt-[40px] md:mt-[58px] pb-20 px-4 md:px-0">
         <motion.div
           key={activeTab}
@@ -303,62 +527,93 @@ const MyPage: React.FC = () => {
           className="w-full max-w-[1128px]"
         >
           {activeTab === 'module' ? (
-            <div className="space-y-6">
-              {moduleProgressData.map(module => (
-                <div
-                  key={module.id}
-                  className="bg-white border border-[#BDBDBD] rounded-[20px] shadow-[0px_4px_60px_0px_rgba(0,0,0,0.1)] p-4 md:p-6"
-                >
-                  <div className="flex flex-col gap-[20px] md:gap-[25px]">
-                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 lg:gap-[467px]">
-                      <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-[19px] w-full lg:w-auto">
-                        <div className="w-full md:w-[212px] h-[80px] md:h-[98px] bg-[#EEEEEE] border-b border-[#E4E4E4] rounded-[12px] flex items-center justify-center p-4 md:p-6">
-                          <div className="text-center">
-                            <div className="text-[18px] md:text-[20px] font-bold text-black mb-1">
+            modulesLoading ? (
+              <div className="text-gray-600">Loading your module progress…</div>
+            ) : moduleRows.length === 0 ? (
+              <div className="text-gray-600">No modules found.</div>
+            ) : (
+              <div className="space-y-6">
+                {moduleRows.map(module => (
+                  <div
+                    key={module.id}
+                    className="bg-white border border-[#BDBDBD] rounded-[20px] shadow-[0px_4px_60px_0px_rgba(0,0,0,0.1)] p-4 md:p-6"
+                  >
+                    <div className="flex flex-col gap-[20px] md:gap-[25px]">
+                      {/* 1) 상단 행 */}
+                      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 lg:gap-[467px]">
+                        {/* 왼쪽 영역 */}
+                        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-[19px] w-full lg:w-auto min-w-0">
+                          {/* 썸네일 박스 */}
+                          <div className="w-full md:w-[212px] h-[80px] md:h-[98px] bg-[#EEEEEE] border-b border-[#E4E4E4] rounded-[12px] flex items-center justify-center p-4 md:p-6">
+                            <div className="text-center min-w-0">
+                              {/* 썸네일 안의 타이틀/설명도 과도한 줄바꿈 방지 */}
+                              <div
+                                className="text-[18px] md:text-[20px] font-bold text-black mb-1 truncate"
+                                title={module.title}
+                              >
+                                {module.title}
+                              </div>
+                              <div
+                                className="text-[12px] md:text-[14px] text-black line-clamp-1"
+                                title={module.description}
+                              >
+                                {module.description}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 우측 텍스트 블록(원래 구조 유지) */}
+                          <div className="flex flex-col gap-1 min-w-0 md:max-w-[520px]">
+                            <div
+                              className="text-[18px] md:text-[20px] font-bold text-black truncate"
+                              title={module.title}
+                            >
                               {module.title}
                             </div>
-                            <div className="text-[12px] md:text-[14px] text-black">
+                            <div
+                              className="text-[12px] md:text-[14px] text-black text-opacity-80 line-clamp-2"
+                              title={module.description}
+                            >
                               {module.description}
                             </div>
                           </div>
                         </div>
-                        <div className="flex flex-col gap-2">
-                          <div className="text-[18px] md:text-[20px] font-bold text-black">
-                            {module.title}
-                          </div>
-                          <div className="text-[12px] md:text-[14px] text-black">
-                            {module.description}
-                          </div>
+
+                        {/* 상태 배지(오른쪽 고정) */}
+                        <div className="bg-[#EEEEEE] rounded-lg px-2 py-1 self-start lg:self-center shrink-0">
+                          <span className="text-[12px] md:text-[14px] font-semibold text-black">
+                            {module.status === 'completed'
+                              ? 'Completed'
+                              : module.status === 'in-progress'
+                                ? 'In Progress'
+                                : 'Not Started'}
+                          </span>
                         </div>
                       </div>
-                      <div className="bg-[#EEEEEE] rounded-lg px-2 py-1 self-start lg:self-center">
-                        <span className="text-[12px] md:text-[14px] font-semibold text-black">
-                          {module.status === 'completed'
-                            ? 'Completed'
-                            : module.status === 'in-progress'
-                              ? 'In Progress'
-                              : 'Not Started'}
-                        </span>
-                      </div>
-                    </div>
 
-                    {/* Progress Bar */}
-                    <div className="w-full">
-                      <div className="w-full h-3 md:h-4 bg-[#D9D9D9] rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-[#333333] rounded-full transition-all duration-300"
-                          style={{ width: `${module.progress}%` }}
-                        />
+                      {/* 2) 진행률 바 (우측에 % 같이 표시해 가독성 ↑) */}
+                      <div className="w-full">
+                        <div className="flex items-center gap-3">
+                          <div className="w-full h-3 md:h-4 bg-[#D9D9D9] rounded-full overflow-hidden min-w-0">
+                            <div
+                              className="h-full bg-[#333333] rounded-full transition-all duration-300"
+                              style={{ width: `${module.progress}%` }}
+                            />
+                          </div>
+                          <span className="text-[12px] md:text-[14px] text-black shrink-0">
+                            {module.progress}%
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )
           ) : (
             <div className="bg-white border border-[#BDBDBD] rounded-[20px] shadow-[0px_4px_60px_0px_rgba(0,0,0,0.1)] p-4 md:p-9 overflow-x-auto">
               <div className="min-w-[800px] flex gap-[-8px]">
-                {/* Topic Column */}
+                {/* Topic */}
                 <div className="w-[300px] md:w-[484px]">
                   <div className="border-b border-black p-3 md:p-6">
                     <h3 className="text-[14px] md:text-[16px] font-semibold text-black">Topic</h3>
@@ -374,8 +629,7 @@ const MyPage: React.FC = () => {
                     </div>
                   ))}
                 </div>
-
-                {/* Module Column */}
+                {/* Module */}
                 <div className="w-[100px] md:w-[124px]">
                   <div className="border-b border-black p-3 md:p-6 text-center">
                     <h3 className="text-[14px] md:text-[16px] font-semibold text-black">Module</h3>
@@ -393,8 +647,7 @@ const MyPage: React.FC = () => {
                     </div>
                   ))}
                 </div>
-
-                {/* Difficulty Column */}
+                {/* Difficulty */}
                 <div className="w-[100px] md:w-[137px]">
                   <div className="border-b border-black p-3 md:p-6 text-center">
                     <h3 className="text-[14px] md:text-[16px] font-semibold text-black">
@@ -407,11 +660,7 @@ const MyPage: React.FC = () => {
                       className="border-b border-[#CCCCCC] p-3 md:p-6 h-[48px] md:h-[56px] flex items-center justify-center"
                     >
                       <div
-                        className={`rounded px-2 py-1 ${
-                          quiz.difficulty === 'Beginner'
-                            ? 'bg-[#EEEEEE] border border-[#BDBDBD]'
-                            : 'bg-[#FFE9C2] border border-[#E6C700]'
-                        }`}
+                        className={`rounded px-2 py-1 ${quiz.difficulty === 'Beginner' ? 'bg-[#EEEEEE] border border-[#BDBDBD]' : 'bg-[#FFE9C2] border border-[#E6C700]'}`}
                       >
                         <span className="text-[12px] md:text-[14px] font-semibold text-black">
                           {quiz.difficulty}
@@ -420,8 +669,7 @@ const MyPage: React.FC = () => {
                     </div>
                   ))}
                 </div>
-
-                {/* Score Column */}
+                {/* Score */}
                 <div className="w-[80px] md:w-[100px]">
                   <div className="border-b border-black p-3 md:p-6 text-center">
                     <h3 className="text-[14px] md:text-[16px] font-semibold text-black">Score</h3>
@@ -435,8 +683,7 @@ const MyPage: React.FC = () => {
                     </div>
                   ))}
                 </div>
-
-                {/* Status Column */}
+                {/* Status */}
                 <div className="w-[100px] md:w-[118px]">
                   <div className="border-b border-black p-3 md:p-6 text-center">
                     <h3 className="text-[14px] md:text-[16px] font-semibold text-black">Status</h3>
@@ -492,8 +739,7 @@ const MyPage: React.FC = () => {
                     </div>
                   ))}
                 </div>
-
-                {/* Action Column */}
+                {/* Action */}
                 <div className="w-[100px] md:w-[134px]">
                   <div className="border-b border-black p-3 md:p-6 text-center">
                     <h3 className="text-[14px] md:text-[16px] font-semibold text-black">Action</h3>
