@@ -16,6 +16,7 @@ import { useAuth } from '../context/AuthContext';
 import { getDownloadURL, ref, uploadBytesResumable, deleteObject } from 'firebase/storage';
 import { storage } from '../config/firebase';
 import { updateProfile } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
 
 type Difficulty = 'Beginner' | 'Intermediate' | 'Advanced';
 type FirestoreLesson = { title: string; content: string };
@@ -38,48 +39,28 @@ type ModuleRow = {
   progress: number;
 };
 
-const quizHistoryData = [
-  {
-    id: 1,
-    topic: 'Introduction to Astronomy',
-    module: 'Module 1',
-    difficulty: 'Beginner',
-    score: '92%',
-    status: 'complete',
-    action: 'retake',
-  },
-  {
-    id: 2,
-    topic: 'The Solar System',
-    module: 'Module 2',
-    difficulty: 'Beginner',
-    score: '92%',
-    status: 'complete',
-    action: 'retake',
-  },
-  {
-    id: 3,
-    topic: 'Stars and Constellations',
-    module: 'Module 3',
-    difficulty: 'Beginner',
-    score: '92%',
-    status: 'pending',
-    action: 'start',
-  },
-  {
-    id: 4,
-    topic: 'Galaxies and Nebulae',
-    module: 'Module 4',
-    difficulty: 'Intermediate',
-    score: '92%',
-    status: 'pending',
-    action: 'start',
-  },
-];
+type QuizResultDoc = {
+  correctCount?: number;
+  totalAnswered?: number;
+  scorePercent?: number; // 0~100
+  completed?: boolean;
+  lastUpdated?: any; // Firebase Timestamp
+};
+
+type QuizHistoryRow = {
+  id: string; // moduleId
+  topic: string; // module title
+  moduleLabel: string; // e.g. moduleId
+  score: string; // "85%"
+  status: 'complete' | 'pending';
+  action: 'retake' | 'start';
+  lastUpdatedMs: number; // for sorting
+};
 
 const MyPage: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'module' | 'quiz'>('module');
+  const navigate = useNavigate();
 
   // ---------- Profile state ----------
   const [isEditMode, setIsEditMode] = useState(false);
@@ -116,6 +97,7 @@ const MyPage: React.FC = () => {
   const [modules, setModules] = useState<FirestoreModule[]>([]);
   const [progressMap, setProgressMap] = useState<Record<string, number>>({});
   const [modulesLoading, setModulesLoading] = useState(true);
+  const [quizRows, setQuizRows] = useState<QuizHistoryRow[]>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -299,9 +281,56 @@ const MyPage: React.FC = () => {
 
   const handleEditProfile = () => setIsEditMode(true);
 
-  const handleQuizAction = (action: string, quizId: number) => {
-    console.log(`${action} quiz ${quizId}`);
+  const handleQuizAction = (action: 'retake' | 'start', moduleId: string) => {
+    if (action === 'retake' || action === 'start') {
+      // 라우팅으로 바로 이동
+      navigate(`/quiz/${moduleId}`);
+    }
   };
+
+  const moduleTitleMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    modules.forEach(m => {
+      map[m.id] = m.title;
+    });
+    return map;
+  }, [modules]);
+
+  useEffect(() => {
+    if (!user?.uid) return;
+    const colRef = collection(db, 'users', user.uid, 'quizResults');
+    const unsub = onSnapshot(colRef, snap => {
+      const rows: QuizHistoryRow[] = [];
+      snap.forEach(d => {
+        const data = d.data() as QuizResultDoc;
+        const moduleId = d.id;
+
+        const score =
+          typeof data.scorePercent === 'number'
+            ? Math.max(0, Math.min(100, Math.round(data.scorePercent)))
+            : (data.totalAnswered || 0) > 0
+              ? Math.round(((data.correctCount || 0) / (data.totalAnswered || 1)) * 100)
+              : 0;
+
+        const completed = !!data.completed || score === 100;
+
+        rows.push({
+          id: moduleId,
+          topic: moduleTitleMap[moduleId] || moduleId,
+          moduleLabel: moduleId,
+          score: `${score}%`,
+          status: completed ? 'complete' : 'pending',
+          action: completed ? 'retake' : 'start',
+          lastUpdatedMs: data.lastUpdated?.toMillis?.() ?? 0,
+        });
+      });
+
+      // 최신 활동 우선 정렬
+      rows.sort((a, b) => b.lastUpdatedMs - a.lastUpdatedMs);
+      setQuizRows(rows);
+    });
+    return () => unsub();
+  }, [user?.uid, moduleTitleMap]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -612,184 +641,194 @@ const MyPage: React.FC = () => {
             )
           ) : (
             <div className="bg-white border border-[#BDBDBD] rounded-[20px] shadow-[0px_4px_60px_0px_rgba(0,0,0,0.1)] p-4 md:p-9 overflow-x-auto">
-              <div className="min-w-[800px] flex gap-[-8px]">
+              <div className="min-w-[720px] flex gap-[-8px]">
                 {/* Topic */}
                 <div className="w-[300px] md:w-[484px]">
                   <div className="border-b border-black p-3 md:p-6">
                     <h3 className="text-[14px] md:text-[16px] font-semibold text-black">Topic</h3>
                   </div>
-                  {quizHistoryData.map(quiz => (
-                    <div
-                      key={quiz.id}
-                      className="border-b border-[#CCCCCC] p-3 md:p-6 h-[48px] md:h-[56px] flex items-center"
-                    >
-                      <span className="text-[14px] md:text-[16px] text-black truncate">
-                        {quiz.topic}
-                      </span>
-                    </div>
-                  ))}
+                  {quizRows.length === 0 ? (
+                    <div className="p-6 text-gray-500">No quiz history yet.</div>
+                  ) : (
+                    quizRows.map(row => (
+                      <div
+                        key={row.id}
+                        className="border-b border-[#CCCCCC] p-3 md:p-6 h-[48px] md:h-[56px] flex items-center"
+                      >
+                        <span className="text-[14px] md:text-[16px] text-black truncate">
+                          {row.topic}
+                        </span>
+                      </div>
+                    ))
+                  )}
                 </div>
+
                 {/* Module */}
-                <div className="w-[100px] md:w-[124px]">
+                <div className="w-[140px] md:w-[180px]">
                   <div className="border-b border-black p-3 md:p-6 text-center">
                     <h3 className="text-[14px] md:text-[16px] font-semibold text-black">Module</h3>
                   </div>
-                  {quizHistoryData.map(quiz => (
-                    <div
-                      key={quiz.id}
-                      className="border-b border-[#CCCCCC] p-3 md:p-6 h-[48px] md:h-[56px] flex items-center justify-center"
-                    >
-                      <div className="bg-[#EEEEEE] border border-[#BDBDBD] rounded px-2 py-1">
-                        <span className="text-[12px] md:text-[14px] font-semibold text-black">
-                          {quiz.module}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+
+                  {quizRows.length === 0
+                    ? null
+                    : quizRows.map(row => (
+                        <div
+                          key={row.id}
+                          className="border-b border-[#CCCCCC] p-3 md:p-6 h-[48px] md:h-[56px] flex items-center justify-center"
+                        >
+                          {/* hover 대상 최상위에 group, tooltip 잘리면 안되니 overflow-visible */}
+                          <div className="relative group bg-[#EEEEEE] border border-[#BDBDBD] rounded px-2 py-1 max-w-full overflow-visible">
+                            {/* 2줄까지만 보여주기 (부모는 overflow-visible 유지) */}
+                            <span className="text-[12px] md:text-[14px] font-semibold text-black break-words line-clamp-2">
+                              {row.moduleLabel}
+                            </span>
+
+                            {/* Tooltip: invisible + opacity 로 부드럽게 표시, 포인터 이벤트 차단 */}
+                            <div
+                              className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2
+                     invisible opacity-0 group-hover:visible group-hover:opacity-100
+                     transition-all duration-200 ease-out
+                     z-50 bg-black text-white text-xs rounded px-2 py-1
+                     whitespace-normal max-w-[220px] break-words shadow-lg
+                     pointer-events-none
+                     translate-y-1 group-hover:translate-y-0"
+                            >
+                              {row.moduleLabel}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                 </div>
-                {/* Difficulty */}
-                <div className="w-[100px] md:w-[137px]">
-                  <div className="border-b border-black p-3 md:p-6 text-center">
-                    <h3 className="text-[14px] md:text-[16px] font-semibold text-black">
-                      Difficulty
-                    </h3>
-                  </div>
-                  {quizHistoryData.map(quiz => (
-                    <div
-                      key={quiz.id}
-                      className="border-b border-[#CCCCCC] p-3 md:p-6 h-[48px] md:h-[56px] flex items-center justify-center"
-                    >
-                      <div
-                        className={`rounded px-2 py-1 ${quiz.difficulty === 'Beginner' ? 'bg-[#EEEEEE] border border-[#BDBDBD]' : 'bg-[#FFE9C2] border border-[#E6C700]'}`}
-                      >
-                        <span className="text-[12px] md:text-[14px] font-semibold text-black">
-                          {quiz.difficulty}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+
                 {/* Score */}
-                <div className="w-[80px] md:w-[100px]">
+                <div className="w-[100px] md:w-[120px]">
                   <div className="border-b border-black p-3 md:p-6 text-center">
                     <h3 className="text-[14px] md:text-[16px] font-semibold text-black">Score</h3>
                   </div>
-                  {quizHistoryData.map(quiz => (
-                    <div
-                      key={quiz.id}
-                      className="border-b border-[#CCCCCC] p-3 md:p-6 h-[48px] md:h-[56px] flex items-center justify-center"
-                    >
-                      <span className="text-[14px] md:text-[16px] text-black">{quiz.score}</span>
-                    </div>
-                  ))}
+                  {quizRows.length === 0
+                    ? null
+                    : quizRows.map(row => (
+                        <div
+                          key={row.id}
+                          className="border-b border-[#CCCCCC] p-3 md:p-6 h-[48px] md:h-[56px] flex items-center justify-center"
+                        >
+                          <span className="text-[14px] md:text-[16px] text-black">{row.score}</span>
+                        </div>
+                      ))}
                 </div>
+
                 {/* Status */}
-                <div className="w-[100px] md:w-[118px]">
+                <div className="w-[120px] md:w-[140px]">
                   <div className="border-b border-black p-3 md:p-6 text-center">
                     <h3 className="text-[14px] md:text-[16px] font-semibold text-black">Status</h3>
                   </div>
-                  {quizHistoryData.map(quiz => (
-                    <div
-                      key={quiz.id}
-                      className="border-b border-[#CCCCCC] p-3 md:p-6 h-[48px] md:h-[56px] flex items-center justify-center"
-                    >
-                      <div className="flex items-center gap-1">
-                        {quiz.status === 'complete' ? (
-                          <>
-                            <svg
-                              width="16"
-                              height="16"
-                              viewBox="0 0 20 20"
-                              fill="none"
-                              className="md:w-5 md:h-5"
-                            >
-                              <path
-                                d="M10 1.67C5.4 1.67 1.67 5.4 1.67 10C1.67 14.6 5.4 18.33 10 18.33C14.6 18.33 18.33 14.6 18.33 10C18.33 5.4 14.6 1.67 10 1.67ZM8.33 14.17L4.17 10L5.34 8.83L8.33 11.82L14.66 5.49L15.83 6.66L8.33 14.17Z"
-                                fill="#00A336"
-                              />
-                            </svg>
-                            <span className="text-[12px] md:text-[14px] text-[#00A336] hidden md:inline">
-                              Complete
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <svg
-                              width="16"
-                              height="16"
-                              viewBox="0 0 20 20"
-                              fill="none"
-                              className="md:w-5 md:h-5"
-                            >
-                              <circle
-                                cx="10"
-                                cy="10"
-                                r="8.33"
-                                stroke="#D9D9D9"
-                                strokeWidth="1.67"
-                                fill="none"
-                              />
-                            </svg>
-                            <span className="text-[12px] md:text-[14px] text-[#D9D9D9] hidden md:inline">
-                              Pending
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                  {quizRows.length === 0
+                    ? null
+                    : quizRows.map(row => (
+                        <div
+                          key={row.id}
+                          className="border-b border-[#CCCCCC] p-3 md:p-6 h-[48px] md:h-[56px] flex items-center justify-center"
+                        >
+                          <div className="flex items-center gap-1">
+                            {row.status === 'complete' ? (
+                              <>
+                                <svg
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 20 20"
+                                  fill="none"
+                                  className="md:w-5 md:h-5"
+                                >
+                                  <path
+                                    d="M10 1.67C5.4 1.67 1.67 5.4 1.67 10C1.67 14.6 5.4 18.33 10 18.33C14.6 18.33 18.33 14.6 18.33 10C18.33 5.4 14.6 1.67 10 1.67ZM8.33 14.17L4.17 10L5.34 8.83L8.33 11.82L14.66 5.49L15.83 6.66L8.33 14.17Z"
+                                    fill="#00A336"
+                                  />
+                                </svg>
+                                <span className="text-[12px] md:text-[14px] text-[#00A336] hidden md:inline">
+                                  Complete
+                                </span>
+                              </>
+                            ) : (
+                              <>
+                                <svg
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 20 20"
+                                  fill="none"
+                                  className="md:w-5 md:h-5"
+                                >
+                                  <circle
+                                    cx="10"
+                                    cy="10"
+                                    r="8.33"
+                                    stroke="#D9D9D9"
+                                    strokeWidth="1.67"
+                                    fill="none"
+                                  />
+                                </svg>
+                                <span className="text-[12px] md:text-[14px] text-[#D9D9D9] hidden md:inline">
+                                  Pending
+                                </span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      ))}
                 </div>
+
                 {/* Action */}
-                <div className="w-[100px] md:w-[134px]">
+                <div className="w-[120px] md:w-[140px]">
                   <div className="border-b border-black p-3 md:p-6 text-center">
                     <h3 className="text-[14px] md:text-[16px] font-semibold text-black">Action</h3>
                   </div>
-                  {quizHistoryData.map(quiz => (
-                    <div
-                      key={quiz.id}
-                      className="border-b border-[#CCCCCC] p-3 md:p-6 h-[48px] md:h-[56px] flex items-center justify-center"
-                    >
-                      <button
-                        onClick={() => handleQuizAction(quiz.action, quiz.id)}
-                        className="bg-[#1E1E1E] text-white rounded px-2 py-1 flex items-center gap-1 hover:bg-gray-800 transition-colors"
-                      >
-                        {quiz.action === 'retake' ? (
-                          <>
-                            <svg
-                              width="16"
-                              height="16"
-                              viewBox="0 0 20 20"
-                              fill="none"
-                              className="md:w-5 md:h-5"
-                            >
-                              <path
-                                d="M14.17 2.5L12.92 3.75L15.42 6.25H10C6.55 6.25 3.75 9.05 3.75 12.5C3.75 15.95 6.55 18.75 10 18.75C13.45 18.75 16.25 15.95 16.25 12.5H14.58C14.58 15.03 12.53 17.08 10 17.08C7.47 17.08 5.42 15.03 5.42 12.5C5.42 9.97 7.47 7.92 10 7.92H15.42L12.92 10.42L14.17 11.67L18.33 7.5L14.17 2.5Z"
-                                fill="white"
-                              />
-                            </svg>
-                            <span className="text-[12px] md:text-[14px] hidden md:inline">
-                              Retake
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <svg
-                              width="16"
-                              height="16"
-                              viewBox="0 0 20 20"
-                              fill="none"
-                              className="md:w-5 md:h-5"
-                            >
-                              <path d="M6.67 4.17V15.83L15.83 10L6.67 4.17Z" fill="white" />
-                            </svg>
-                            <span className="text-[12px] md:text-[14px] hidden md:inline">
-                              Start
-                            </span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  ))}
+                  {quizRows.length === 0
+                    ? null
+                    : quizRows.map(row => (
+                        <div
+                          key={row.id}
+                          className="border-b border-[#CCCCCC] p-3 md:p-6 h-[48px] md:h-[56px] flex items-center justify-center"
+                        >
+                          <button
+                            onClick={() => handleQuizAction(row.action, row.id)}
+                            className="bg-[#1E1E1E] text-white rounded px-2 py-1 flex items-center gap-1 hover:bg-gray-800 transition-colors"
+                          >
+                            {row.action === 'retake' ? (
+                              <>
+                                <svg
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 20 20"
+                                  fill="none"
+                                  className="md:w-5 md:h-5"
+                                >
+                                  <path
+                                    d="M14.17 2.5L12.92 3.75L15.42 6.25H10C6.55 6.25 3.75 9.05 3.75 12.5C3.75 15.95 6.55 18.75 10 18.75C13.45 18.75 16.25 15.95 16.25 12.5H14.58C14.58 15.03 12.53 17.08 10 17.08C7.47 17.08 5.42 15.03 5.42 12.5C5.42 9.97 7.47 7.92 10 7.92H15.42L12.92 10.42L14.17 11.67L18.33 7.5L14.17 2.5Z"
+                                    fill="white"
+                                  />
+                                </svg>
+                                <span className="text-[12px] md:text-[14px] hidden md:inline">
+                                  Retake
+                                </span>
+                              </>
+                            ) : (
+                              <>
+                                <svg
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 20 20"
+                                  fill="none"
+                                  className="md:w-5 md:h-5"
+                                >
+                                  <path d="M6.67 4.17V15.83L15.83 10L6.67 4.17Z" fill="white" />
+                                </svg>
+                                <span className="text-[12px] md:text-[14px] hidden md:inline">
+                                  Start
+                                </span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      ))}
                 </div>
               </div>
             </div>
