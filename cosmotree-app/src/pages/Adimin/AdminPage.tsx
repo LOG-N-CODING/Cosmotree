@@ -7,11 +7,14 @@ import { Sidebar } from '../../components/layout/Admin/Sidebar';
 import { LearnList } from '../../components/layout/Admin/LearnList';
 import { QuizList } from '../../components/layout/Admin/QuizList';
 import { SeedList } from '../../components/layout/Admin/SeedList';
+import ChallengeList from '../../components/layout/Admin/ChallengeList';
 
 export default function AdminPage() {
   const [searchParams] = useSearchParams();
   const defaultSection = (searchParams.get('section') as any) || 'Users';
-  const [section, setSection] = useState<'Users' | 'Learn' | 'Quiz' | 'Seed'>(defaultSection);
+  const [section, setSection] = useState<'Users' | 'Learn' | 'Quiz' | 'Challenge' | 'Seed'>(
+    defaultSection
+  );
 
   useEffect(() => {
     const sec = searchParams.get('section') as any;
@@ -28,6 +31,9 @@ export default function AdminPage() {
         <div className="max-w-screen-lg mx-auto pt-16">{section === 'Users' && <UserList />}</div>
         <div className="max-w-screen-lg mx-auto pt-16">{section === 'Learn' && <LearnList />}</div>
         <div className="max-w-screen-lg mx-auto pt-16">{section === 'Quiz' && <QuizList />}</div>
+        <div className="max-w-screen-lg mx-auto pt-16">
+          {section === 'Challenge' && <ChallengeList />}
+        </div>
         <div className="max-w-screen-lg mx-auto pt-16">{section === 'Seed' && <SeedList />}</div>
       </main>
     </div>
