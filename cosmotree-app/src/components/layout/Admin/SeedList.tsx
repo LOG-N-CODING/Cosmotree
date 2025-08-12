@@ -1,6 +1,7 @@
 // src/components/admin/SeedList.tsx
 import React, { useState } from 'react';
 import { deleteAllModules, seedAllModules } from './utils/astronomySeed';
+import { clearAllQuizzes, seedAllQuizzes } from './utils/astronomyQuizSeed';
 
 export const SeedList = () => {
   const [log, setLog] = useState<string[]>([]);
@@ -10,6 +11,8 @@ export const SeedList = () => {
     modulesSkipped: number;
     lessonsAdded: number;
     lessonsUpdated: number;
+    modulesQuizUpdated?: number;
+    questionsSeeded?: number;
   } | null>(null);
 
   const appendLog = (msg: string) => setLog(prev => [...prev, msg]);
@@ -19,9 +22,17 @@ export const SeedList = () => {
     setStats(null);
     setIsRunning(true);
     try {
-      // 🔧 seedAllModules는 { onLog } 객체를 받습니다.
-      const result = await seedAllModules({ onLog: appendLog });
-      setStats(result);
+      // 1) 모듈 & 레슨 시드
+      const modResult = await seedAllModules({ onLog: appendLog });
+
+      // 2) 퀴즈 시드 (모듈이 있어야 하므로 뒤에)
+      const quizResult = await seedAllQuizzes({ onLog: appendLog });
+
+      setStats({
+        ...modResult,
+        modulesQuizUpdated: quizResult.modulesQuizUpdated,
+        questionsSeeded: quizResult.questionsSeeded,
+      });
     } finally {
       setIsRunning(false);
     }
@@ -31,8 +42,11 @@ export const SeedList = () => {
     setLog([]);
     setIsRunning(true);
     try {
-      // deleteAllModules는 콜백 함수 그대로 받도록 작성되어 있음
+      // 전체 모듈 삭제 (quizzes 포함 전체 제거)
       await deleteAllModules(appendLog);
+      await clearAllQuizzes(appendLog);
+      // 만약 모듈은 지우지 않고 퀴즈만 비우고 싶다면:
+      // await clearAllQuizzes(appendLog);
     } finally {
       setIsRunning(false);
     }
@@ -65,6 +79,13 @@ export const SeedList = () => {
           Modules — added: <b>{stats.modulesAdded}</b>, skipped: <b>{stats.modulesSkipped}</b>
           <br />
           Lessons — added: <b>{stats.lessonsAdded}</b>, updated: <b>{stats.lessonsUpdated}</b>
+          {typeof stats.modulesQuizUpdated !== 'undefined' && (
+            <>
+              <br />
+              Quizzes — modules updated: <b>{stats.modulesQuizUpdated}</b>, questions seeded:{' '}
+              <b>{stats.questionsSeeded}</b>
+            </>
+          )}
         </div>
       )}
 

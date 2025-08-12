@@ -1,8 +1,17 @@
-import React, { useState, useEffect } from 'react';
+// src/pages/QuizDetail.tsx
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
-// 퀴즈 질문 타입 정의
+// 🔗 Firestore
+import { doc, getDoc, Timestamp } from 'firebase/firestore';
+import { finalizeQuiz, recordAnswer } from '../Quizzes';
+import { db } from '../../config/firebase';
+
+// 🔗 진행도 저장 헬퍼 (Quizzes.tsx에서 export 했던 것 사용)
+// 필요하면 utils/quizProgress.ts로 이동 권장
+
+// ───────────────── Types (이 파일 전용 내부 표시용)
 export interface Question {
   id: number;
   question: string;
@@ -11,17 +20,39 @@ export interface Question {
   correctAnswer: string | number;
   explanation: string;
 }
-
-// 퀴즈 데이터 타입 정의
 export interface QuizData {
-  id: number;
+  id: string; // ← 문서 ID
   title: string;
-  module: string;
+  module: string; // 표시용(=title)
   questions: Question[];
   totalQuestions: number;
 }
 
-// 답변 상태 타입
+// Firestore에 저장된 Module 문서 형태(이전 정의와 맞춤)
+type QuizType = 'MultipleChoice' | 'ShortAnswer';
+interface MultipleChoiceQuizFS {
+  type: 'MultipleChoice';
+  question: string;
+  choices: string[];
+  answer: string | number; // 텍스트 or 인덱스
+  explanation?: string;
+}
+interface ShortAnswerQuizFS {
+  type: 'ShortAnswer';
+  question: string;
+  answer: string; // 텍스트
+  explanation?: string;
+}
+type QuizItemFS = MultipleChoiceQuizFS | ShortAnswerQuizFS;
+
+interface ModuleDocFS {
+  title: string;
+  quizzes: QuizItemFS[];
+  difficulty?: 'Beginner' | 'Intermediate' | 'Advanced';
+  createdAt?: Timestamp;
+}
+
+// 답변 상태
 export interface AnswerState {
   questionId: number;
   selectedAnswer: string | number | null;
@@ -29,44 +60,8 @@ export interface AnswerState {
   isSubmitted: boolean;
 }
 
-// 샘플 퀴즈 데이터
-const sampleQuizData: QuizData = {
-  id: 1,
-  title: 'Introduction to Astronomy',
-  module: 'Module1',
-  totalQuestions: 10,
-  questions: [
-    {
-      id: 1,
-      question: 'What is the closest to Earth?',
-      type: 'multiple-choice',
-      options: ['The Moon', 'The Sun', 'Mars', 'Venus'],
-      correctAnswer: 0,
-      explanation:
-        "The Moon is Earth's natural satellite and the closest celestial body to our planet, located about 384,400 kilometers away.",
-    },
-    {
-      id: 2,
-      question: 'What is Astronomy?',
-      type: 'text',
-      correctAnswer: 'The scientific study of celestial objects and phenomena',
-      explanation:
-        "Astronomy is the scientific study of celestial objects (such as stars, planets, comets, and galaxies) and phenomena that originate outside the Earth's atmosphere.",
-    },
-    {
-      id: 3,
-      question: 'Which planet is known as the Red Planet?',
-      type: 'multiple-choice',
-      options: ['Venus', 'Mars', 'Jupiter', 'Saturn'],
-      correctAnswer: 1,
-      explanation:
-        'Mars is known as the Red Planet due to iron oxide (rust) on its surface, which gives it a reddish appearance.',
-    },
-  ],
-};
-
 const QuizDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id: moduleId } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
   const [quizData, setQuizData] = useState<QuizData | null>(null);
@@ -75,34 +70,96 @@ const QuizDetail: React.FC = () => {
   const [textAnswer, setTextAnswer] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
-  // 컴포넌트 마운트 시 퀴즈 데이터 로드
-  useEffect(() => {
-    const loadQuizData = async () => {
-      try {
-        setIsLoading(true);
-        // 실제 환경에서는 API 호출로 대체
-        await new Promise(resolve => setTimeout(resolve, 500));
-        setQuizData(sampleQuizData);
-
-        // 답변 상태 초기화
-        const initialAnswers = sampleQuizData.questions.map(q => ({
-          questionId: q.id,
-          selectedAnswer: null,
-          isCorrect: null,
-          isSubmitted: false,
-        }));
-        setAnswers(initialAnswers);
-      } catch (error) {
-        console.error('Failed to load quiz data:', error);
-      } finally {
-        setIsLoading(false);
+  // Firestore → 내부 표시용으로 매핑
+  function mapModuleToQuizData(docId: string, data: ModuleDocFS): QuizData {
+    const questions: Question[] = (data.quizzes ?? []).map((q, idx) => {
+      if (q.type === 'MultipleChoice') {
+        // 정답이 텍스트면 choices에서 인덱스 찾기
+        let correct: number | string = q.answer;
+        if (typeof correct === 'string') {
+          const found = q.choices?.findIndex(c => c === correct);
+          correct = (found ?? -1) >= 0 ? found! : correct; // 없으면 텍스트 그대로
+        }
+        return {
+          id: idx + 1,
+          question: q.question,
+          type: 'multiple-choice',
+          options: q.choices ?? [],
+          correctAnswer: correct, // 숫자(인덱스) 우선, 불가하면 텍스트
+          explanation: q.explanation ?? '',
+        };
+      } else {
+        return {
+          id: idx + 1,
+          question: q.question,
+          type: 'text',
+          correctAnswer: q.answer,
+          explanation: q.explanation ?? '',
+        };
       }
+    });
+
+    return {
+      id: docId,
+      title: data.title ?? docId,
+      module: data.title ?? docId,
+      questions,
+      totalQuestions: questions.length,
     };
+  }
 
-    loadQuizData();
-  }, [id]);
+  // 모듈 로드 (moduleId 변경 시 리셋)
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      if (!moduleId) return;
+      setIsLoading(true);
+      setQuizData(null);
+      setCurrentQuestionIndex(0);
+      setAnswers([]);
+      setTextAnswer('');
 
-  // Back to Modules 클릭 핸들러
+      try {
+        const ref = doc(db, 'modules', moduleId);
+        const snap = await getDoc(ref);
+        if (!snap.exists()) {
+          if (alive) {
+            setQuizData({
+              id: moduleId,
+              title: moduleId,
+              module: moduleId,
+              questions: [],
+              totalQuestions: 0,
+            });
+          }
+          return;
+        }
+        const data = snap.data() as ModuleDocFS;
+        const mapped = mapModuleToQuizData(snap.id, data);
+
+        if (alive) {
+          setQuizData(mapped);
+          setAnswers(
+            mapped.questions.map(q => ({
+              questionId: q.id,
+              selectedAnswer: null,
+              isCorrect: null,
+              isSubmitted: false,
+            }))
+          );
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        if (alive) setIsLoading(false);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [moduleId]);
+
+  // Back to Modules
   const handleBackToModules = () => {
     Swal.fire({
       title: 'Exit Quiz?',
@@ -123,94 +180,125 @@ const QuizDetail: React.FC = () => {
         cancelButton: 'swal-custom-cancel',
       },
     }).then(result => {
-      if (result.isConfirmed) {
-        navigate('/quizzes');
-      }
+      if (result.isConfirmed) navigate('/quizzes');
     });
   };
 
-  // 답변 선택 핸들러 (객관식)
+  // 선택형
   const handleAnswerSelect = (optionIndex: number) => {
     const currentAnswer = answers[currentQuestionIndex];
     if (currentAnswer?.isSubmitted) return;
 
-    const newAnswers = [...answers];
-    newAnswers[currentQuestionIndex] = {
-      ...newAnswers[currentQuestionIndex],
+    const next = [...answers];
+    next[currentQuestionIndex] = {
+      ...next[currentQuestionIndex],
       selectedAnswer: optionIndex,
     };
-    setAnswers(newAnswers);
+    setAnswers(next);
   };
 
-  // 텍스트 답변 변경 핸들러 (주관식)
+  // 주관식
   const handleTextAnswerChange = (value: string) => {
     setTextAnswer(value);
-    const newAnswers = [...answers];
-    newAnswers[currentQuestionIndex] = {
-      ...newAnswers[currentQuestionIndex],
+    const next = [...answers];
+    next[currentQuestionIndex] = {
+      ...next[currentQuestionIndex],
       selectedAnswer: value,
     };
-    setAnswers(newAnswers);
+    setAnswers(next);
   };
 
-  // 답변 제출 핸들러
-  const handleSubmitAnswer = () => {
-    const currentQuestion = quizData?.questions[currentQuestionIndex];
-    const currentAnswer = answers[currentQuestionIndex];
-
-    if (!currentQuestion || !currentAnswer || currentAnswer.selectedAnswer === null) {
-      return;
-    }
+  // 제출(한 문제) → 정오판정 + 진행도 누적(recordAnswer)
+  const handleSubmitAnswer = async () => {
+    if (!quizData) return;
+    const q = quizData.questions[currentQuestionIndex];
+    const a = answers[currentQuestionIndex];
+    if (!q || !a || a.selectedAnswer === null) return;
 
     let isCorrect = false;
-
-    if (currentQuestion.type === 'multiple-choice') {
-      isCorrect = currentAnswer.selectedAnswer === currentQuestion.correctAnswer;
+    if (q.type === 'multiple-choice') {
+      // 정답이 인덱스면 숫자 비교, 텍스트면 텍스트 비교
+      if (typeof q.correctAnswer === 'number') {
+        isCorrect = a.selectedAnswer === q.correctAnswer;
+      } else {
+        const chosen =
+          typeof a.selectedAnswer === 'number'
+            ? (q.options?.[a.selectedAnswer] ?? '')
+            : String(a.selectedAnswer);
+        isCorrect = String(q.correctAnswer).trim() === String(chosen).trim();
+      }
     } else {
-      // 주관식의 경우 간단한 키워드 매칭
-      const userAnswer = (currentAnswer.selectedAnswer as string).toLowerCase().trim();
-      const correctAnswer = (currentQuestion.correctAnswer as string).toLowerCase().trim();
+      const userAns = String(a.selectedAnswer).toLowerCase().trim();
+      const correct = String(q.correctAnswer).toLowerCase().trim();
+      // 간단 키워드 매칭(첫 단어 기준) → 필요 시 개선
       isCorrect =
-        userAnswer.includes(correctAnswer.split(' ')[0]) ||
-        correctAnswer.includes(userAnswer.split(' ')[0]);
+        userAns === correct ||
+        userAns.includes(correct.split(' ')[0]) ||
+        correct.includes(userAns.split(' ')[0]);
     }
 
-    const newAnswers = [...answers];
-    newAnswers[currentQuestionIndex] = {
-      ...newAnswers[currentQuestionIndex],
+    const next = [...answers];
+    next[currentQuestionIndex] = {
+      ...next[currentQuestionIndex],
       isCorrect,
       isSubmitted: true,
     };
-    setAnswers(newAnswers);
-  };
+    setAnswers(next);
 
-  // 다음 질문으로 이동
-  const handleNextQuestion = () => {
-    if (currentQuestionIndex < (quizData?.questions.length || 0) - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setTextAnswer('');
-    } else {
-      // 퀴즈 완료
-      const correctCount = answers.filter(answer => answer.isCorrect).length;
-      const totalQuestions = answers.length;
-      const score = Math.round((correctCount / totalQuestions) * 100);
-
-      Swal.fire({
-        title: 'Quiz Completed!',
-        html: `
-          <div style="text-align: center;">
-            <p style="font-size: 18px; margin-bottom: 16px;">You scored <strong>${score}%</strong></p>
-            <p>Correct answers: ${correctCount} out of ${totalQuestions}</p>
-          </div>
-        `,
-        icon: score >= 70 ? 'success' : 'info',
-        confirmButtonText: 'Back to Quizzes',
-        confirmButtonColor: '#1E1E1E',
-      }).then(() => {
-        navigate('/quizzes');
-      });
+    // 누적 진행도 반영 (유저 로그인 상태면 저장)
+    if (moduleId) {
+      try {
+        await recordAnswer(moduleId, isCorrect);
+      } catch (e) {
+        console.warn('recordAnswer failed:', e);
+      }
     }
   };
+
+  // 다음/완료
+  const handleNextQuestion = async () => {
+    if (!quizData) return;
+
+    if (currentQuestionIndex < quizData.questions.length - 1) {
+      setCurrentQuestionIndex(i => i + 1);
+      setTextAnswer('');
+      return;
+    }
+
+    // Finish
+    const correctCount = answers.filter(x => x.isCorrect).length;
+    const totalQuestions = answers.length;
+    const score = Math.round((correctCount / Math.max(1, totalQuestions)) * 100);
+
+    // 최종 결과 저장
+    if (moduleId) {
+      try {
+        await finalizeQuiz(moduleId, correctCount, totalQuestions);
+      } catch (e) {
+        console.warn('finalizeQuiz failed:', e);
+      }
+    }
+
+    await Swal.fire({
+      title: 'Quiz Completed!',
+      html: `
+        <div style="text-align: center;">
+          <p style="font-size: 18px; margin-bottom: 16px;">You scored <strong>${score}%</strong></p>
+          <p>Correct answers: ${correctCount} out of ${totalQuestions}</p>
+        </div>
+      `,
+      icon: score >= 70 ? 'success' : 'info',
+      confirmButtonText: 'Back to Quizzes',
+      confirmButtonColor: '#1E1E1E',
+    });
+
+    navigate('/quizzes');
+  };
+
+  const progress = useMemo(() => {
+    if (!quizData) return 0;
+    return ((currentQuestionIndex + 1) / Math.max(1, quizData.totalQuestions)) * 100;
+  }, [quizData, currentQuestionIndex]);
 
   if (isLoading || !quizData) {
     return (
@@ -220,13 +308,20 @@ const QuizDetail: React.FC = () => {
     );
   }
 
+  if (quizData.totalQuestions === 0) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-xl">No quizzes in this module.</div>
+      </div>
+    );
+  }
+
   const currentQuestion = quizData.questions[currentQuestionIndex];
   const currentAnswer = answers[currentQuestionIndex];
-  const progress = ((currentQuestionIndex + 1) / quizData.totalQuestions) * 100;
 
   return (
     <div className="min-h-screen bg-white relative">
-      {/* 배경 이미지 */}
+      {/* BG */}
       <div
         className="absolute inset-0 w-full h-full"
         style={{
@@ -237,11 +332,11 @@ const QuizDetail: React.FC = () => {
         }}
       />
 
-      {/* 헤더 */}
+      {/* Header */}
       <div className="relative z-10 px-6 pt-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-14">
-            {/* Back to Modules 버튼 */}
+            {/* Back */}
             <button
               onClick={handleBackToModules}
               className="flex items-center gap-2 px-4 py-3 bg-transparent text-white hover:bg-white hover:bg-opacity-10 rounded-lg transition-colors"
@@ -258,7 +353,7 @@ const QuizDetail: React.FC = () => {
               Back to Modules
             </button>
 
-            {/* 퀴즈 정보 */}
+            {/* Info */}
             <div className="flex flex-col items-end gap-6">
               <div className="flex items-center gap-8">
                 <div>
@@ -271,7 +366,7 @@ const QuizDetail: React.FC = () => {
                 </div>
               </div>
 
-              {/* 진행률 바 */}
+              {/* Progress */}
               <div className="w-full max-w-4xl h-4 bg-gray-300 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gray-400 transition-all duration-300"
@@ -283,25 +378,29 @@ const QuizDetail: React.FC = () => {
         </div>
       </div>
 
-      {/* 메인 퀴즈 영역 */}
+      {/* Main */}
       <div className="relative z-10 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="bg-white backdrop-blur-md border border-black rounded-[36px] p-14">
             <div className="space-y-9">
-              {/* 질문 */}
+              {/* Question */}
               <div className="text-center">
                 <h2 className="text-2xl font-bold text-black">{currentQuestion.question}</h2>
               </div>
 
-              {/* 답변 옵션 */}
+              {/* Options */}
               <div className="space-y-4">
                 {currentQuestion.type === 'multiple-choice' ? (
-                  // 객관식 답변
                   currentQuestion.options?.map((option, index) => {
                     let buttonStyle = 'bg-white border border-gray-400 text-black hover:bg-gray-50';
 
                     if (currentAnswer?.isSubmitted) {
-                      if (index === currentQuestion.correctAnswer) {
+                      const isTrueIndex =
+                        typeof currentQuestion.correctAnswer === 'number'
+                          ? index === currentQuestion.correctAnswer
+                          : option === String(currentQuestion.correctAnswer);
+
+                      if (isTrueIndex) {
                         buttonStyle = 'bg-green-100 border border-green-500 text-black';
                       } else if (
                         index === currentAnswer.selectedAnswer &&
@@ -331,55 +430,64 @@ const QuizDetail: React.FC = () => {
                           <span className="text-lg font-semibold">{option}</span>
                         </div>
 
-                        {/* 정답/오답 아이콘 */}
                         {currentAnswer?.isSubmitted && (
                           <div className="ml-auto">
-                            {index === currentQuestion.correctAnswer ? (
-                              <div className="w-9 h-9 bg-green-500 rounded-full flex items-center justify-center">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                  <path
-                                    d="M9 12L11 14L15 10"
-                                    stroke="white"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  />
-                                </svg>
-                              </div>
-                            ) : index === currentAnswer.selectedAnswer &&
-                              !currentAnswer.isCorrect ? (
-                              <div className="w-9 h-9 bg-red-500 rounded-full flex items-center justify-center">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                  <path
-                                    d="M18 6L6 18M6 6L18 18"
-                                    stroke="white"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  />
-                                </svg>
-                              </div>
-                            ) : null}
+                            {(() => {
+                              const isTrueIndex =
+                                typeof currentQuestion.correctAnswer === 'number'
+                                  ? index === currentQuestion.correctAnswer
+                                  : option === String(currentQuestion.correctAnswer);
+                              if (isTrueIndex) {
+                                return (
+                                  <div className="w-9 h-9 bg-green-500 rounded-full flex items-center justify-center">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                      <path
+                                        d="M9 12L11 14L15 10"
+                                        stroke="white"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      />
+                                    </svg>
+                                  </div>
+                                );
+                              }
+                              if (
+                                index === currentAnswer.selectedAnswer &&
+                                !currentAnswer.isCorrect
+                              ) {
+                                return (
+                                  <div className="w-9 h-9 bg-red-500 rounded-full flex items-center justify-center">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                      <path
+                                        d="M18 6L6 18M6 6L18 18"
+                                        stroke="white"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      />
+                                    </svg>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            })()}
                           </div>
                         )}
                       </button>
                     );
                   })
                 ) : (
-                  // 주관식 답변
                   <div className="space-y-4">
                     <textarea
                       value={textAnswer}
                       onChange={e => handleTextAnswerChange(e.target.value)}
                       disabled={currentAnswer?.isSubmitted}
-                      placeholder="답변을 입력해주세요..."
+                      placeholder="Type your answer…"
                       className="w-full p-4 border border-gray-400 rounded-xl resize-none h-32 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-
-                    {/* 주관식 답변 결과 */}
                     {currentAnswer?.isSubmitted && (
                       <div className="space-y-4">
-                        {/* Your Answer 섹션 */}
                         <div>
                           <h3 className="text-lg font-medium text-black mb-2">Your answer</h3>
                           <div
@@ -424,11 +532,10 @@ const QuizDetail: React.FC = () => {
                           </div>
                         </div>
 
-                        {/* 정답 표시 (틀렸을 때만) */}
                         {!currentAnswer.isCorrect && (
                           <div className="bg-gray-100 border border-gray-400 rounded-xl p-4">
                             <h3 className="font-medium text-gray-700 mb-2">Correct Answer:</h3>
-                            <p className="text-gray-700">{currentQuestion.correctAnswer}</p>
+                            <p className="text-gray-700">{String(currentQuestion.correctAnswer)}</p>
                           </div>
                         )}
                       </div>
@@ -437,7 +544,7 @@ const QuizDetail: React.FC = () => {
                 )}
               </div>
 
-              {/* 설명 영역 (답변 제출 후) */}
+              {/* Explanation */}
               {currentAnswer?.isSubmitted && (
                 <div className="bg-blue-50 border border-blue-400 rounded-xl p-6">
                   <h3 className="font-bold text-blue-700 mb-2">Explanation</h3>
@@ -445,7 +552,7 @@ const QuizDetail: React.FC = () => {
                 </div>
               )}
 
-              {/* 액션 버튼 */}
+              {/* Actions */}
               <div className="flex justify-end">
                 {!currentAnswer?.isSubmitted ? (
                   <button
@@ -482,30 +589,12 @@ const QuizDetail: React.FC = () => {
         </div>
       </div>
 
-      {/* SweetAlert2 커스텀 스타일 */}
+      {/* SweetAlert2 custom styles */}
       <style>{`
-        .swal-custom-popup {
-          border-radius: 36px !important;
-          padding: 2rem !important;
-        }
-        .swal-custom-confirm {
-          background-color: #FF1616 !important;
-          border: none !important;
-          border-radius: 8px !important;
-          padding: 8px 16px !important;
-          font-weight: 500 !important;
-        }
-        .swal-custom-cancel {
-          background-color: white !important;
-          color: black !important;
-          border: 1px solid #BDBDBD !important;
-          border-radius: 8px !important;
-          padding: 8px 16px !important;
-          font-weight: 500 !important;
-        }
-        .swal-custom-cancel:hover {
-          background-color: #f5f5f5 !important;
-        }
+        .swal-custom-popup { border-radius: 36px !important; padding: 2rem !important; }
+        .swal-custom-confirm { background-color: #FF1616 !important; border: none !important; border-radius: 8px !important; padding: 8px 16px !important; font-weight: 500 !important; }
+        .swal-custom-cancel { background-color: white !important; color: black !important; border: 1px solid #BDBDBD !important; border-radius: 8px !important; padding: 8px 16px !important; font-weight: 500 !important; }
+        .swal-custom-cancel:hover { background-color: #f5f5f5 !important; }
       `}</style>
     </div>
   );
