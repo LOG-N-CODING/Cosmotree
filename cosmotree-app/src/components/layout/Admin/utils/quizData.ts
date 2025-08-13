@@ -1,28 +1,28 @@
 import type { Quiz } from './types'
 
 export const quizzes: Quiz[] = [
-  {
+    {
     moduleId: 'Module-1-Introduction-to-Astronomy',
-    title: '천문학 입문',
+    title: 'Introduction to Astronomy',
     questions: [
-      // 객관식 문제 6개
+      // Multiple-choice questions
       {
         id: 'q1',
         type: 'multiple-choice',
-        question: '다음 중 적응광학(Adaptive Optics) 기술이 해결하는 문제는?',
+        question: 'Which problem does adaptive optics technology solve?',
         options: [
-          '망원경의 색수차',
-          '대기의 난류에 의한 상의 흔들림',
-          '망원경 거울의 무게',
-          '관측 시간의 제한'
+          'Chromatic aberration of telescopes',
+          'Image blurring caused by atmospheric turbulence',
+          'Weight of telescope mirrors',
+          'Limitation of observation time'
         ],
         correctAnswer: 1,
-        explanation: '적응광학 기술은 대기의 난류로 인한 상의 흔들림을 실시간으로 보정하여 더 선명한 관측을 가능하게 합니다.'
+        explanation: 'Adaptive optics corrects image blurring caused by atmospheric turbulence in real time, enabling clearer observations.'
       },
       {
         id: 'q2',
         type: 'multiple-choice',
-        question: '허블 상수의 현재 값은 대략 몇 km/s/Mpc인가?',
+        question: 'What is the current value of the Hubble constant in km/s/Mpc?',
         options: [
           '50',
           '70',
@@ -30,51 +30,51 @@ export const quizzes: Quiz[] = [
           '150'
         ],
         correctAnswer: 1,
-        explanation: '허블 상수는 약 70 km/s/Mpc로, 우주의 팽창률을 나타내는 중요한 상수입니다.'
+        explanation: 'The Hubble constant is about 70 km/s/Mpc and represents the expansion rate of the universe.'
       },
       {
         id: 'q3',
         type: 'multiple-choice',
-        question: '중력파를 처음 직접 검출한 LIGO에서 관측된 현상은?',
+        question: 'What phenomenon was observed by LIGO when gravitational waves were first directly detected?',
         options: [
-          '중성자별 충돌',
-          '블랙홀 병합',
-          '초신성 폭발',
-          '퀘이사 활동'
+          'Neutron star collision',
+          'Black hole merger',
+          'Supernova explosion',
+          'Quasar activity'
         ],
         correctAnswer: 1,
-        explanation: '2015년 LIGO는 두 블랙홀의 병합에서 발생한 중력파를 최초로 직접 검출했습니다.'
+        explanation: 'In 2015, LIGO directly detected gravitational waves from the merger of two black holes for the first time.'
       },
       {
         id: 'q4',
         type: 'multiple-choice',
-        question: '외계행성 탐지에 사용되는 시선속도법(Radial Velocity Method)의 원리는?',
+        question: 'What is the principle of the radial velocity method used for exoplanet detection?',
         options: [
-          '행성이 별빛을 가리는 현상',
-          '행성의 중력이 별을 흔드는 효과',
-          '행성에서 반사되는 빛',
-          '행성의 적외선 복사'
+          'Phenomenon where a planet blocks starlight',
+          'Effect of a planet’s gravity shaking the star',
+          'Light reflected from the planet',
+          'Infrared radiation from the planet'
         ],
         correctAnswer: 1,
-        explanation: '시선속도법은 행성의 중력이 중심별을 흔들어 도플러 효과로 인한 스펙트럼 이동을 관측하는 방법입니다.'
+        explanation: 'The radial velocity method observes Doppler shifts in the spectrum caused by a planet’s gravity shaking its host star.'
       },
       {
         id: 'q5',
         type: 'multiple-choice',
-        question: '은하의 회전곡선 문제를 설명하는 가설은?',
+        question: 'Which hypothesis explains the problem of galaxy rotation curves?',
         options: [
-          '수정된 뉴턴 역학(MOND)',
-          '암흑물질',
-          '초대질량 블랙홀',
-          '위의 모든 것'
+          'Modified Newtonian Dynamics (MOND)',
+          'Dark matter',
+          'Supermassive black hole',
+          'All of the above'
         ],
         correctAnswer: 3,
-        explanation: '은하의 회전곡선 문제는 암흑물질, MOND 등 다양한 이론으로 설명하려는 시도가 있습니다.'
+        explanation: 'The galaxy rotation curve problem is explained by various theories such as dark matter and MOND.'
       },
       {
         id: 'q6',
         type: 'multiple-choice',
-        question: '우주배경복사의 온도는 현재 약 몇 K인가?',
+        question: 'What is the current temperature of the cosmic microwave background?',
         options: [
           '2.7 K',
           '4.2 K',
@@ -82,1062 +82,1073 @@ export const quizzes: Quiz[] = [
           '5.6 K'
         ],
         correctAnswer: 0,
-        explanation: '우주배경복사의 현재 온도는 약 2.7 K로, 빅뱅의 잔열입니다.'
+        explanation: 'The current temperature of the cosmic microwave background is about 2.7 K, which is the residual heat from the Big Bang.'
       },
-      // 주관식/서술형 문제 4개
+      // Subjective questions
       {
         id: 'q7',
         type: 'subjective',
-        question: '다중파장 천문학(Multi-wavelength Astronomy)의 중요성과 각 파장대별 관측 정보에 대해 설명하세요.',
-        sampleAnswer: '다중파장 천문학은 전자기스펙트럼의 다양한 파장대에서 동시에 관측하여 천체의 종합적 정보를 얻는 방법입니다. 전파는 차가운 가스와 분자구름, 가시광선은 별과 은하의 형태, X선은 고온 플라즈마와 블랙홀 근처 현상, 감마선은 극고에너지 과정을 보여줍니다. 이를 통해 천체의 물리적 과정을 완전히 이해할 수 있습니다.',
-        explanation: '각 파장대는 서로 다른 물리적 과정과 온도 영역을 보여주므로 종합적 관측이 필수적입니다.'
+        question: 'Explain the importance of multi-wavelength astronomy and the observational information provided by each wavelength band.',
+        sampleAnswer: 'Multi-wavelength astronomy obtains comprehensive information about celestial objects by observing them simultaneously across various bands of the electromagnetic spectrum. Radio waves show cold gas and molecular clouds, visible light reveals the shapes of stars and galaxies, X-rays show hot plasma and phenomena near black holes, and gamma rays show extremely energetic processes. This allows us to fully understand the physical processes of celestial objects.',
+        explanation: 'Each wavelength band reveals different physical processes and temperature ranges, so comprehensive observations are essential.'
       },
       {
         id: 'q8',
         type: 'subjective',
-        question: '표준촉광(Standard Candle)의 개념과 우주거리 측정에서의 역할을 설명하세요.',
-        sampleAnswer: '표준촉광은 절대등급이 알려진 천체로, 겉보기등급과 비교하여 거리를 측정하는 데 사용됩니다. 대표적으로 Ia형 초신성은 항상 비슷한 최대밝기를 가져 우주론적 거리 측정에 핵심적입니다. 세페이드 변광성은 주기-광도 관계를 이용한 중간거리 측정에, RR Lyrae 변광성은 근거리 측정에 사용됩니다. 이들은 우주거리 사다리를 구성하여 허블상수 결정과 우주의 크기 측정을 가능하게 합니다.',
-        explanation: '표준촉광은 우주의 거리 척도를 확립하는 핵심 도구입니다.'
+        question: 'Explain the concept of a standard candle and its role in measuring cosmic distances.',
+        sampleAnswer: 'A standard candle is a celestial object with a known absolute magnitude, used to measure distance by comparing its apparent magnitude. Type Ia supernovae have similar peak brightness and are key for cosmological distance measurements. Cepheid variables use the period-luminosity relation for intermediate distances, and RR Lyrae variables are used for nearby distances. These form the cosmic distance ladder, enabling determination of the Hubble constant and the size of the universe.',
+        explanation: 'Standard candles are essential tools for establishing the cosmic distance scale.'
       },
       {
         id: 'q9',
         type: 'subjective',
-        question: '암흑에너지의 발견 과정과 그 의미에 대해 서술하세요.',
-        sampleAnswer: '1998년 초신성 우주론 프로젝트에서 멀리 있는 Ia형 초신성들이 예상보다 어둡다는 것을 발견했습니다. 이는 우주의 팽창이 가속되고 있음을 의미하며, 이를 설명하기 위해 암흑에너지 개념이 도입되었습니다. 암흑에너지는 우주 전체 에너지의 약 68%를 차지하며, 척력을 가진 신비로운 에너지로 여겨집니다. 이 발견은 우주론의 패러다임을 바꾸었고, 우주의 최종 운명이 열사(Heat Death)일 가능성을 제시했습니다.',
-        explanation: '암흑에너지 발견은 현대 우주론의 가장 중요한 성과 중 하나입니다.'
+        question: 'Describe the process of discovering dark energy and its significance.',
+        sampleAnswer: 'In 1998, the Supernova Cosmology Project found that distant Type Ia supernovae were dimmer than expected, indicating accelerated expansion of the universe. The concept of dark energy was introduced to explain this. Dark energy accounts for about 68% of the universe’s total energy and is considered a mysterious repulsive force. This discovery changed the paradigm of cosmology and suggested that the universe’s ultimate fate may be heat death.',
+        explanation: 'The discovery of dark energy is one of the most important achievements in modern cosmology.'
       },
       {
         id: 'q10',
         type: 'subjective',
-        question: '외계생명체 탐사 방법론과 드레이크 방정식의 한계에 대해 논하세요.',
-        sampleAnswer: '외계생명체 탐사는 SETI(전파신호 탐지), 외계행성의 생체징후 탐지, 태양계 내 생명체 탐사 등으로 구분됩니다. 드레이크 방정식은 은하 내 소통 가능한 문명의 수를 추정하려 했지만, 많은 변수들이 불확실하여 실용성이 제한적입니다. 현대적 접근은 케플러우주망원경과 JWST를 통한 외계행성 대기 분석, 바이오마커(산소, 메탄, 수증기) 탐지에 집중하고 있습니다. 이는 생명체의 존재 가능성을 더 객관적으로 평가할 수 있는 방법입니다.',
-        explanation: '외계생명체 탐사는 기술 발전과 함께 더욱 과학적이고 체계적으로 발전하고 있습니다.'
+        question: 'Discuss the methods for searching for extraterrestrial life and the limitations of the Drake Equation.',
+        sampleAnswer: 'Methods for searching for extraterrestrial life include SETI (radio signal detection), detection of biosignatures on exoplanets, and exploration of life in the Solar System. The Drake Equation estimates the number of communicative civilizations in the galaxy, but its many uncertain variables limit its practical use. Modern approaches focus on analyzing exoplanet atmospheres with telescopes like Kepler and JWST, searching for biomarkers such as oxygen, methane, and water vapor. This allows for a more objective assessment of the possibility of life.',
+        explanation: 'The search for extraterrestrial life is becoming more scientific and systematic with technological advances.'
       }
     ]
   },
+  // 
   {
-    moduleId: 'Module-2-Solar-System',
-    title: '태양계',
-    questions: [
-      // 객관식 문제 6개
-      {
-        id: 'q1',
-        type: 'multiple-choice',
-        question: '태양풍이 행성간 자기장과 상호작용하여 형성되는 경계면은?',
-        options: [
-          '자기권계면(Magnetopause)',
-          '태양권계면(Heliopause)',
-          '충격파면(Bow Shock)',
-          '자기꼬리(Magnetotail)'
-        ],
-        correctAnswer: 0,
-        explanation: '자기권계면은 태양풍과 행성 자기장이 균형을 이루는 경계면으로, 지구 자기권의 경계를 형성합니다.'
-      },
-      {
-        id: 'q2',
-        type: 'multiple-choice',
-        question: '목성의 위성 이오에서 화산활동의 에너지원은?',
-        options: [
-          '방사성 붕괴',
-          '조석가열(Tidal Heating)',
-          '태양복사',
-          '잔류열'
-        ],
-        correctAnswer: 1,
-        explanation: '이오는 목성과 다른 갈릴레이 위성들의 중력에 의한 조석가열로 화산활동이 활발합니다.'
-      },
-      {
-        id: 'q3',
-        type: 'multiple-choice',
-        question: '화성에서 발견된 메탄의 의미는?',
-        options: [
-          '대기 온난화의 증거',
-          '생명체 활동 또는 지질학적 활동의 가능성',
-          '화산활동의 증거',
-          '혜성 충돌의 흔적'
-        ],
-        correctAnswer: 1,
-        explanation: '화성의 메탄은 생물학적 과정이나 지질학적 과정에서 생성될 수 있어 생명체 존재 가능성을 시사합니다.'
-      },
-      {
-        id: 'q4',
-        type: 'multiple-choice',
-        question: '카시니 우주선이 토성계에서 발견한 가장 중요한 성과는?',
-        options: [
-          '타이탄의 메탄 호수',
-          '엔셀라두스의 지하 바다',
-          '토성 고리의 세부 구조',
-          '위의 모든 것'
-        ],
-        correctAnswer: 3,
-        explanation: '카시니 미션은 타이탄의 메탄 호수, 엔셀라두스의 지하 바다, 토성 고리의 복잡한 구조 등을 발견했습니다.'
-      },
-      {
-        id: 'q5',
-        type: 'multiple-choice',
-        question: '소행성대와 카이퍼대의 주요 차이점은?',
-        options: [
-          '구성 물질(암석 vs 얼음)',
-          '태양으로부터의 거리',
-          '천체의 크기',
-          '위의 모든 것'
-        ],
-        correctAnswer: 3,
-        explanation: '소행성대는 화성-목성 사이의 암석 천체들이고, 카이퍼대는 해왕성 너머의 얼음 천체들입니다.'
-      },
-      {
-        id: 'q6',
-        type: 'multiple-choice',
-        question: '금성의 역행 자전의 가장 유력한 원인은?',
-        options: [
-          '대기의 마찰',
-          '거대한 충돌 사건',
-          '조석 잠금',
-          '자기장의 영향'
-        ],
-        correctAnswer: 1,
-        explanation: '금성의 역행 자전은 태양계 형성 초기 거대한 천체와의 충돌로 설명됩니다.'
-      },
-      // 주관식/서술형 문제 4개
-      {
-        id: 'q7',
-        type: 'subjective',
-        question: '목성 시스템의 갈릴레이 위성들 간의 궤도 공명과 그 영향을 설명하세요.',
-        sampleAnswer: '이오, 유로파, 가니메데는 4:2:1의 궤도 공명을 이루고 있습니다. 이는 이오가 4번 공전할 때 유로파는 2번, 가니메데는 1번 공전한다는 의미입니다. 이 공명은 위성들의 궤도 이심률을 유지시켜 조석가열을 지속시킵니다. 특히 이오의 화산활동과 유로파의 지하 바다가 액체 상태로 유지되는 데 중요한 역할을 합니다. 이는 태양계에서 생명체가 존재할 수 있는 환경을 만드는 메커니즘입니다.',
-        explanation: '궤도 공명은 위성계의 진화와 생명체 거주 가능성에 중요한 영향을 미칩니다.'
-      },
-      {
-        id: 'q8',
-        type: 'subjective',
-        question: '화성의 물 순환 역사와 현재 물의 존재 형태에 대해 논하세요.',
-        sampleAnswer: '화성은 초기에 두꺼운 대기와 액체 물이 존재했으나, 자기장 소실로 인해 태양풍에 대기가 벗겨지면서 물이 사라졌습니다. 현재는 극지방의 얼음, 지하 영구동토층의 얼음, 대기 중 수증기, 그리고 일부 지하 염수의 형태로 존재합니다. 최근 화성 정찰궤도선의 관측으로 계절적 염수 흐름(RSL)이 발견되어 현재도 제한적인 액체 물 활동이 있을 가능성이 제기되었습니다. 이는 화성의 생명체 존재 가능성과 직결됩니다.',
-        explanation: '화성의 물 역사는 행성 진화와 생명체 거주 가능성을 이해하는 핵심입니다.'
-      },
-      {
-        id: 'q9',
-        type: 'subjective',
-        question: '태양계 외곽 지역의 구조와 보이저 우주선의 발견에 대해 설명하세요.',
-        sampleAnswer: '태양계 외곽은 카이퍼대, 분산원반, 오르트 구름으로 구성됩니다. 보이저 1호와 2호는 태양권계면을 통과하여 성간 공간에 진입했으며, 이 과정에서 태양권의 실제 크기와 형태, 성간 자기장의 강도 등을 측정했습니다. 특히 성간 공간의 플라즈마 밀도가 예상보다 높고, 태양권의 모양이 구형이 아닌 복잡한 형태임을 발견했습니다. 이는 태양계와 은하계의 상호작용을 이해하는 데 중요한 정보를 제공합니다.',
-        explanation: '보이저 미션은 태양계의 경계와 성간 공간에 대한 직접적인 정보를 제공했습니다.'
-      },
-      {
-        id: 'q10',
-        type: 'subjective',
-        question: '소천체들(소행성, 혜성, 운석)이 태양계 형성 연구에 중요한 이유를 논하세요.',
-        sampleAnswer: '소천체들은 태양계 형성 당시의 원시 물질을 보존하고 있어 "타임캡슐" 역할을 합니다. 탄소질 운석은 유기화합물과 물을 포함해 지구 생명체의 재료를 제공했을 가능성을 보여줍니다. 혜성의 핵은 태양계 외곽의 얼음과 먼지 조성을 알려주며, 동위원소 비율 연구를 통해 태양계 형성 환경을 추정할 수 있습니다. 소행성대의 구성과 분포는 목성의 중력 영향과 행성 이주 과정을 이해하는 데 중요합니다. 최근 하야부사2, OSIRIS-REx 등의 시료 채취 미션은 이러한 연구를 더욱 정밀하게 만들고 있습니다.',
-        explanation: '소천체 연구는 태양계 형성과 생명체 기원을 이해하는 핵심 열쇠입니다.'
-      }
-    ]
-  },
+  moduleId: 'Module-2-Solar-System',
+  title: 'Solar System',
+  questions: [
+    // 6 multiple-choice questions
+    {
+      id: 'q1',
+      type: 'multiple-choice',
+      question: 'What is the boundary formed by the interaction between the solar wind and a planet’s magnetic field?',
+      options: [
+        'Magnetopause',
+        'Heliopause',
+        'Bow Shock',
+        'Magnetotail'
+      ],
+      correctAnswer: 0,
+      explanation: 'The magnetopause is the boundary where the solar wind and a planet’s magnetic field balance, marking the edge of the Earth’s magnetosphere.'
+    },
+    {
+      id: 'q2',
+      type: 'multiple-choice',
+      question: 'What is the energy source of volcanic activity on Jupiter’s moon Io?',
+      options: [
+        'Radioactive decay',
+        'Tidal heating',
+        'Solar radiation',
+        'Residual heat'
+      ],
+      correctAnswer: 1,
+      explanation: 'Io’s volcanic activity is driven by tidal heating caused by the gravitational forces of Jupiter and the other Galilean moons.'
+    },
+    {
+      id: 'q3',
+      type: 'multiple-choice',
+      question: 'What does the detection of methane on Mars suggest?',
+      options: [
+        'Evidence of global warming',
+        'Possible biological activity or geological processes',
+        'Evidence of volcanic activity',
+        'Traces of comet impacts'
+      ],
+      correctAnswer: 1,
+      explanation: 'Methane on Mars can be produced by biological or geological processes, suggesting the possibility of life.'
+    },
+    {
+      id: 'q4',
+      type: 'multiple-choice',
+      question: 'What was the most significant finding of the Cassini spacecraft in the Saturn system?',
+      options: [
+        'Methane lakes on Titan',
+        'Subsurface ocean on Enceladus',
+        'Detailed structure of Saturn’s rings',
+        'All of the above'
+      ],
+      correctAnswer: 3,
+      explanation: 'The Cassini mission discovered Titan’s methane lakes, Enceladus’s subsurface ocean, and the complex structure of Saturn’s rings.'
+    },
+    {
+      id: 'q5',
+      type: 'multiple-choice',
+      question: 'What is the main difference between the asteroid belt and the Kuiper belt?',
+      options: [
+        'Composition (rock vs ice)',
+        'Distance from the Sun',
+        'Size of celestial bodies',
+        'All of the above'
+      ],
+      correctAnswer: 3,
+      explanation: 'The asteroid belt lies between Mars and Jupiter and consists of rocky bodies, while the Kuiper belt lies beyond Neptune and consists of icy bodies.'
+    },
+    {
+      id: 'q6',
+      type: 'multiple-choice',
+      question: 'What is the most likely cause of Venus’s retrograde rotation?',
+      options: [
+        'Atmospheric friction',
+        'Giant impact event',
+        'Tidal locking',
+        'Effect of magnetic fields'
+      ],
+      correctAnswer: 1,
+      explanation: 'Venus’s retrograde rotation is explained by a giant collision with another body in the early solar system.'
+    },
+    // 4 subjective/descriptive questions
+    {
+      id: 'q7',
+      type: 'subjective',
+      question: 'Explain the orbital resonance among Jupiter’s Galilean moons and its effects.',
+      sampleAnswer: 'Io, Europa, and Ganymede are in a 4:2:1 orbital resonance. This means that Io orbits 4 times, Europa orbits twice, and Ganymede orbits once in the same period. This resonance maintains the moons’ orbital eccentricities, sustaining tidal heating. This is crucial for Io’s volcanic activity and for keeping Europa’s subsurface ocean in liquid form, potentially creating an environment for life in the solar system.',
+      explanation: 'Orbital resonance plays an important role in the evolution of moon systems and in the habitability potential for life.'
+    },
+    {
+      id: 'q8',
+      type: 'subjective',
+      question: 'Discuss the history of Mars’s water cycle and the current forms in which water exists.',
+      sampleAnswer: 'Early Mars had a thick atmosphere and liquid water, but the loss of its magnetic field allowed the solar wind to strip away the atmosphere, causing the water to disappear. Today, water exists as polar ice, subsurface permafrost, atmospheric vapor, and possibly subsurface brines. Recent observations by the Mars Reconnaissance Orbiter have revealed recurring slope lineae (RSL), suggesting the possibility of limited present-day liquid water activity. This is directly linked to the potential for life on Mars.',
+      explanation: 'The history of water on Mars is key to understanding planetary evolution and the potential for habitability.'
+    },
+    {
+      id: 'q9',
+      type: 'subjective',
+      question: 'Describe the structure of the outer solar system and the discoveries made by the Voyager spacecraft.',
+      sampleAnswer: 'The outer solar system consists of the Kuiper belt, the scattered disk, and the Oort cloud. Voyager 1 and 2 crossed the heliopause into interstellar space, measuring the actual size and shape of the heliosphere and the strength of the interstellar magnetic field. They discovered that the plasma density in interstellar space is higher than expected, and that the heliosphere is not spherical but has a complex shape. These findings provide important insights into the interaction between the solar system and the galaxy.',
+      explanation: 'The Voyager missions provided direct information on the boundaries of the solar system and interstellar space.'
+    },
+    {
+      id: 'q10',
+      type: 'subjective',
+      question: 'Discuss why small bodies (asteroids, comets, meteorites) are important for studying the formation of the solar system.',
+      sampleAnswer: 'Small bodies preserve primordial material from the time of the solar system’s formation, acting as “time capsules.” Carbonaceous chondrites contain organic compounds and water, suggesting they may have delivered the ingredients for life to Earth. The nuclei of comets reveal the composition of ice and dust in the outer solar system, and isotope ratio studies allow us to infer the conditions of the solar system’s formation. The composition and distribution of the asteroid belt reveal the effects of Jupiter’s gravity and planetary migration. Sample return missions like Hayabusa2 and OSIRIS-REx have made such studies even more precise.',
+      explanation: 'Studying small bodies is a key to understanding the formation of the solar system and the origins of life.'
+    }
+  ]
+},
+
+
+  // Module 3: Stars and Stellar Evolution (English)
   {
     moduleId: 'Module-3-Stars-and-Stellar-Evolution',
-    title: '항성과 항성 진화',
+    title: 'Stars and Stellar Evolution',
     questions: [
-      // 객관식 문제 6개
+      // Multiple-choice questions
       {
         id: 'q1',
         type: 'multiple-choice',
-        question: '백색왜성의 찬드라세카르 한계 질량은 약 몇 태양질량인가?',
+        question: 'What is the primary energy source for main sequence stars?',
         options: [
-          '1.0 M☉',
-          '1.4 M☉',
-          '2.0 M☉',
-          '3.0 M☉'
+          'Gravitational contraction',
+          'Nuclear fusion of hydrogen into helium',
+          'Radioactive decay',
+          'Chemical reactions'
         ],
         correctAnswer: 1,
-        explanation: '찬드라세카르 한계는 약 1.4 태양질량으로, 이를 초과하면 백색왜성은 중성자별이나 블랙홀로 붕괴합니다.'
+        explanation: 'Main sequence stars generate energy by fusing hydrogen into helium in their cores.'
       },
       {
         id: 'q2',
         type: 'multiple-choice',
-        question: '중성자별의 전자 축퇴압을 극복하는 압력은?',
+        question: 'Which property determines the lifetime of a star on the main sequence?',
         options: [
-          '중성자 축퇴압',
-          '복사압',
-          '자기압',
-          '회전압'
+          'Temperature',
+          'Luminosity',
+          'Mass',
+          'Radius'
         ],
-        correctAnswer: 0,
-        explanation: '중성자별에서는 중성자 축퇴압이 중력 붕괴를 막는 주요 압력입니다.'
+        correctAnswer: 2,
+        explanation: 'A star’s mass is the primary factor that determines its main sequence lifetime.'
       },
       {
         id: 'q3',
         type: 'multiple-choice',
-        question: '퀘이사의 에너지원으로 가장 유력한 것은?',
+        question: 'What is a white dwarf?',
         options: [
-          '핵융합',
-          '중력적 수축',
-          '초대질량 블랙홀로의 강착',
-          '초신성 폭발'
+          'A massive star in the process of forming',
+          'A remnant core of a low- or intermediate-mass star after shedding its outer layers',
+          'A star that is about to explode as a supernova',
+          'A star in the red giant phase'
         ],
-        correctAnswer: 2,
-        explanation: '퀘이사는 은하 중심의 초대질량 블랙홀 주변으로 물질이 강착하면서 방출되는 에너지로 설명됩니다.'
+        correctAnswer: 1,
+        explanation: 'A white dwarf is the dense, hot core left behind after a low- or intermediate-mass star expels its outer layers.'
       },
       {
         id: 'q4',
         type: 'multiple-choice',
-        question: '감마선 폭발(GRB)의 지속시간에 따른 분류는?',
+        question: 'Which event marks the end of a massive star’s life?',
         options: [
-          '짧은 GRB(< 2초)와 긴 GRB(> 2초)',
-          '짧은 GRB(< 10초)와 긴 GRB(> 10초)',
-          '짧은 GRB(< 1초)와 긴 GRB(> 1초)',
-          '분류 기준이 없음'
+          'Becoming a white dwarf',
+          'Supernova explosion',
+          'Planetary nebula ejection',
+          'Becoming a brown dwarf'
         ],
-        correctAnswer: 0,
-        explanation: '감마선 폭발은 지속시간 2초를 기준으로 짧은 GRB와 긴 GRB로 분류되며, 서로 다른 기원을 가집니다.'
+        correctAnswer: 1,
+        explanation: 'Massive stars end their lives in a supernova explosion, leaving behind a neutron star or black hole.'
       },
       {
         id: 'q5',
         type: 'multiple-choice',
-        question: '킬로노바(kilonova) 현상의 원인은?',
+        question: 'What is the Hertzsprung-Russell (H-R) diagram used for?',
         options: [
-          '대질량 별의 핵붕괴',
-          '중성자별 충돌',
-          '백색왜성 폭발',
-          '블랙홀 형성'
+          'Classifying galaxies',
+          'Plotting stars according to their luminosity and temperature',
+          'Measuring distances to stars',
+          'Studying planetary orbits'
         ],
         correctAnswer: 1,
-        explanation: '킬로노바는 두 중성자별이 충돌할 때 발생하는 현상으로, 중원소 생성의 주요 과정입니다.'
+        explanation: 'The H-R diagram plots stars by luminosity and temperature, revealing patterns of stellar evolution.'
       },
       {
         id: 'q6',
         type: 'multiple-choice',
-        question: '항성의 금속도(metallicity)가 높을수록 나타나는 현상은?',
+        question: 'What is a neutron star?',
         options: [
-          '더 뜨거운 표면온도',
-          '더 많은 행성 형성',
-          '더 짧은 수명',
-          '더 강한 항성풍'
+          'A star made entirely of neutrons, formed after a supernova',
+          'A star in the process of forming',
+          'A type of white dwarf',
+          'A planet-sized star'
         ],
-        correctAnswer: 1,
-        explanation: '금속도가 높은 별 주변에서는 고체 입자가 많아 행성 형성이 더 활발합니다.'
+        correctAnswer: 0,
+        explanation: 'A neutron star is the collapsed core of a massive star, composed almost entirely of neutrons.'
       },
-      // 주관식/서술형 문제 4개
+      // Subjective questions
       {
         id: 'q7',
         type: 'subjective',
-        question: '중성자별의 물리적 특성과 관측 방법에 대해 설명하세요.',
-        sampleAnswer: '중성자별은 직경 약 20km, 밀도 10^15 g/cm³의 극한 천체입니다. 강한 자기장(10^12 G)과 빠른 자전으로 인해 펄사로 관측됩니다. 자기축과 자전축이 다를 때 등대처럼 전파 펄스를 방출합니다. 중력파 검출기로는 쌍성 중성자별의 궤도 붕괴를 관측할 수 있으며, X선 관측으로는 강착하는 물질에서 나오는 고에너지 복사를 탐지합니다. 중성자별은 물질의 극한 상태와 강중력장 물리학을 연구하는 자연 실험실 역할을 합니다.',
-        explanation: '중성자별은 극한 물리학 연구의 핵심 대상입니다.'
+        question: 'Explain the process of stellar nucleosynthesis and its significance.',
+        sampleAnswer: 'Stellar nucleosynthesis is the process by which elements are formed within stars through nuclear fusion. It is responsible for creating most elements heavier than hydrogen and helium, enriching the universe with the building blocks for planets and life.',
+        explanation: 'Stellar nucleosynthesis explains the origin of chemical elements and the evolution of matter in the universe.'
       },
       {
         id: 'q8',
         type: 'subjective',
-        question: 'Ia형 초신성의 형성 메커니즘과 우주론적 중요성을 논하세요.',
-        sampleAnswer: 'Ia형 초신성은 쌍성계에서 백색왜성이 동반성으로부터 물질을 강착하여 찬드라세카르 한계를 초과할 때 발생합니다. 탄소-산소 백색왜성의 핵융합 폭발로 거의 일정한 최대밝기를 가져 표준촉광 역할을 합니다. 이를 통해 먼 거리 측정이 가능하여 우주의 가속팽창 발견에 결정적 역할을 했습니다. 또한 철족 원소의 주요 생산처로서 은하의 화학적 진화에 중요한 기여를 합니다. 최근 서로 다른 폭발 메커니즘(single degenerate vs double degenerate)에 대한 연구가 활발합니다.',
-        explanation: 'Ia형 초신성은 우주론과 항성 진화 연구의 핵심 도구입니다.'
+        question: 'Describe the life cycle of a low-mass star like the Sun.',
+        sampleAnswer: 'A low-mass star forms from a molecular cloud, spends most of its life fusing hydrogen on the main sequence, becomes a red giant, sheds its outer layers as a planetary nebula, and ends as a white dwarf.',
+        explanation: 'The life cycle of a low-mass star involves several stages, ending with a white dwarf remnant.'
       },
       {
         id: 'q9',
         type: 'subjective',
-        question: '블랙홀의 종류와 형성 과정, 그리고 사건지평선망원경(EHT)의 성과를 설명하세요.',
-        sampleAnswer: '블랙홀은 질량에 따라 항성질량 블랙홀(3-20 M☉), 중간질량 블랙홀(10²-10⁵ M☉), 초대질량 블랙홀(10⁶-10¹⁰ M☉)로 분류됩니다. 항성질량 블랙홀은 대질량별의 핵붕괴로, 초대질량 블랙홀은 초기 우주의 종족 III 별이나 원시 블랙홀에서 성장한 것으로 추정됩니다. EHT는 2019년 M87* 블랙홀의 그림자를 최초로 촬영하고, 2022년 우리 은하 중심 Sgr A*를 관측했습니다. 이는 일반상대성이론을 극한 조건에서 검증하고, 블랙홀 주변의 강착원반과 제트 형성을 직접 관측한 혁신적 성과입니다.',
-        explanation: '블랙홀 연구는 현대 천체물리학의 최전선입니다.'
+        question: 'What are the observational signatures of a supernova?',
+        sampleAnswer: 'Supernovae are observed as sudden, dramatic increases in brightness, followed by a gradual fading. They may also produce characteristic spectra, neutrino bursts, and expanding remnants visible in various wavelengths.',
+        explanation: 'Supernovae are identified by their light curves, spectra, and remnants.'
       },
       {
         id: 'q10',
         type: 'subjective',
-        question: '항성 진화와 원소 합성 과정이 우주의 화학적 진화에 미치는 영향을 논하세요.',
-        sampleAnswer: '우주의 화학적 진화는 빅뱅 핵합성(H, He, Li), 항성 내부 핵융합(C부터 Fe까지), 초신성 폭발(Fe보다 무거운 원소), 중성자별 충돌(r-과정 원소)의 단계적 과정입니다. 종족 III 별은 최초로 중원소를 생산하여 다음 세대 별 형성에 영향을 주었고, 대질량별은 짧은 수명으로 빠른 화학적 풍화를 일으켰습니다. 점근거성가지별은 s-과정을 통해 중성자 포획 원소를 생산하고, Ia형 초신성은 철족 원소를 공급합니다. 이러한 과정으로 은하의 금속도가 시간에 따라 증가하며, 행성 형성과 생명체 출현의 조건이 마련되었습니다.',
-        explanation: '항성의 일생은 우주의 화학적 진화와 생명체 출현의 기반을 제공합니다.'
+        question: 'Discuss the importance of binary star systems in stellar evolution.',
+        sampleAnswer: 'Binary star systems allow for mass transfer between stars, leading to phenomena such as novae, X-ray binaries, and Type Ia supernovae. They provide key insights into stellar evolution and end states.',
+        explanation: 'Binary interactions can dramatically alter the evolution and fate of stars.'
       }
     ]
   },
+  // Module 4: Galaxies and Large-Scale Structure (English)
   {
     moduleId: 'Module-4-Galaxies-and-Large-Scale-Structure',
-    title: '은하와 대규모 구조',
+    title: 'Galaxies and Large-Scale Structure',
     questions: [
-      // 객관식 문제 6개
+      // Multiple-choice questions
       {
         id: 'q1',
         type: 'multiple-choice',
-        question: '우리 은하 중심의 초대질량 블랙홀로 알려진 대상은?',
+        question: 'What is the primary component of the Milky Way’s dark matter halo?',
         options: [
-          'Sgr A*',
-          'M87*',
-          'Cygnus X-1',
-          'Andromeda A'
+          'Neutrinos',
+          'Molecular clouds',
+          'Unseen non-baryonic matter',
+          'Stellar remnants'
         ],
-        correctAnswer: 0,
-        explanation: '우리 은하 중심부에는 질량 약 400만 태양질량의 초대질량 블랙홀 Sgr A*가 존재합니다.'
+        correctAnswer: 2,
+        explanation: 'The dark matter halo is thought to be composed mainly of non-baryonic, weakly interacting massive particles (WIMPs) or similar candidates.'
       },
       {
         id: 'q2',
         type: 'multiple-choice',
-        question: '허블 분류에서 막대나선은하를 나타내는 분류 기호는?',
+        question: 'Which type of galaxy is characterized by a smooth, featureless light profile and little gas or dust?',
         options: [
-          'E',
-          'S0',
-          'SB',
-          'Irr'
+          'Spiral galaxy',
+          'Elliptical galaxy',
+          'Irregular galaxy',
+          'Lenticular galaxy'
         ],
-        correctAnswer: 2,
-        explanation: '막대나선은하는 SB(SBa, SBb, SBc 등)로 표기하며, 중심에 막대 구조를 가집니다.'
+        correctAnswer: 1,
+        explanation: 'Elliptical galaxies have smooth, featureless profiles and contain little interstellar gas or dust.'
       },
       {
         id: 'q3',
         type: 'multiple-choice',
-        question: '은하의 평탄한 회전곡선이 시사하는 가장 중요한 물리적 해석은?',
+        question: 'What is the main evidence for the existence of supermassive black holes at the centers of galaxies?',
         options: [
-          '항성 형성률 증가',
-          '암흑물질의 존재',
-          '허블 상수의 변화',
-          '나선팔 공명 붕괴'
-        ],
-        correctAnswer: 1,
-        explanation: '관측된 평탄한 회전곡선은 눈에 보이는 질량만으로 설명되지 않아 암흑물질 헤일로의 존재를 지지합니다.'
-      },
-      {
-        id: 'q4',
-        type: 'multiple-choice',
-        question: '은하군과 은하단을 연결해 거대한 거미줄 형태를 이루는 구조는?',
-        options: [
-          '필라멘트',
-          '구상성단',
-          '초신성 잔해',
-          '분자운'
-        ],
-        correctAnswer: 0,
-        explanation: '우주의 대규모 구조는 필라멘트와 공동(보이드)로 구성된 코스믹 웹 형태를 이룹니다.'
-      },
-      {
-        id: 'q5',
-        type: 'multiple-choice',
-        question: '타원은하(Elliptical galaxy)의 일반적인 특성으로 옳은 것은?',
-        options: [
-          '가스와 먼지가 풍부하고 젊은 별이 많다',
-          '형태가 불규칙하며 성간물질이 매우 풍부하다',
-          '주로 오래된 별로 구성되고 가스가 적어 항성형성이 약하다',
-          '강한 나선팔 구조를 보인다'
-        ],
-        correctAnswer: 2,
-        explanation: '타원은하는 가스/먼지가 적고 노년층 별이 우세하여 현재의 항성형성이 약합니다.'
-      },
-      {
-        id: 'q6',
-        type: 'multiple-choice',
-        question: '우리 은하가 속한 작은 규모의 집단은 무엇인가?',
-        options: [
-          '처녀자리 은하단',
-          '국부은하군',
-          '코마 은하단',
-          '라니아케아 초은하단'
-        ],
-        correctAnswer: 1,
-        explanation: '우리 은하와 안드로메다은하(M31) 등을 포함하는 소규모 집단을 국부은하군(Local Group)이라 합니다.'
-      },
-      // 주관식/서술형 문제 4개
-      {
-        id: 'q7',
-        type: 'subjective',
-        question: '허블–르메트르 법칙이 대규모 구조 지도화에 어떻게 활용되는지 설명하세요.',
-        sampleAnswer: '허블–르메트르 법칙(v = H0 d)을 통해 은하의 후퇴속도에서 거리를 추정할 수 있습니다. 여기에 적색편이 조사(예: SDSS)를 결합하면, 은하의 3차원 분포를 재구성하여 필라멘트와 보이드로 이루어진 코스믹 웹을 지도화할 수 있습니다. 왜곡(핑거 오브 갓) 보정과 궤도학적 편향 보정을 적용해 실제 대규모 구조의 통계(2점 상관함수, 파워 스펙트럼)를 얻습니다.',
-        explanation: '적색편이–거리 추정은 대규모 구조의 통계적 성질과 우주론 파라미터 제약에 핵심적입니다.'
-      },
-      {
-        id: 'q8',
-        type: 'subjective',
-        question: '은하 병합 과정이 퀘이사 활동과 별형성 폭발에 미치는 영향을 논하세요.',
-        sampleAnswer: '은하 병합은 가스 유입을 촉진하여 중심부 강착률을 높이고, 초대질량 블랙홀의 급격한 성장과 퀘이사(AGN) 활동을 유발할 수 있습니다. 또한 가스 압축으로 단기간의 별형성 폭발(starburst)이 발생합니다. AGN 피드백은 가스를 가열/방출해 항성형성을 억제, 붉고 죽은 은하로의 전환(쿼칭)에 기여합니다.',
-        explanation: '병합–AGN–피드백 연결고리는 은하 형태/색의 진화를 설명하는 표준 시나리오입니다.'
-      },
-      {
-        id: 'q9',
-        type: 'subjective',
-        question: '약한/강한 중력렌즈 효과가 은하단 질량 분포와 암흑물질 연구에 제공하는 정보를 설명하세요.',
-        sampleAnswer: '강한 렌즈는 아인슈타인 고리/아크를 만들어 중심 질량 분포를 정밀 제약합니다. 약한 렌즈는 배경 은하의 평균적인 전단 왜곡을 통계적으로 측정해, 넓은 스케일에서의 질량(암흑물질) 분포를 복원합니다. 이를 통해 광도 대비 질량(M/L), 서브할로 존재, 질량 중심–광도 중심 오프셋 등을 파악하고, 우주론 파라미터(σ8, Ωm)에도 제약을 줍니다.',
-        explanation: '중력렌즈는 빛이 아닌 중력으로 질량을 “직접” 추적할 수 있는 강력한 도구입니다.'
-      },
-      {
-        id: 'q10',
-        type: 'subjective',
-        question: '우리 은하의 구조(팽대부, 원반, 헤일로, 암흑물질 헤일로)와 이를 지지하는 관측 증거를 정리하세요.',
-        sampleAnswer: '팽대부는 중심의 두꺼운 별집중 영역, 원반은 박막/두꺼운 원반으로 나뉘며 별·가스·나선팔이 있습니다. 헤일로는 구상성단과 금속도가 낮은 오래된 별이 분포합니다. 회전곡선의 평탄함과 위성은하 운동, 별흐름(타이달 스트림) 분석은 거대한 암흑물질 헤일로의 존재를 지지합니다. 가이아 데이터는 별속도 분포와 구조 성분 분리를 정밀화했습니다.',
-        explanation: '다중 추적자(별, 성단, 가스, 위성은하)와 역학 모델링이 우리 은하 구조 이해의 핵심 근거입니다.'
-      }
-    ]
-  },
-  {
-    moduleId: 'Module-5-Cosmology',
-    title: '우주론',
-    questions: [
-      // 객관식 문제 6개
-      {
-        id: 'q1',
-        type: 'multiple-choice',
-        question: '우주마이크로파배경(CMB)의 온도 요동(δT/T)의 전형적 크기는?',
-        options: [
-          '10^-1',
-          '10^-2',
-          '10^-3',
-          '10^-5'
+          'High-velocity stellar orbits',
+          'Strong X-ray emission',
+          'Jets and radio lobes',
+          'All of the above'
         ],
         correctAnswer: 3,
-        explanation: 'CMB의 온도 요동 스케일은 약 10^-5로, 초기 밀도요동의 크기를 반영합니다.'
-      },
-      {
-        id: 'q2',
-        type: 'multiple-choice',
-        question: '바리온 음향 진동(BAO)은 우주론에서 어떤 역할을 하는가?',
-        options: [
-          '표준자(standard ruler)로서의 거리척도 제공',
-          '항성 금속도의 시간 진화 측정',
-          '초신성의 광도 보정',
-          '은하 회전곡선의 기울기 측정'
-        ],
-        correctAnswer: 0,
-        explanation: 'BAO 스케일은 표준자로 쓰여 거리지표를 정교하게 제약해 암흑에너지 성질을 추적합니다.'
-      },
-      {
-        id: 'q3',
-        type: 'multiple-choice',
-        question: '암흑에너지의 상태방정식 매개변수 w = p/(ρc^2)가 -1일 때 이는 무엇을 의미하는가?',
-        options: [
-          '우주상수(Λ)',
-          '복사 지배 성분',
-          '차가운 암흑물질',
-          '상전이 중인 스칼라장'
-        ],
-        correctAnswer: 0,
-        explanation: 'w = -1은 시간/공간에 일정한 진공에너지, 즉 우주상수 모형에 해당합니다.'
+        explanation: 'All of these phenomena are observed in galactic centers and are best explained by the presence of supermassive black holes.'
       },
       {
         id: 'q4',
         type: 'multiple-choice',
-        question: '관측에 따르면 우주의 평균 곡률(Ω_k)에 가장 가까운 값은?',
+        question: 'Which structure is the largest in the universe?',
         options: [
-          '0(평탄)',
-          '0.1(양의 곡률)',
-          '-0.5(음의 곡률)',
-          '1.0(강한 곡률)'
+          'Galaxy',
+          'Galaxy cluster',
+          'Supercluster',
+          'Filament'
         ],
-        correctAnswer: 0,
-        explanation: '플랑크 등 관측은 우주가 매우 평탄함(Ω_k ≈ 0)을 지지합니다.'
+        correctAnswer: 3,
+        explanation: 'Cosmic filaments are the largest known structures, forming the “cosmic web” of galaxies and clusters.'
       },
       {
         id: 'q5',
         type: 'multiple-choice',
-        question: '재이온화(reionization) 시대의 증거로 가장 관련 깊은 관측은?',
+        question: 'What is the Tully-Fisher relation used for?',
         options: [
-          '고적색편이 퀘이사 스펙트럼의 Gunn–Peterson 흡수',
-          '근적외선에서의 별 탄생선 폭',
-          '은하회전 곡선의 평탄부',
-          '은하단의 X선 방출'
+          'Measuring galaxy mass',
+          'Estimating galaxy distance',
+          'Classifying galaxy type',
+          'Determining star formation rate'
         ],
-        correctAnswer: 0,
-        explanation: 'Gunn–Peterson 트로프는 중성 수소가 많던 재이온화 전/초기의 흔적을 보여줍니다.'
+        correctAnswer: 1,
+        explanation: 'The Tully-Fisher relation links the luminosity of a spiral galaxy to its rotation speed, allowing distance estimation.'
       },
       {
         id: 'q6',
         type: 'multiple-choice',
-        question: '저적색편이(z ≪ 1)에서 허블–르메트르 법칙 v = H0 d와 v ≈ cz 근사를 쓸 때 c는 무엇인가?',
+        question: 'Which of the following best describes a galaxy merger?',
         options: [
-          '빛의 속도',
-          '음속',
-          '은하 원반의 회전 속도',
-          '허블 거리'
+          'A galaxy splitting into two',
+          'Two galaxies colliding and combining',
+          'A galaxy forming from intergalactic gas',
+          'A star cluster merging with a galaxy'
         ],
-        correctAnswer: 0,
-        explanation: 'c는 진공 중 빛의 속도로, 적색편이 z가 매우 작을 때 v ≈ cz 근사가 성립합니다.'
+        correctAnswer: 1,
+        explanation: 'A galaxy merger occurs when two galaxies collide and combine, often triggering starbursts.'
       },
-      // 주관식/서술형 문제 4개
+      // Subjective questions
       {
         id: 'q7',
         type: 'subjective',
-        question: '우주 인플레이션이 도입된 이유와 대표적 관측 증거를 설명하세요.',
-        sampleAnswer: '인플레이션은 지평선/평탄성/자기홀극 문제를 동시에 해결합니다. 급팽창은 우주를 거의 평탄하게 만들고, 인과적으로 분리된 영역 간의 등방성도 설명합니다. 양자요동이 거시적으로 확대되어 거의 스케일 불변에 가까운 초기 스펙트럼을 남겨 CMB 각파워스펙트럼과 대규모 구조에 흔적을 남깁니다. 원시 중력파의 B-모드 탐색은 추가적 검증 수단입니다.',
-        explanation: 'CMB 등방성/평탄성, 스칼라 요동의 성질은 인플레이션 시나리오를 강하게 지지합니다.'
+        question: 'Explain the significance of the Hubble sequence in galaxy classification.',
+        sampleAnswer: 'The Hubble sequence is a morphological classification scheme for galaxies, organizing them into ellipticals, spirals, and irregulars. It helps astronomers understand galaxy evolution and the relationships between different types.',
+        explanation: 'The Hubble sequence provides a framework for studying galaxy properties and their evolutionary paths.'
       },
       {
         id: 'q8',
         type: 'subjective',
-        question: 'ΛCDM 모형의 핵심 파라미터(Ω_m, Ω_Λ, H0, n_s, σ8 등)와 각 의미를 요약하세요.',
-        sampleAnswer: 'Ω_m과 Ω_Λ는 물질과 암흑에너지 밀도비, H0는 현재 팽창률, n_s는 원시 스칼라 요동의 기울기, σ8은 8 h^-1 Mpc 스케일에서의 밀도 요동 분산입니다. 이들 파라미터는 CMB, BAO, SNe 데이터 결합으로 정밀 추정되며, 우주의 내용물과 성장사를 요약합니다.',
-        explanation: '파라미터 정의와 관측 제약을 아는 것은 우주론 결과 해석의 기본입니다.'
+        question: 'Describe the role of dark matter in the formation of large-scale structure in the universe.',
+        sampleAnswer: 'Dark matter provides the gravitational scaffolding for the formation of galaxies and clusters. Its presence accelerates the growth of density fluctuations, leading to the cosmic web structure observed today.',
+        explanation: 'Without dark matter, the observed large-scale structure could not have formed within the age of the universe.'
       },
       {
         id: 'q9',
         type: 'subjective',
-        question: '초기 밀도요동의 선형 성장과 비선형 진화가 파워 스펙트럼/상관함수에 미치는 영향을 설명하세요.',
-        sampleAnswer: '선형 영역에서는 요동이 성장인자 D(a)에 비례해 성장하며 파워 스펙트럼의 모양을 보존합니다. 작은 스케일에서는 비선형 붕괴가 진행되어 파워가 증폭되고, 헤일로 형성/병합이 일어나며 1-halo/2-halo 항으로 기술됩니다. BAO 피크는 비선형 확산으로 약간 흐려지지만 재구성 기법으로 복원됩니다.',
-        explanation: '선형–비선형 구분과 이로 인한 통계량 변화 이해는 구조 형성 해석의 핵심입니다.'
+        question: 'What observational evidence supports the existence of galaxy clusters and superclusters?',
+        sampleAnswer: 'Evidence includes the spatial clustering of galaxies, gravitational lensing, X-ray emission from hot intracluster gas, and redshift surveys mapping large-scale structures.',
+        explanation: 'Multiple lines of evidence confirm the existence and properties of galaxy clusters and superclusters.'
       },
       {
         id: 'q10',
         type: 'subjective',
-        question: '허블 상수(H0) 긴장의 관측 근거와 가능한 해석(시스템 오차 vs 신물리)을 비교해 논하세요.',
-        sampleAnswer: '플랑크 CMB로부터의 ΛCDM 외삽 H0와 거리사다리(세페이드–SNe Ia)로부터의 직접 측정 H0가 유의미하게 불일치합니다. 시스템 오차 가능성(영점 보정, 선택효과)과 신물리 가능성(조기 암흑에너지, 추가 중성미자 자유도 등)이 논의되고 있습니다. 다파장/다중 추적자 관측과 독립적 방법(마스킹 시간지연 렌즈 등)이 검증을 돕습니다.',
-        explanation: 'H0 긴장은 현대 우주론의 핵심 쟁점으로, 데이터와 이론 모두에서 활발히 연구 중입니다.'
+        question: 'Discuss the importance of the cosmic web and its impact on galaxy evolution.',
+        sampleAnswer: 'The cosmic web is the large-scale structure of the universe, consisting of filaments, clusters, and voids. It influences galaxy formation, interactions, and the distribution of matter on cosmic scales.',
+        explanation: 'The cosmic web shapes the environment in which galaxies form and evolve.'
       }
     ]
   },
-  {
-    moduleId: 'Module-6-Exoplanets-and-Astrobiology',
-    title: '외계행성과 우주생물학',
-    questions: [
-      // 객관식 문제 6개
-      {
-        id: 'q1',
-        type: 'multiple-choice',
-        question: '트랜싯 관측에서 광도 강하 깊이 ΔF/F를 가장 잘 나타내는 식은?',
-        options: [
-          '(R_p / R_*)^2',
-          '(M_p / M_*)^2',
-          'a / R_*',
-          'e'
-        ],
-        correctAnswer: 0,
-        explanation: '행성 반지름 대비 항성 반지름의 제곱이 트랜싯 깊이를 지배합니다.'
-      },
-      {
-        id: 'q2',
-        type: 'multiple-choice',
-        question: '시선속도(RV)법에서 반진폭 K를 증가시키는 요인은?',
-        options: [
-          '더 큰 행성 질량',
-          '더 큰 궤도 반장축 a',
-          '더 작은 궤도 경사 i (face-on)',
-          '더 큰 항성 질량'
-        ],
-        correctAnswer: 0,
-        explanation: 'K ∝ M_p sin i / a^{1/2} M_*^{2/3}로, 큰 행성 질량과 큰 경사(엣지온), 작은 a, 작은 항성 질량이 K를 키웁니다.'
-      },
-      {
-        id: 'q3',
-        type: 'multiple-choice',
-        question: '거주가능대(HZ)의 일반적 정의로 옳은 것은?',
-        options: [
-          '액체 금속이 안정한 범위',
-          '액체 물이 표면에 존재 가능한 복사 플럭스 범위',
-          '행성 자기장이 존재하는 범위',
-          '별로부터 1 AU 고정 거리'
-        ],
-        correctAnswer: 1,
-        explanation: 'HZ는 행성 대기 조건을 가정할 때 표면에 액체 물이 가능한 항성 복사 플럭스 범위를 의미합니다.'
-      },
-      {
-        id: 'q4',
-        type: 'multiple-choice',
-        question: '생체지표로 함께 나타날 경우 강한 비평형 신호를 주는 조합은?',
-        options: [
-          'CO2와 N2',
-          'H2와 He',
-          'O2(또는 O3)와 CH4의 공존',
-          'Na와 K 흡수선'
-        ],
-        correctAnswer: 2,
-        explanation: '산화적(O2/O3)과 환원적(CH4) 기체의 공존은 생물학적 보충 없이는 유지가 어렵습니다.'
-      },
-      {
-        id: 'q5',
-        type: 'multiple-choice',
-        question: '행성의 평균 밀도를 추정하기 위해 필요한 관측 조합은?',
-        options: [
-          '트랜싯 + 시선속도',
-          '직접영상 + 천문측량',
-          '마이크로렌징 + 트랜싯',
-          'TTV 단독'
-        ],
-        correctAnswer: 0,
-        explanation: '트랜싯으로 반지름, RV로 질량을 얻어 밀도(= 질량/부피)를 계산합니다.'
-      },
-      {
-        id: 'q6',
-        type: 'multiple-choice',
-        question: 'TTV(Transit Timing Variation)의 주된 원인은?',
-        options: [
-          '별표면 점에 의한 광도 요동',
-          '행성–행성 중력 상호작용',
-          '망원경 지향 오차',
-          '행성 자체 자전'
-        ],
-        correctAnswer: 1,
-        explanation: '인접한 행성들 간의 중력 교란이 트랜싯 시각을 주기적으로 앞당기거나 지연시킵니다.'
-      },
-      // 주관식/서술형 문제 4개
-      {
-        id: 'q7',
-        type: 'subjective',
-        question: '생체지표 가스 탐지에서 위양성/위음성 시나리오와 이를 줄이는 관측 전략을 설명하세요.',
-        sampleAnswer: '위양성: 광분해에 의한 O2 축적, 화산가스가 만든 CH4 신호, 건조한 행성의 O3 강화 등. 위음성: 구름/헤이즈로 스펙트럼 신호가 희석, 대기 유실로 생체지표가 약화. 전략: 다중파장(가시–적외) 동시 관측, 시간가변성 모니터링, 표면/지형 알베도 보정, 행성·항성 활동성 분리(플레어 모니터링), 다중분자 동시 탐지로 비평형성 검증.',
-        explanation: '물리·화학적 비생물 과정과 관측 한계를 함께 고려해 위양성/위음성을 낮춰야 합니다.'
-      },
-      {
-        id: 'q8',
-        type: 'subjective',
-        question: '원시 원반에서의 행성 형성과 궤도 이동이 행성계 구조(핫 주피터, 공명 체계, 물 공급)에 미치는 영향을 논하세요.',
-        sampleAnswer: '핫 주피터는 형성 후 디스크 상호작용(타입 II 이동)으로 별 가까이 이주해 내측 암석행성 형성/안정성에 영향을 줍니다. 다행성계는 공명 사슬을 형성하기도 하며, 얼음선 너머에서 형성된 얼음 천체가 이동하며 내측으로 물을 공급했을 수 있습니다. 후기에 행성–행성 산란이 공명을 파괴하고 궤도 이심률/경사를 증가시킵니다.',
-        explanation: '디스크–행성 및 행성–행성 상호작용은 최종 아키텍처를 결정하는 핵심 메커니즘입니다.'
-      },
-      {
-        id: 'q9',
-        type: 'subjective',
-        question: '전이(Transmission)·방출(Emission) 분광을 통한 대기 역추정의 기본 가정과 주요 불확실성을 정리하세요.',
-        sampleAnswer: '가정: 1D 대기, 화학평형 혹은 단순 비평형 모형, 구름/헤이즈의 매개변수화, 항성 스펙트럼/활동성의 안정성. 불확실성: 항성 이질성(점·플라게), 구름/헤이즈의 퇴색 효과, 선혼잡 및 분자 데이터베이스 불확실성, 시계열 보정 시스템atics. 공변성 때문에 반지름–구름–조성의 축퇴가 흔합니다.',
-        explanation: '역추정은 가정 민감하며, 다중자료 결합과 물리적 사전정보가 중요합니다.'
-      },
-      {
-        id: 'q10',
-        type: 'subjective',
-        question: '적색왜성(M-dwarf) 거주가능대 행성의 관측상 장점과 거주가능성 측면의 위험 요인을 비교하세요.',
-        sampleAnswer: '장점: 작은 항성 반지름으로 트랜싯 신호가 큼, HZ가 짧은 공전주기로 관측 효율이 높음. 위험: 조석 고정으로 극단적 일교차/대기 순환 의존, 빈번한 플레어/자외선으로 대기 유실·표면 방사선 위험, 초기 형성기 고에너지 복사 노출. 대기 조성/압력과 해양·구름 피드백이 안정화를 좌우합니다.',
-        explanation: '관측은 유리하지만 항성 활동성이 높은 환경에서의 장기 거주가능성은 불확실합니다.'
-      }
-    ]
-  },
-  {
-    moduleId: 'Module-7-High-Energy-Astrophysics',
-    title: '고에너지 천체물리',
-    questions: [
-      // 객관식 문제 6개
-      {
-        id: 'q1',
-        type: 'multiple-choice',
-        question: '은하단 뜨거운 가스(ICM)의 대표적 X선 방출 메커니즘은?',
-        options: [
-          '열적 브렘스트랄룽',
-          '분자 선방출',
-          '다이렉트 재결합 연속',
-          '체렌코프 복사'
-        ],
-        correctAnswer: 0,
-        explanation: '수천만 K의 전자-이온 충돌로 인한 열적 브렘스트랄룽이 ICM X선의 주된 기원입니다.'
-      },
-      {
-        id: 'q2',
-        type: 'multiple-choice',
-        question: 'AGN 통일 모형에서 관측되는 타입 차이의 주된 원인은?',
-        options: [
-          '중심 블랙홀 질량 차이',
-          '시선 방향과 토러스 가림',
-          '제트의 유무',
-          '별형성률의 차이'
-        ],
-        correctAnswer: 1,
-        explanation: '시선 방향과 토러스에 의한 가림 효과가 타입 1/2 등 분류 차이의 핵심 원인입니다.'
-      },
-      {
-        id: 'q3',
-        type: 'multiple-choice',
-        question: '긴 지속(>2초) 감마선 폭발의 주된 발원 시나리오는?',
-        options: [
-          '쌍중성자별 병합',
-          '대질량 별의 핵붕괴(콜랩사)',
-          '백색왜성의 열폭주',
-          '태양 플레어'
-        ],
-        correctAnswer: 1,
-        explanation: '긴 GRB는 주로 대질량 별 붕괴(콜랩사) 모형으로 설명됩니다. 짧은 GRB는 병합 기원이 유력합니다.'
-      },
-      {
-        id: 'q4',
-        type: 'multiple-choice',
-        question: '충격파 페르미 가속(1차)로 예측되는 입자 에너지 스펙트럼 형태는?',
-        options: [
-          '지수감쇠 스펙트럼',
-          '선형 스펙트럼',
-          '거듭제곱 법칙 스펙트럼',
-          '로렌츠 피크'
-        ],
-        correctAnswer: 2,
-        explanation: '확산 충격가속은 비열적 거듭제곱 분포 N(E) ∝ E^{-p}를 만들어 싱크로트론/IC 방출 스펙트럼을 설명합니다.'
-      },
-      {
-        id: 'q5',
-        type: 'multiple-choice',
-        question: 'Ia형 초신성과 II형 초신성을 스펙트럼으로 구분하는 특징은?',
-        options: [
-          'Ia형은 강한 수소선, II형은 수소선 없음',
-          'Ia형은 Si II 특성선, 수소선 없음; II형은 수소선 존재',
-          '둘 다 수소선 없음',
-          '둘 다 Si II 선이 강함'
-        ],
-        correctAnswer: 1,
-        explanation: 'Ia형은 수소선이 없고 Si II(약 615 nm)가 특징적이며, II형은 발광 껍질의 수소선이 나타납니다.'
-      },
-      {
-        id: 'q6',
-        type: 'multiple-choice',
-        question: '지상 중력파 관측기(LIGO/Virgo/KAGRA)의 기본 검출 방식은?',
-        options: [
-          '초전도 자력계',
-          '레이저 간섭계 스트레인 측정',
-          '음향 공명 검출기',
-          '전리층 전도도 변화 측정'
-        ],
-        correctAnswer: 1,
-        explanation: '킬로미터급 암즈의 레이저 간섭계로 암시그널의 미세한 거리 변화(스트레인)를 측정합니다.'
-      },
-      // 주관식/서술형 문제 4개
-      {
-        id: 'q7',
-        type: 'subjective',
-        question: 'X선/감마선 망원경의 집광 방식(스키닝 입사, 코디드 마스크 등)과 에너지 대역별 장단점을 비교하세요.',
-        sampleAnswer: '연성 X선은 스키닝 입사 거울로 회절 없이 집광이 가능하며 높은 각해상도를 제공합니다. 경성 X선/감마선은 반사 어려움으로 코디드 마스크/콤프턴 망원경/Pair 생성 카메라 등을 사용합니다. 코디드 마스크는 넓은 시야와 빠른 트랜지언트 탐지에 유리하나 배경/복원 잡음이 큽니다. 에너지 상승 시 각해상도 저하와 검출 효율 문제가 커집니다.',
-        explanation: '에너지 대역에 따른 광학 설계 제약이 계측 성능을 결정합니다.'
-      },
-      {
-        id: 'q8',
-        type: 'subjective',
-        question: 'AGN 제트의 비열 방출(싱크로트론, 역콤프턴)과 숙주은하에 미치는 피드백 메커니즘을 설명하세요.',
-        sampleAnswer: '상대론적 전자가 자기장에서 싱크로트론을, 씨드 광자(CMB/토러스/디스크)를 산란해 역콤프턴을 방출합니다. 제트는 은하단 ICM에 공동/충격을 만들고 가스를 가열해 냉각류를 억제, 별형성을 감소시킵니다. 이는 거대 타원은하의 쿼칭에 중요한 역할을 합니다.',
-        explanation: '비열 제트 방출과 기계적 피드백은 은하/은하단 열역학을 좌우합니다.'
-      },
-      {
-        id: 'q9',
-        type: 'subjective',
-        question: '쌍중성자별 병합의 다중전령 관측(GW170817 등)이 r-과정 원소 합성과 킬로노바 물리학에 제공한 통찰을 정리하세요.',
-        sampleAnswer: 'GW 신호와 함께한 감마선/광학/적외선 대응체는 중성자 풍부한 물질의 방출과 방사성 붕괴로 인한 킬로노바 광도를 보여주었습니다. 스펙트럼은 란타넘 등 중원소의 존재를 시사하며, r-과정 원소의 주요 기원으로 병합이 유력해졌습니다. 시간에 따른 색 변화는 불투명도 차이(래인-블루/레드 컴포넌트)를 반영합니다.',
-        explanation: '다중전령은 원소 합성의 현장을 직접 추적하는 전례 없는 창을 열었습니다.'
-      },
-      {
-        id: 'q10',
-        type: 'subjective',
-        question: '초신성 충격파에서의 입자 가속과 잔해포의 방사(라디오~감마) 스펙트럼 해석을 간단한 물리로 설명하세요.',
-        sampleAnswer: '충격 전후 확산과 Fermi 1차 가속으로 전자가 비열적 파워로 분포하며, 자기장에서 라디오~X선 싱크로트론이 방출됩니다. 고에너지 양성자는 p–p 충돌로 중성 파이온을 만들고 이는 감마선으로 붕괴합니다. 스펙트럼 기울기와 커팅오프는 충격 속도, 자기장 증폭, 에너지 손실(싱크로트론/IC)에 의해 결정됩니다.',
-        explanation: '멀티파장 스펙트럼은 전자/양성자 가속과 환경 물리량을 역으로 제약합니다.'
-      }
-    ]
-  },
+  // Module 8: Planetary Science (English)
   {
     moduleId: 'Module-8-Planetary-Science',
-    title: '행성과학',
+    title: 'Planetary Science',
     questions: [
-      // 객관식 문제 6개
+      // Multiple-choice questions
       {
         id: 'q1',
         type: 'multiple-choice',
-        question: '비교행성과학이 보여주는 내행성과 외행성의 일반적 차이로 옳은 것은?',
+        question: 'What is comparative planetology?',
         options: [
-          '내행성은 낮은 밀도, 외행성은 높은 밀도',
-          '내행성은 높은 밀도(암석), 외행성은 낮은 밀도(가스/얼음)',
-          '둘 모두 비슷한 평균 밀도',
-          '외행성은 금속핵이 없고 전부 균질'
+          'The study of stars and galaxies',
+          'The comparison of different planets to understand their formation and evolution',
+          'The study of planetary atmospheres only',
+          'A method for classifying exoplanets'
         ],
         correctAnswer: 1,
-        explanation: '내행성은 암석/금속으로 밀도가 높고, 외행성은 수소/헬륨과 얼음 성분이 많아 밀도가 낮습니다.'
+        explanation: 'Comparative planetology compares planets to reveal common processes and differences in their evolution.'
       },
       {
         id: 'q2',
         type: 'multiple-choice',
-        question: '금성의 극단적으로 높은 표면온도를 유발한 주된 원인은?',
+        question: 'Which planet has the thickest atmosphere in the Solar System?',
         options: [
-          '약한 태양 복사',
-          '강한 지각 활동',
-          '두꺼운 CO2 대기에 의한 폭주 온실효과',
-          '강한 행성 자기장'
+          'Earth',
+          'Venus',
+          'Mars',
+          'Jupiter'
         ],
-        correctAnswer: 2,
-        explanation: '두꺼운 이산화탄소 대기와 구름이 강한 온실효과를 일으켜 표면온도가 매우 높습니다.'
+        correctAnswer: 1,
+        explanation: 'Venus has a dense, CO2-rich atmosphere with a surface pressure about 90 times that of Earth.'
       },
       {
         id: 'q3',
         type: 'multiple-choice',
-        question: '타이탄 대기의/표면 환경의 독특한 특징은?',
+        question: 'What is the main component of the Martian polar ice caps?',
         options: [
-          '액체 물의 바다',
-          '질소 대기와 액체 메탄/에탄의 강과 호수',
-          '이산화황 대기와 규산염 비',
-          '산소 대기와 질산암모늄 구름'
+          'Water ice and dry ice (CO2)',
+          'Methane',
+          'Ammonia',
+          'Sulfuric acid'
         ],
-        correctAnswer: 1,
-        explanation: '타이탄은 두꺼운 질소 대기와 탄화수소 기반의 액체(메탄/에탄) 순환을 가집니다.'
+        correctAnswer: 0,
+        explanation: 'The Martian polar caps are composed of water ice and seasonally frozen carbon dioxide.'
       },
       {
         id: 'q4',
         type: 'multiple-choice',
-        question: '토성 고리의 주된 구성 성분은?',
+        question: 'Which moon is known for its subsurface ocean and geysers?',
         options: [
-          '규산염 암석 조각',
-          '철-니켈 금속 조각',
-          '수분 얼음 입자',
-          '탄소 나노튜브'
+          'Io',
+          'Europa',
+          'Titan',
+          'Phobos'
         ],
-        correctAnswer: 2,
-        explanation: '토성 고리는 주로 수분 얼음으로 이루어진 수 cm~수 m 크기의 입자들로 구성됩니다.'
+        correctAnswer: 1,
+        explanation: 'Europa, a moon of Jupiter, is famous for its subsurface ocean and water geysers.'
       },
       {
         id: 'q5',
         type: 'multiple-choice',
-        question: '행성 분화(differentiation)를 가장 잘 설명하는 것은?',
+        question: 'What is the Kuiper Belt?',
         options: [
-          '충돌로 인한 표면 파쇄',
-          '밀도에 따라 무거운 성분은 중심핵, 가벼운 성분은 맨틀/지각으로 분리',
-          '자기장 생성 억제',
-          '대기 탈출 가속'
+          'A region of rocky asteroids between Mars and Jupiter',
+          'A disk-shaped region beyond Neptune containing icy bodies and dwarf planets',
+          'A ring system around Saturn',
+          'A layer of Earth’s atmosphere'
         ],
         correctAnswer: 1,
-        explanation: '가열과 용융을 거치며 밀도 분리로 핵-맨틀-지각의 층상이 형성됩니다.'
+        explanation: 'The Kuiper Belt is a region beyond Neptune filled with icy bodies, including Pluto.'
       },
       {
         id: 'q6',
         type: 'multiple-choice',
-        question: '소행성의 장주기 궤도를 서서히 변화시키는 비중력 효과로 알려진 것은?',
+        question: 'Which planet has the most prominent ring system?',
         options: [
-          '폴크 효과',
-          '야르콥스키(Yarkovsky) 효과',
-          '오로라 효과',
-          '스넬 효과'
-        ],
-        correctAnswer: 1,
-        explanation: '열 방출의 추진력 비대칭으로 인해 소행성 궤도가 장기간에 걸쳐 변화합니다.'
-      },
-      // 주관식/서술형 문제 4개
-      {
-        id: 'q7',
-        type: 'subjective',
-        question: '비교행성과학 관점에서 수성·금성·지구·화성의 지질/내부/자기장 차이를 정리하세요.',
-        sampleAnswer: '수성은 큰 금속핵과 약한 외핵 대류로 국지적 자기장이 있으며, 금성은 전역 자기장 부재·두꺼운 대기·광범위한 화산지형, 지구는 강한 다이너모 자기장과 활동적 판구조론, 화성은 전역 자기장 부재·고대 지각의 잔류자화·과거 물흔적이 특징입니다.',
-        explanation: '행성 크기, 냉각 역사, 휘발성 물질 보유가 내/외부 진화를 가릅니다.'
-      },
-      {
-        id: 'q8',
-        type: 'subjective',
-        question: '행성 기후를 좌우하는 요인(복사 평형, 온실가스, 알베도, 자전·경사, 해양/대륙 분포)을 사례와 함께 설명하세요.',
-        sampleAnswer: '지구는 적당한 온실가스와 해양 열용량으로 기후가 안정적입니다. 금성은 강한 CO2 온실효과와 구름으로 극단적 고온, 화성은 얇은 대기로 복사 냉각이 커서 한랭·계절 변화가 큽니다. 축경사 변화와 세차운동은 빙하기-간빙기 주기를 유도합니다.',
-        explanation: '에너지 수지와 순환, 표면/대양 상호작용이 기후 상태를 결정합니다.'
-      },
-      {
-        id: 'q9',
-        type: 'subjective',
-        question: '고리-위성 상호작용(로슈 한계, 셰퍼드 위성, 공명)이 고리 구조를 어떻게 유지/형성하는지 설명하세요.',
-        sampleAnswer: '로슈 한계 안에서는 큰 천체가 조석력으로 분해되어 고리를 형성할 수 있습니다. 셰퍼드 위성은 중력으로 입자를 가둬 좁은 고리의 경계를 유지합니다. 궤도 공명은 간극(예: 카시니 간극)과 밀도파를 만들어 미세 구조를 형성합니다.',
-        explanation: '중력 상호작용과 조석력, 공명이 고리 미세구조의 핵심 동역학입니다.'
-      },
-      {
-        id: 'q10',
-        type: 'subjective',
-        question: '소천체(소행성/혜성/카이퍼대 천체)의 조성과 기원을 통해 태양계 형성에 대해 무엇을 알 수 있는지 논하세요.',
-        sampleAnswer: '탄소질 운석의 유기물/수분, 혜성 얼음과 휘발성 조성, KBO의 얼음/복합 유기물은 온도 구배와 얼음선 바깥의 형성 환경을 보여줍니다. 동위원소 비율은 물/휘발성의 기원(지구 물의 공급원)을 제약합니다. 샘플리턴 미션(하야부사2, OSIRIS-REx)은 원시 물질의 정밀 분석을 가능하게 했습니다.',
-        explanation: '소천체는 태양계 원시 물질의 “타임캡슐”로 형성 시나리오 검증에 핵심입니다.'
-      }
-    ]
-  },
-  {
-    moduleId: 'Module-9-Space-Exploration',
-    title: '우주 탐사',
-    questions: [
-      // 객관식 문제 6개
-      {
-        id: 'q1',
-        type: 'multiple-choice',
-        question: '중력도움(Gravity Assist)의 주된 목적은?',
-        options: [
-          '탐사선의 질량 감소',
-          '통신 지연 감소',
-          '속도/에너지 변화로 궤도 전이 효율 증가',
-          '탐사선 냉각'
-        ],
-        correctAnswer: 2,
-        explanation: '행성의 중력장을 이용해 상대적 운동에너지 교환으로 속도/방향을 유리하게 바꿉니다.'
-      },
-      {
-        id: 'q2',
-        type: 'multiple-choice',
-        question: '화성 착륙에서 “7분 공포” 단계에 포함되지 않는 것은?',
-        options: [
-          '대기권 진입',
-          '초음속 감속',
-          '열차폐체 분리',
-          '원자로 시동'
+          'Jupiter',
+          'Uranus',
+          'Neptune',
+          'Saturn'
         ],
         correctAnswer: 3,
-        explanation: '원자로 시동은 착륙 단계와 무관합니다. 감속/낙하산/역추진/스카이크레인 등이 포함됩니다.'
+        explanation: 'Saturn’s rings are the most extensive and visible in the Solar System.'
       },
-      {
-        id: 'q3',
-        type: 'multiple-choice',
-        question: '딥스페이스 통신에서 Ka 밴드 사용의 장점은?',
-        options: [
-          '긴 파장으로 회절 이득 증가',
-          '짧은 파장으로 더 높은 데이터율과 작은 안테나 빔폭',
-          '전리층 간섭 감소가 불가능',
-          '지구 대기 감쇠가 전혀 없음'
-        ],
-        correctAnswer: 1,
-        explanation: 'Ka는 높은 주파수로 대역폭이 넓어 고속 데이터 전송과 좁은 빔 형성이 가능합니다.'
-      },
-      {
-        id: 'q4',
-        type: 'multiple-choice',
-        question: '이온추진기의 장점으로 옳은 것은?',
-        options: [
-          '매우 높은 추력',
-          '높은 비추력(Isp)으로 추진제 효율이 좋다',
-          '복잡한 연소 제어가 필요 없다',
-          '대기 비행에 유리하다'
-        ],
-        correctAnswer: 1,
-        explanation: '이온추진은 낮은 추력이지만 매우 높은 Isp로 장기간 임무에 효율적입니다.'
-      },
-      {
-        id: 'q5',
-        type: 'multiple-choice',
-        question: '소행성 시료반환 미션(하야부사2/OSIRIS-REx)의 핵심 과학 목표는?',
-        options: [
-          '블랙홀 이벤트 호라이즌 측정',
-          '행성 자기장 지도화',
-          '원시 소천체 물질의 조성/광물/유기물 분석',
-          '태양 내부 헬리오지진학'
-        ],
-        correctAnswer: 2,
-        explanation: '원시 물질의 직접 분석으로 태양계 형성과 유기물 기원을 밝히는 것이 목표입니다.'
-      },
-      {
-        id: 'q6',
-        type: 'multiple-choice',
-        question: '달 남극 자원 탐사의 주요 표적은?',
-        options: [
-          '규산염 모래',
-          '영구음영 지역의 물 얼음',
-          '헬륨-3 기체층',
-          '탄소 동위원소 구름'
-        ],
-        correctAnswer: 1,
-        explanation: '영구음영 분화구에 보존된 물 얼음은 연료/생명유지 자원으로 중요합니다.'
-      },
-      // 주관식/서술형 문제 4개
+      // Subjective questions
       {
         id: 'q7',
         type: 'subjective',
-        question: '행성 보호(Planetary Protection) 원칙과 카테고리(예: 화성·유로파 임무) 적용 차이를 설명하세요.',
-        sampleAnswer: '전방 오염 방지와 후방 오염 방지가 핵심입니다. 생명 잠재성이 낮은 천체는 완화된 절차(카테고리 II~III), 유로파/엔셀라두스 등 해양 세계는 엄격한 멸균과 생물부하 제한(카테고리 IV/V)이 요구됩니다. 샘플 반환은 특별 격리·격벽 설계 등 최상위 보호 조치를 적용합니다.',
-        explanation: '생명 잠재성/과학적 민감도에 따라 요구 수준이 달라집니다.'
+        question: 'Explain the importance of studying planetary atmospheres.',
+        sampleAnswer: 'Studying planetary atmospheres helps us understand climate, weather, potential for life, and the evolution of planets. It also informs us about atmospheric escape and greenhouse effects.',
+        explanation: 'Atmospheric studies are key to understanding planetary environments and habitability.'
       },
       {
         id: 'q8',
         type: 'subjective',
-        question: '지상국-탐사선 링크 예산(link budget)의 기본 요소와 데이터율/안테나 이득/거리의 트레이드오프를 설명하세요.',
-        sampleAnswer: '송신 전력, 안테나 이득, 경로 손실(거리^2), 시스템 잡음 온도, 변조/코딩 이득이 핵심입니다. 거리 증가 시 경로 손실이 급격히 커져 데이터율을 낮추거나 안테나 이득/송신 전력을 높여야 합니다. 오류정정코드로 링크 신뢰도를 유지합니다.',
-        explanation: '링크 예산은 통신 성능 설계의 기본 프레임워크입니다.'
+        question: 'Describe the process of planetary differentiation.',
+        sampleAnswer: 'Planetary differentiation is the process by which a planet separates into layers of different composition, such as core, mantle, and crust, due to heating and gravity.',
+        explanation: 'Differentiation shapes a planet’s internal structure and geological activity.'
       },
       {
         id: 'q9',
         type: 'subjective',
-        question: '대기 진입·하강·착륙(EDL) 시스템 설계에서 열차폐체, 낙하산, 역추진, 스카이크레인의 역할과 선택 기준을 정리하세요.',
-        sampleAnswer: '열차폐체는 초고속 진입 시 열/하중을 견디며, 낙하산은 초음속 영역 감속에 효과적입니다. 대기가 희박하거나 중량이 큰 경우 역추진이 필요합니다. 스카이크레인은 대형 로버를 먼지/역추진 플룸 피해 없이 안전히 하강시키는 데 유용합니다. 천체 대기/중력/질량에 따라 조합이 달라집니다.',
-        explanation: '임무 목표와 환경 제약에 맞춘 다층 감속 전략이 필요합니다.'
+        question: 'What are the main factors influencing the habitability of a planet or moon?',
+        sampleAnswer: 'Key factors include the presence of liquid water, a stable atmosphere, suitable temperature, magnetic field, and energy sources.',
+        explanation: 'Habitability depends on a combination of physical and chemical conditions.'
       },
       {
         id: 'q10',
         type: 'subjective',
-        question: '미래 우주 탐사(달/화성 거주, 해양 위성 탐사, 소행성 활용)의 기술적 과제와 국제 협력 이슈를 논하세요.',
-        sampleAnswer: '인-시투 자원 활용(ISRU), 방사선 차폐, 폐쇄형 생명유지, 장기 신뢰성, 재사용/보급 인프라가 핵심 기술 과제입니다. 국제 규범(우주조약, 자원 채굴/소유권), 데이터 공유, 행성 보호 기준 합의가 필요합니다. 민간과 공공의 역할 분담도 중요합니다.',
-        explanation: '기술·법·정책이 결합된 종합적 과제가 미래 탐사의 성패를 좌우합니다.'
+        question: 'Discuss the scientific value of robotic missions to other planets.',
+        sampleAnswer: 'Robotic missions provide direct data on planetary surfaces, atmospheres, and geology, enabling discoveries about planetary history, potential for life, and Solar System evolution.',
+        explanation: 'Robotic exploration is essential for advancing planetary science.'
       }
     ]
   },
+  // Module 9: Space Exploration (English)
   {
-    moduleId: 'Module-10-Modern-Astronomical-Techniques',
-    title: '현대 천문 관측 기술',
+    moduleId: 'Module-9-Space-Exploration',
+    title: 'Space Exploration',
     questions: [
-      // 객관식 문제 6개
+      // Multiple-choice questions
       {
         id: 'q1',
         type: 'multiple-choice',
-        question: '전파/광학 간섭계의 각해상도를 주로 결정하는 인자는?',
+        question: 'Which mission was the first to land humans on the Moon?',
         options: [
-          '망원경 개수',
-          '베이스라인 길이(B)',
-          '적도의 위치',
-          '노출 시간'
+          'Apollo 11',
+          'Vostok 1',
+          'Luna 2',
+          'Gemini 4'
         ],
-        correctAnswer: 1,
-        explanation: '간섭계의 해상도는 대략 θ ≈ λ/B로, 더 긴 베이스라인과 더 짧은 파장이 해상도를 향상시킵니다.'
+        correctAnswer: 0,
+        explanation: 'Apollo 11 was the first mission to land humans on the Moon in 1969.'
       },
       {
         id: 'q2',
         type: 'multiple-choice',
-        question: '분광 해상도 R의 정의로 옳은 것은?',
+        question: 'What is the primary goal of the Mars Rover missions?',
         options: [
-          'R = Δλ/λ',
-          'R = λ/Δλ',
-          'R = c/Δv',
-          'R = F/σ'
+          'To study the Sun',
+          'To search for signs of past or present life and understand Martian geology',
+          'To observe asteroids',
+          'To test rocket engines'
         ],
         correctAnswer: 1,
-        explanation: '분광 해상도는 R = λ/Δλ로 정의되며, 속도 해상도와는 R ≈ c/Δv로 연결됩니다.'
+        explanation: 'Mars Rovers are designed to search for life and study the planet’s surface and climate.'
       },
       {
         id: 'q3',
         type: 'multiple-choice',
-        question: '배경 지배 영역에서 신호대잡음비(SNR)의 시간 의존성은?',
+        question: 'Which spacecraft is the farthest human-made object from Earth?',
         options: [
-          'SNR ∝ t',
-          'SNR ∝ √t',
-          'SNR ∝ 1/t',
-          '시간과 무관'
+          'Voyager 1',
+          'Pioneer 10',
+          'New Horizons',
+          'Cassini'
         ],
-        correctAnswer: 1,
-        explanation: '광자 통계에 의해 배경 지배 관측에서 SNR은 노출 시간의 제곱근에 비례합니다.'
+        correctAnswer: 0,
+        explanation: 'Voyager 1 is the most distant spacecraft, having entered interstellar space.'
       },
       {
         id: 'q4',
         type: 'multiple-choice',
-        question: '광학 관측의 표준 보정 프레임과 그 역할로 옳은 것은?',
+        question: 'What is the International Space Station (ISS)?',
         options: [
-          '바이어스: 열전자 보정, 다크: 픽셀 응답, 플랫: 읽기 오프셋',
-          '바이어스: 읽기 오프셋, 다크: 열전자 전류, 플랫: 픽셀 응답 균질화',
-          '바이어스: 파장 보정, 다크: 플럭스 보정, 플랫: 산란광 제거',
-          '모두 동일한 역할'
+          'A lunar base',
+          'A robotic Mars laboratory',
+          'A habitable artificial satellite in low Earth orbit',
+          'A space telescope'
         ],
-        correctAnswer: 1,
-        explanation: '바이어스는 읽기 오프셋, 다크는 열전류, 플랫은 픽셀/광로의 감도 차이를 보정합니다.'
+        correctAnswer: 2,
+        explanation: 'The ISS is a habitable research laboratory orbiting Earth.'
       },
       {
         id: 'q5',
         type: 'multiple-choice',
-        question: 'IFU(Integral Field Unit) 분광의 장점으로 옳은 것은?',
+        question: 'Which country launched the first artificial satellite, Sputnik 1?',
         options: [
-          '한 점에서 높은 분광 해상도만 제공',
-          '광시야 이미징만 가능',
-          '공간(x, y)과 파장(λ) 축을 갖는 3D 데이터큐브 획득',
-          '배경 보정 불가능'
+          'United States',
+          'China',
+          'Soviet Union',
+          'Japan'
         ],
         correctAnswer: 2,
-        explanation: 'IFU는 각 공간 픽셀마다 스펙트럼을 제공하여 3차원 데이터큐브를 생성합니다.'
+        explanation: 'The Soviet Union launched Sputnik 1 in 1957.'
       },
       {
         id: 'q6',
         type: 'multiple-choice',
-        question: '다중전령 천문학의 주된 목표는?',
+        question: 'What is the main purpose of the Hubble Space Telescope?',
         options: [
-          '단일 파장대 신호 극대화',
-          '중력파·전자기파·중성미자 등 서로 다른 메신저 결합으로 근원 물리 제약',
-          '망원경 거울 수 축소',
-          '데이터 양 최소화'
+          'To observe the Sun',
+          'To study the Earth’s atmosphere',
+          'To observe distant galaxies, stars, and planets',
+          'To monitor weather patterns'
         ],
-        correctAnswer: 1,
-        explanation: '서로 다른 메신저는 서로 보완적 정보를 제공하여 근원과 물리 매개변수를 정밀 제약합니다.'
+        correctAnswer: 2,
+        explanation: 'Hubble is used to observe distant objects in the universe with high resolution.'
       },
-      // 주관식/서술형 문제 4개
+      // Subjective questions
       {
         id: 'q7',
         type: 'subjective',
-        question: '적응광학(AO)의 구성요소(웨이브프론트 센서, 변형 거울, 실시간 제어)와 성능 지표(Strehl 비) 및 한계를 설명하세요.',
-        sampleAnswer: 'AO는 가이드성(자연/레이저)으로 파면 왜곡을 측정(웨이브프론트 센서)하고, 변형 거울이 실시간으로 보정합니다. Strehl 비는 이상 회절한계 대비 실제 PSF 피크의 비율로 보정 성능을 나타냅니다. 고층 난류, 가이드성 밝기 제한, 시간 지연, 고각분해의 경우 보정 범위(이소플래닉 각) 등이 한계입니다.',
-        explanation: '대기 난류 보정의 물리와 실무 제약을 이해하는 것이 핵심입니다.'
+        question: 'Explain the significance of robotic exploration in advancing space science.',
+        sampleAnswer: 'Robotic exploration allows us to gather data from environments too dangerous or distant for humans, leading to discoveries about planets, moons, and the broader universe.',
+        explanation: 'Robotic missions are crucial for expanding our knowledge of the Solar System and beyond.'
       },
       {
         id: 'q8',
         type: 'subjective',
-        question: 'VLBI/EHT 영상 복원 파이프라인(프린지 피팅, 위상 폐쇄, 정규화, 정규화된 최대우도/정칙화 이미지)과 불확실성 평가를 요약하세요.',
-        sampleAnswer: '원거리 기지국 간 위상 불안정은 폐쇄위상/폐쇄진폭으로 극복합니다. 프린지 피팅으로 지연·도플러를 보정하고, 정칙화(최소 전체 변화 등)를 포함한 최대우도/샘플링 기반 기법으로 이미지를 복원합니다. 부트스트랩/합성 데이터 테스트로 신뢰구간을 추정합니다.',
-        explanation: '희소 샘플링된 uv-평면 복원은 통계적·계산적 기법에 의존합니다.'
+        question: 'Discuss the challenges of long-duration human spaceflight.',
+        sampleAnswer: 'Challenges include microgravity effects on health, radiation exposure, psychological stress, and the need for life support and reliable technology.',
+        explanation: 'Long-duration missions require solutions for health, safety, and sustainability.'
       },
       {
         id: 'q9',
         type: 'subjective',
-        question: '광학 분광 자료의 파이프라인(바이어스/다크/플랫, 파장 보정, 플럭스/대기선 보정)과 주요 오차원을 정리하세요.',
-        sampleAnswer: '바이어스/다크/플랫으로 기본 보정을 수행하고, 아크 램프로 파장 보정, 표준성으로 플럭스 보정, 텔루릭 보정으로 대기 흡수선을 제거합니다. 오차원은 배경 변화, 선혼잡, 검출기 비선형성, 추출 창 선택, 기기 프로파일 변화 등입니다.',
-        explanation: '정확한 보정과 오차 예산 산정이 과학적 결론의 신뢰도를 좌우합니다.'
+        question: 'What are the benefits of international cooperation in space exploration?',
+        sampleAnswer: 'International cooperation enables sharing of resources, expertise, and costs, leading to more ambitious missions and fostering peaceful relations.',
+        explanation: 'Collaboration enhances scientific returns and global partnerships.'
       },
       {
         id: 'q10',
         type: 'subjective',
-        question: '차세대 관측(루빈/유클리드/로만, JWST)과 데이터 폭증 시대의 계산·머신러닝 인프라(알럿 브로커, 클라우드, GPU)의 역할을 논하세요.',
-        sampleAnswer: '루빈은 고속 알럿 스트림과 광시야 심천체 탐사를 제공하고, 유클리드/로만은 약한 렌즈/암흑에너지에 초점을 둡니다. JWST는 적외선 고감도로 외계행성 대기와 초기은하를 연구합니다. 알럿 브로커/실시간 분류, 클라우드 기반 처리, GPU/분산 학습으로 규모 문제를 해결합니다.',
-        explanation: '대과학(big science) 시대엔 관측·계산·알고리즘의 통합이 필수입니다.'
+        question: 'Describe the role of private companies in the future of space exploration.',
+        sampleAnswer: 'Private companies are driving innovation, reducing costs, and expanding access to space through commercial launch services, satellite deployment, and plans for lunar and Mars missions.',
+        explanation: 'The private sector is transforming the landscape of space exploration.'
+      }
+    ]
+  },
+  // Module 10: Modern Astronomical Techniques (English)
+  {
+    moduleId: 'Module-10-Modern-Astronomical-Techniques',
+    title: 'Modern Astronomical Techniques',
+    questions: [
+      // Multiple-choice questions
+      {
+        id: 'q1',
+        type: 'multiple-choice',
+        question: 'What is adaptive optics used for in astronomy?',
+        options: [
+          'Correcting atmospheric distortion in ground-based telescopes',
+          'Measuring cosmic distances',
+          'Detecting exoplanets',
+          'Analyzing cosmic microwave background'
+        ],
+        correctAnswer: 0,
+        explanation: 'Adaptive optics corrects for atmospheric turbulence, improving image quality.'
+      },
+      {
+        id: 'q2',
+        type: 'multiple-choice',
+        question: 'Which technique is used to detect exoplanets by measuring the dimming of a star?',
+        options: [
+          'Radial velocity',
+          'Transit method',
+          'Direct imaging',
+          'Astrometry'
+        ],
+        correctAnswer: 1,
+        explanation: 'The transit method detects exoplanets by observing periodic dips in a star’s brightness.'
+      },
+      {
+        id: 'q3',
+        type: 'multiple-choice',
+        question: 'What is the main advantage of radio astronomy?',
+        options: [
+          'It can observe through clouds and dust',
+          'It provides color images',
+          'It is only used for Solar System objects',
+          'It requires space telescopes'
+        ],
+        correctAnswer: 0,
+        explanation: 'Radio waves penetrate dust and clouds, allowing observation of otherwise hidden regions.'
+      },
+      {
+        id: 'q4',
+        type: 'multiple-choice',
+        question: 'Which instrument is used to analyze the chemical composition of stars?',
+        options: [
+          'Photometer',
+          'Spectrograph',
+          'Interferometer',
+          'Polarimeter'
+        ],
+        correctAnswer: 1,
+        explanation: 'A spectrograph disperses light into its spectrum, revealing chemical signatures.'
+      },
+      {
+        id: 'q5',
+        type: 'multiple-choice',
+        question: 'What is interferometry in astronomy?',
+        options: [
+          'A method for measuring star temperatures',
+          'Combining signals from multiple telescopes to increase resolution',
+          'A technique for launching satellites',
+          'A way to detect gravitational waves'
+        ],
+        correctAnswer: 1,
+        explanation: 'Interferometry combines data from several telescopes to achieve higher resolution.'
+      },
+      {
+        id: 'q6',
+        type: 'multiple-choice',
+        question: 'Which space telescope is designed to observe in the infrared?',
+        options: [
+          'Hubble Space Telescope',
+          'Chandra X-ray Observatory',
+          'James Webb Space Telescope',
+          'Fermi Gamma-ray Space Telescope'
+        ],
+        correctAnswer: 2,
+        explanation: 'The James Webb Space Telescope is optimized for infrared observations.'
+      },
+      // Subjective questions
+      {
+        id: 'q7',
+        type: 'subjective',
+        question: 'Explain the importance of spectroscopy in modern astronomy.',
+        sampleAnswer: 'Spectroscopy allows astronomers to determine the composition, temperature, motion, and other properties of celestial objects by analyzing their light spectra.',
+        explanation: 'Spectroscopy is a fundamental tool for understanding the physical and chemical nature of the universe.'
+      },
+      {
+        id: 'q8',
+        type: 'subjective',
+        question: 'Describe the role of computer simulations in astronomical research.',
+        sampleAnswer: 'Computer simulations model complex processes such as galaxy formation, star evolution, and cosmic structure, helping interpret observations and test theories.',
+        explanation: 'Simulations are essential for exploring scenarios that cannot be directly observed.'
+      },
+      {
+        id: 'q9',
+        type: 'subjective',
+        question: 'What are the benefits of multi-wavelength observations in astronomy?',
+        sampleAnswer: 'Multi-wavelength observations combine data from radio, infrared, optical, ultraviolet, X-ray, and gamma-ray telescopes to provide a complete picture of astronomical objects and phenomena.',
+        explanation: 'Different wavelengths reveal different physical processes and structures.'
+      },
+      {
+        id: 'q10',
+        type: 'subjective',
+        question: 'Discuss the impact of big data and machine learning on modern astronomy.',
+        sampleAnswer: 'Big data and machine learning enable astronomers to analyze vast datasets, discover patterns, and automate the detection of rare events, accelerating scientific discovery.',
+        explanation: 'Advanced data analysis techniques are transforming astronomical research.'
+      }
+    ]
+  },
+  // Module 7: High-Energy Astrophysics (English)
+  {
+    moduleId: 'Module-7-High-Energy-Astrophysics',
+    title: 'High-Energy Astrophysics',
+    questions: [
+      // Multiple-choice questions
+      {
+        id: 'q1',
+        type: 'multiple-choice',
+        question: 'Which astronomical object is the primary source of gamma-ray bursts (GRBs)?',
+        options: [
+          'White dwarfs',
+          'Merging neutron stars or massive star collapse',
+          'Brown dwarfs',
+          'Exoplanets'
+        ],
+        correctAnswer: 1,
+        explanation: 'GRBs are produced by merging neutron stars or the collapse of massive stars.'
+      },
+      {
+        id: 'q2',
+        type: 'multiple-choice',
+        question: 'What is the main mechanism behind X-ray emission from accreting black holes?',
+        options: [
+          'Nuclear fusion',
+          'Synchrotron radiation',
+          'Thermal emission from hot accretion disks',
+          'Radioactive decay'
+        ],
+        correctAnswer: 2,
+        explanation: 'Hot accretion disks around black holes emit X-rays due to their high temperatures.'
+      },
+      {
+        id: 'q3',
+        type: 'multiple-choice',
+        question: 'Which phenomenon provided the first direct evidence for gravitational waves?',
+        options: [
+          'Pulsar timing',
+          'LIGO detection of binary black hole merger',
+          'Solar flares',
+          'Gamma-ray bursts'
+        ],
+        correctAnswer: 1,
+        explanation: 'LIGO’s detection of gravitational waves from a binary black hole merger was the first direct evidence.'
+      },
+      {
+        id: 'q4',
+        type: 'multiple-choice',
+        question: 'What is an active galactic nucleus (AGN)?',
+        options: [
+          'A region of intense star formation',
+          'A supermassive black hole accreting matter at a galaxy’s center',
+          'A cluster of neutron stars',
+          'A planetary nebula'
+        ],
+        correctAnswer: 1,
+        explanation: 'An AGN is powered by a supermassive black hole accreting matter at the center of a galaxy.'
+      },
+      {
+        id: 'q5',
+        type: 'multiple-choice',
+        question: 'Which instrument is designed to detect high-energy X-rays and gamma rays from space?',
+        options: [
+          'Hubble Space Telescope',
+          'Chandra X-ray Observatory',
+          'Kepler Space Telescope',
+          'Spitzer Space Telescope'
+        ],
+        correctAnswer: 1,
+        explanation: 'Chandra is designed for X-rays; Fermi and Swift are used for gamma rays.'
+      },
+      {
+        id: 'q6',
+        type: 'multiple-choice',
+        question: 'What is a pulsar?',
+        options: [
+          'A rapidly rotating neutron star emitting beams of radiation',
+          'A type of white dwarf',
+          'A supermassive black hole',
+          'A variable star in a binary system'
+        ],
+        correctAnswer: 0,
+        explanation: 'A pulsar is a rapidly rotating neutron star that emits beams of electromagnetic radiation.'
+      },
+      // Subjective questions
+      {
+        id: 'q7',
+        type: 'subjective',
+        question: 'Explain the significance of gravitational wave astronomy in modern astrophysics.',
+        sampleAnswer: 'Gravitational wave astronomy allows the direct observation of cataclysmic events like black hole and neutron star mergers, providing new insights into the universe’s most energetic phenomena.',
+        explanation: 'Gravitational waves open a new window for studying the universe, complementing electromagnetic observations.'
+      },
+      {
+        id: 'q8',
+        type: 'subjective',
+        question: 'Describe the main types of high-energy astrophysical transients and their importance.',
+        sampleAnswer: 'High-energy transients include gamma-ray bursts, supernovae, and tidal disruption events. They are important for understanding stellar evolution, black hole formation, and the extreme physics of the universe.',
+        explanation: 'Transients reveal the most energetic and short-lived processes in the cosmos.'
+      },
+      {
+        id: 'q9',
+        type: 'subjective',
+        question: 'What are the challenges in detecting and studying cosmic rays?',
+        sampleAnswer: 'Cosmic rays are difficult to trace to their sources due to magnetic field deflection and low flux at the highest energies. Large detectors and long observation times are required.',
+        explanation: 'Cosmic ray studies require advanced technology and face fundamental observational challenges.'
+      },
+      {
+        id: 'q10',
+        type: 'subjective',
+        question: 'Discuss the role of multi-messenger astronomy in high-energy astrophysics.',
+        sampleAnswer: 'Multi-messenger astronomy combines data from electromagnetic waves, gravitational waves, neutrinos, and cosmic rays to provide a more complete understanding of energetic cosmic events.',
+        explanation: 'Multi-messenger observations enable breakthroughs in understanding the most extreme phenomena in the universe.'
+      }
+    ]
+  },
+  // Module 6: Exoplanets and Astrobiology (English)
+  {
+    moduleId: 'Module-6-Exoplanets-and-Astrobiology',
+    title: 'Exoplanets and Astrobiology',
+    questions: [
+      // Multiple-choice questions
+      {
+        id: 'q1',
+        type: 'multiple-choice',
+        question: 'Which method has discovered the largest number of exoplanets to date?',
+        options: [
+          'Radial velocity method',
+          'Transit method',
+          'Direct imaging',
+          'Microlensing'
+        ],
+        correctAnswer: 1,
+        explanation: 'The transit method, used by missions like Kepler, has discovered the most exoplanets.'
+      },
+      {
+        id: 'q2',
+        type: 'multiple-choice',
+        question: 'What is a habitable zone?',
+        options: [
+          'A region where planets have rings',
+          'The area around a star where liquid water can exist on a planet’s surface',
+          'A region with the highest density of asteroids',
+          'The area where planets form most rapidly'
+        ],
+        correctAnswer: 1,
+        explanation: 'The habitable zone is the region around a star where conditions may allow liquid water to exist.'
+      },
+      {
+        id: 'q3',
+        type: 'multiple-choice',
+        question: 'Which molecule is considered a key biosignature in exoplanet atmospheres?',
+        options: [
+          'Methane',
+          'Ammonia',
+          'Oxygen',
+          'Carbon monoxide'
+        ],
+        correctAnswer: 2,
+        explanation: 'Oxygen, especially when found with methane, is a strong biosignature for life.'
+      },
+      {
+        id: 'q4',
+        type: 'multiple-choice',
+        question: 'What is the main goal of the SETI project?',
+        options: [
+          'To find new planets in the Solar System',
+          'To search for signals from extraterrestrial civilizations',
+          'To study the atmospheres of exoplanets',
+          'To send probes to other stars'
+        ],
+        correctAnswer: 1,
+        explanation: 'SETI (Search for Extraterrestrial Intelligence) aims to detect signals from intelligent life.'
+      },
+      {
+        id: 'q5',
+        type: 'multiple-choice',
+        question: 'Which of the following is NOT a method for detecting exoplanets?',
+        options: [
+          'Transit method',
+          'Radial velocity method',
+          'Parallax method',
+          'Microlensing'
+        ],
+        correctAnswer: 2,
+        explanation: 'The parallax method is used for measuring stellar distances, not for detecting exoplanets.'
+      },
+      {
+        id: 'q6',
+        type: 'multiple-choice',
+        question: 'What is the significance of the TRAPPIST-1 system?',
+        options: [
+          'It is the closest star to the Sun',
+          'It has seven Earth-sized planets, some in the habitable zone',
+          'It is the first exoplanet discovered',
+          'It is a binary star system'
+        ],
+        correctAnswer: 1,
+        explanation: 'TRAPPIST-1 is notable for its seven Earth-sized planets, several of which may be habitable.'
+      },
+      // Subjective questions
+      {
+        id: 'q7',
+        type: 'subjective',
+        question: 'Explain the transit method for detecting exoplanets and its limitations.',
+        sampleAnswer: 'The transit method detects exoplanets by measuring the dip in a star’s brightness as a planet passes in front of it. Its limitations include the need for precise alignment and the possibility of false positives from stellar activity.',
+        explanation: 'The transit method is powerful but only works for systems with the right orientation and can be affected by other phenomena.'
+      },
+      {
+        id: 'q8',
+        type: 'subjective',
+        question: 'Discuss the importance of biosignatures in the search for extraterrestrial life.',
+        sampleAnswer: 'Biosignatures are chemical indicators, such as oxygen or methane, that may suggest the presence of life. Their detection in exoplanet atmospheres is a key goal for astrobiology.',
+        explanation: 'Biosignatures provide indirect evidence for life and guide observational strategies.'
+      },
+      {
+        id: 'q9',
+        type: 'subjective',
+        question: 'What are the main challenges in confirming the habitability of exoplanets?',
+        sampleAnswer: 'Challenges include limited data on atmospheric composition, surface conditions, and the effects of stellar activity. Direct imaging and spectroscopy are difficult for distant, small planets.',
+        explanation: 'Technological and observational limits make it hard to confirm habitability beyond basic criteria.'
+      },
+      {
+        id: 'q10',
+        type: 'subjective',
+        question: 'Describe the Drake Equation and its significance in astrobiology.',
+        sampleAnswer: 'The Drake Equation estimates the number of communicative civilizations in our galaxy by multiplying factors like star formation rate, fraction of stars with planets, and probability of life. It highlights the uncertainties and guides research in astrobiology.',
+        explanation: 'The Drake Equation frames the scientific discussion about the prevalence of extraterrestrial intelligence.'
+      }
+    ]
+  },
+  // Module 5: Cosmology (English)
+  {
+    moduleId: 'Module-5-Cosmology',
+    title: 'Cosmology',
+    questions: [
+      // Multiple-choice questions
+      {
+        id: 'q1',
+        type: 'multiple-choice',
+        question: 'What is the best evidence for the Big Bang theory?',
+        options: [
+          'The existence of black holes',
+          'The cosmic microwave background',
+          'The abundance of exoplanets',
+          'The presence of dark energy'
+        ],
+        correctAnswer: 1,
+        explanation: 'The cosmic microwave background is a relic radiation from the early universe, providing strong evidence for the Big Bang.'
+      },
+      {
+        id: 'q2',
+        type: 'multiple-choice',
+        question: 'Which element was NOT primarily formed during Big Bang nucleosynthesis?',
+        options: [
+          'Hydrogen',
+          'Helium',
+          'Lithium',
+          'Carbon'
+        ],
+        correctAnswer: 3,
+        explanation: 'Carbon is mainly produced in stars, not during the Big Bang nucleosynthesis.'
+      },
+      {
+        id: 'q3',
+        type: 'multiple-choice',
+        question: 'What does the term “dark energy” refer to?',
+        options: [
+          'A form of matter that emits no light',
+          'The energy associated with black holes',
+          'A mysterious force causing the accelerated expansion of the universe',
+          'The energy of cosmic rays'
+        ],
+        correctAnswer: 2,
+        explanation: 'Dark energy is the unknown cause of the observed acceleration in the universe’s expansion.'
+      },
+      {
+        id: 'q4',
+        type: 'multiple-choice',
+        question: 'Which observation led to the discovery of the universe’s accelerated expansion?',
+        options: [
+          'The rotation curves of galaxies',
+          'The redshift of distant supernovae',
+          'The cosmic microwave background',
+          'The distribution of galaxy clusters'
+        ],
+        correctAnswer: 1,
+        explanation: 'Observations of distant Type Ia supernovae revealed that the universe’s expansion is accelerating.'
+      },
+      {
+        id: 'q5',
+        type: 'multiple-choice',
+        question: 'What is the fate of the universe if dark energy continues to dominate?',
+        options: [
+          'It will recollapse in a Big Crunch',
+          'It will expand forever, leading to a “heat death”',
+          'It will oscillate between expansion and contraction',
+          'It will fragment into smaller universes'
+        ],
+        correctAnswer: 1,
+        explanation: 'If dark energy dominates, the universe will expand forever and eventually reach a state of maximum entropy, or “heat death.”'
+      },
+      {
+        id: 'q6',
+        type: 'multiple-choice',
+        question: 'What is the main evidence for the existence of dark matter?',
+        options: [
+          'The cosmic microwave background',
+          'The rotation curves of galaxies',
+          'The abundance of heavy elements',
+          'The presence of black holes'
+        ],
+        correctAnswer: 1,
+        explanation: 'The rotation curves of galaxies show that there is more mass present than can be accounted for by visible matter.'
+      },
+      // Subjective questions
+      {
+        id: 'q7',
+        type: 'subjective',
+        question: 'Explain the significance of the cosmic microwave background in cosmology.',
+        sampleAnswer: 'The cosmic microwave background (CMB) is the afterglow of the Big Bang, providing a snapshot of the universe when it was about 380,000 years old. Its uniformity and tiny fluctuations give insight into the early universe’s conditions and the formation of large-scale structure.',
+        explanation: 'The CMB is a cornerstone of modern cosmology, confirming the Big Bang and informing models of the universe’s evolution.'
+      },
+      {
+        id: 'q8',
+        type: 'subjective',
+        question: 'Describe the process and importance of Big Bang nucleosynthesis.',
+        sampleAnswer: 'Big Bang nucleosynthesis refers to the formation of light elements (hydrogen, helium, and traces of lithium) in the first few minutes after the Big Bang. The observed abundances of these elements match theoretical predictions, supporting the Big Bang model.',
+        explanation: 'Big Bang nucleosynthesis is key evidence for the early hot, dense state of the universe.'
+      },
+      {
+        id: 'q9',
+        type: 'subjective',
+        question: 'What are the main differences between dark matter and dark energy?',
+        sampleAnswer: 'Dark matter is a form of matter that interacts gravitationally but not electromagnetically, explaining galaxy rotation curves and structure formation. Dark energy is a mysterious force driving the accelerated expansion of the universe.',
+        explanation: 'Dark matter and dark energy are distinct components of the universe with different roles and properties.'
+      },
+      {
+        id: 'q10',
+        type: 'subjective',
+        question: 'Discuss the role of supernovae in measuring cosmic distances and the expansion of the universe.',
+        sampleAnswer: 'Type Ia supernovae serve as standard candles for measuring cosmic distances. Their observed brightness and redshift have been crucial in discovering the universe’s accelerated expansion and constraining cosmological parameters.',
+        explanation: 'Supernovae are essential tools for observational cosmology and understanding the universe’s expansion history.'
       }
     ]
   }

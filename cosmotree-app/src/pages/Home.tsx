@@ -185,6 +185,7 @@ const Home = () => {
             >
               Start Your Cosmic Journey Today
             </motion.h3>
+            {/* 버튼 클릭 시 /auth/signup 페이지로 이동합니다 */}
             <motion.button
               className="bg-transparent text-black px-4 md:px-6 py-2 md:py-3 rounded-lg text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-gowun leading-none tracking-tight hover:bg-black hover:text-white transition-colors"
               initial={{ opacity: 0, scale: 0.8 }}
@@ -192,10 +193,14 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.8 }}
               viewport={{ once: true }}
               whileHover={{
-                scale: 1.05,
-                boxShadow: '0 10px 20px rgba(0,0,0,0.2)',
+              scale: 1.05,
+              boxShadow: '0 10px 20px rgba(0,0,0,0.2)',
               }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => {
+              // 회원가입 페이지로 이동합니다
+              window.location.href = '/auth/signup';
+              }}
             >
               Join Us
             </motion.button>

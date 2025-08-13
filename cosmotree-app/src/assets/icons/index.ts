@@ -7,6 +7,8 @@ import BookIcon from './book.svg';
 import NeurologyIcon from './neurologyIcon.svg';
 import Stars2Icon from './stars2Icon.svg';
 import LibraryBooksIcon from './libraryBooksIcon.svg';
+import QuizCheckIcon from './quiz-check.svg';
+import QuizCancelIcon from './quiz-cancel.svg';
 
 // Icon metadata for TypeScript support
 export interface IconInfo {
@@ -70,6 +72,18 @@ export const iconInfo: Record<string, IconInfo> = {
     component: 'LibraryBooksIcon',
     size: '20x20',
     description: 'Books library icon for learning and educational content'
+  },
+  quizCheck: {
+    name: 'Quiz Check',
+    component: 'QuizCheckIcon',
+    size: '60x61',
+    description: 'Green checkmark icon for correct quiz answers'
+  },
+  quizCancel: {
+    name: 'Quiz Cancel',
+    component: 'QuizCancelIcon',
+    size: '60x61',
+    description: 'Red X icon for incorrect quiz answers'
   }
 };
 
@@ -82,7 +96,9 @@ export {
   BookIcon,
   NeurologyIcon,
   Stars2Icon,
-  LibraryBooksIcon
+  LibraryBooksIcon,
+  QuizCheckIcon,
+  QuizCancelIcon
 };
 
 // Export icon names for easy reference

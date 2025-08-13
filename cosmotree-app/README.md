@@ -2,6 +2,41 @@
 
 Cosmotree는 우주 탐험과 천문학 학습에 중점을 둔 인터랙티브 교육 플랫폼입니다. React, TypeScript, 그리고 최신 웹 기술로 구축되었습니다.
 
+## 시작하기
+
+### 환경변수 설정
+
+1. 프로젝트 루트에 `.env` 파일을 생성하세요:
+```bash
+cp .env.example .env
+```
+
+2. `.env` 파일에 필요한 API 키를 설정하세요:
+```env
+# OpenAI API Key (관리자 기능 사용시 필요)
+REACT_APP_OPENAI_API_KEY=your-openai-api-key-here
+
+# Firebase Configuration (if needed)
+# REACT_APP_FIREBASE_API_KEY=your-firebase-api-key
+# REACT_APP_FIREBASE_AUTH_DOMAIN=your-auth-domain
+# REACT_APP_FIREBASE_PROJECT_ID=your-project-id
+```
+
+⚠️ **보안 주의사항**: `.env` 파일은 절대 Git에 커밋하지 마세요. API 키는 민감한 정보입니다.
+
+### 설치 및 실행
+
+```bash
+# 의존성 설치
+npm install
+
+# 개발 서버 시작
+npm start
+
+# 빌드
+npm run build
+```
+
 ## 주요 기능
 
 - **인터랙티브 대시보드**: 애니메이션 컴포넌트로 학습 진행률 추적

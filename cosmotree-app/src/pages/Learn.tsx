@@ -6,6 +6,7 @@ import Icon from '../components/UI/Icon';
 import { collection, doc, getDocs, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
+import './Learn.css';
 
 // ===== Types from Firestore =====
 type Difficulty = 'Beginner' | 'Intermediate' | 'Advanced';
@@ -81,6 +82,7 @@ const LearningModule: React.FC<LearningModuleProps> = ({
         minHeight: '480px',
       }}
     >
+      
       {status === 'locked' && <div className="absolute inset-0 bg-white/75 rounded-3xl z-10" />}
 
       {/* 상단 콘텐츠 */}

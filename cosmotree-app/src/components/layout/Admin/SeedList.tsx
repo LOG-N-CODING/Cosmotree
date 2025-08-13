@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { deleteAllModules, seedAllModules } from './utils/astronomySeed';
 import { clearAllQuizzes, seedAllQuizzes } from './utils/astronomyQuizSeed';
+import { AdminGuideCard } from './AdminGuideCard';
 
 export const SeedList = () => {
   const [log, setLog] = useState<string[]>([]);
@@ -53,24 +54,59 @@ export const SeedList = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 border rounded-lg bg-white space-y-4">
-      <h2 className="text-2xl font-semibold">Astronomy Seed</h2>
+    <div className="max-w-3xl">
+      {/* 도움말 카드 */}
+      <AdminGuideCard
+        icon="database"
+        title="Database Seeding Guide"
+        description="Initialize your learning platform with comprehensive astronomy content and quiz data."
+        tips={[
+          "Use 'Seed All' to populate the database with astronomy modules, lessons, and quizzes",
+          "Seeding is safe - existing content will be preserved and only new items will be added",
+          "Use 'Delete All' only for development - this will remove ALL content permanently",
+          "Check the log output to monitor the seeding progress and results",
+          "Seeding includes 10+ astronomy modules with detailed lessons and interactive quizzes"
+        ]}
+      />
+
+      <div className="border rounded-lg bg-white p-6 space-y-4">
+        <h2 className="text-2xl font-semibold">Astronomy Seed</h2>
 
       <div className="flex gap-3">
         <button
           onClick={handleSeed}
           disabled={isRunning}
-          className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-4 py-2 rounded"
+          className="px-6 py-3 rounded-lg bg-gradient-to-r from-green-600 to-emerald-600 text-white disabled:opacity-60 disabled:cursor-not-allowed font-medium flex items-center gap-2 hover:from-green-700 hover:to-emerald-700 transition-all"
         >
-          {isRunning ? 'Processing…' : 'Seed All'}
+          {isRunning ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <span>Processing...</span>
+            </>
+          ) : (
+            <>
+              <span>🌱</span>
+              <span>Seed All Data</span>
+            </>
+          )}
         </button>
 
         <button
           onClick={handleDelete}
           disabled={isRunning}
-          className="bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white px-4 py-2 rounded"
+          className="px-6 py-3 rounded-lg bg-gradient-to-r from-red-600 to-pink-600 text-white disabled:opacity-60 disabled:cursor-not-allowed font-medium flex items-center gap-2 hover:from-red-700 hover:to-pink-700 transition-all"
         >
-          {isRunning ? 'Processing…' : 'Delete All'}
+          {isRunning ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <span>Processing...</span>
+            </>
+          ) : (
+            <>
+              <span>🗑️</span>
+              <span>Delete All Data</span>
+            </>
+          )}
         </button>
       </div>
 
@@ -93,6 +129,7 @@ export const SeedList = () => {
         {log.map((l, i) => (
           <div key={i}>{l}</div>
         ))}
+      </div>
       </div>
     </div>
   );

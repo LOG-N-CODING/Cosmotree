@@ -10,6 +10,8 @@ import Learn from './pages/Learn';
 import LearnDetail from './pages/Learn/Detail';
 import Quizzes from './pages/Quizzes';
 import QuizDetail from './pages/Quizzes/QuizDetail';
+import Challenges from './pages/Challenges';
+import ChallengeDetail from './pages/Challenges/ChallengeDetail';
 import MyPage from './pages/MyPage';
 import { useAuth, AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/layout/ProtectedRoute';
@@ -35,7 +37,7 @@ function AppContent() {
         path="/dashboard"
         element={
           <>
-            <div className="px-10 pt-10 space-y-8">
+            <div className="px-4 sm:px-6 md:px-8 lg:px-10 pt-6 sm:pt-8 md:pt-10 space-y-6 sm:space-y-8">
               <Header mode="dark" fixed={false} />
             </div>
             <Dashboard />
@@ -64,7 +66,9 @@ function AppContent() {
         path="/quizzes"
         element={
           <>
-            <Header mode="dark" fixed={true} />
+            <div className="px-4 sm:px-6 md:px-8 lg:px-10 space-y-6 sm:space-y-8">
+              <Header mode="dark" fixed={true} />
+            </div>
             <Quizzes />
           </>
         }
@@ -72,6 +76,22 @@ function AppContent() {
 
       {/* Quiz Detail route without header/footer */}
       <Route path="/quiz/:id" element={<QuizDetail />} />
+
+      {/* Challenges route with header only */}
+      <Route
+        path="/challenges"
+        element={
+          <>
+            <div className="px-4 sm:px-6 md:px-8 lg:px-10 space-y-6 sm:space-y-8">
+              <Header mode="dark" fixed={true} />
+            </div>
+            <Challenges />
+          </>
+        }
+      />
+
+      {/* Challenge Detail route without header/footer */}
+      <Route path="/challenge/:moduleId/:challengeId" element={<ChallengeDetail />} />
 
       {/* MyPage route with header only */}
       <Route
@@ -104,7 +124,7 @@ function AppContent() {
         element={
           <>
             {/* <ProtectedRoute adminOnly={true}> */}
-            <Header mode="light" fixed={true} />
+            <Header mode="light" fixed={false} />
             <AdminPage />
             {/* </ProtectedRoute> */}
           </>

@@ -47,7 +47,7 @@ code {
 /* Swiper styles */
 .resource-swiper {
   padding: 10px 0 !important;
-  background: white !important;
+  background: transparent !important;
   overflow-y: visible !important;
 }
 
@@ -57,7 +57,7 @@ code {
 }
 
 .resource-swiper .swiper-wrapper {
-  background: white !important;
+  background: transparent !important;
 }
 
 

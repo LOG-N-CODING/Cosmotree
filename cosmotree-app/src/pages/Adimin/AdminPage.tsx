@@ -27,14 +27,14 @@ export default function AdminPage() {
         <Sidebar onSelect={sec => setSection(sec)} />
       </div>
       {/* 4) 메인 컨텐츠 */}
-      <main className="flex-1 bg-white min-h-screen px-4 sm:px-6 lg:px-8">
-        <div className="max-w-screen-lg mx-auto pt-16">{section === 'Users' && <UserList />}</div>
-        <div className="max-w-screen-lg mx-auto pt-16">{section === 'Learn' && <LearnList />}</div>
-        <div className="max-w-screen-lg mx-auto pt-16">{section === 'Quiz' && <QuizList />}</div>
-        <div className="max-w-screen-lg mx-auto pt-16">
+      <main className="flex-1 bg-gray-50 min-h-screen px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto py-6">
+          {section === 'Users' && <UserList />}
+          {section === 'Learn' && <LearnList />}
+          {section === 'Quiz' && <QuizList />}
           {section === 'Challenge' && <ChallengeList />}
+          {section === 'Seed' && <SeedList />}
         </div>
-        <div className="max-w-screen-lg mx-auto pt-16">{section === 'Seed' && <SeedList />}</div>
       </main>
     </div>
   );

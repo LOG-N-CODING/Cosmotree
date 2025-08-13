@@ -48,13 +48,13 @@ const Header: React.FC<HeaderProps> = ({ mode = 'light', fixed = false }) => {
     return (
       <>
         <nav
-          className={` top-4 md:top-10 left-4 md:left-10 right-4 md:right-10 z-50 backdrop-blur rounded-xl ${
+          className={`${fixed ? 'fixed' : ''} top-4 md:top-10 left-4 md:left-10 right-4 md:right-10 z-50 backdrop-blur rounded-xl ${
             mode === 'light'
               ? 'bg-gray-200 bg-opacity-50'
               : 'bg-black bg-opacity-50 backdrop-blur-lg'
           }`}
         >
-          <div className="flex justify-between items-center py-3 md:py-5 px-4 max-w-7xl mx-auto">
+          <div className="flex justify-between items-center py-3 md:py-5 px-4 max-w-7xl">
             <Logo />
 
             {/* Desktop Navigation */}
@@ -63,6 +63,7 @@ const Header: React.FC<HeaderProps> = ({ mode = 'light', fixed = false }) => {
               <NavLink to="/dashboard">Dashboard</NavLink>
               <NavLink to="/learn">Learn</NavLink>
               <NavLink to="/quizzes">Quizzes</NavLink>
+              <NavLink to="/challenges">Challenges</NavLink>
 
               {/* 로그인 전 */}
               {!user && (
@@ -75,10 +76,9 @@ const Header: React.FC<HeaderProps> = ({ mode = 'light', fixed = false }) => {
               {/* 로그인 후 */}
               {user && (
                 <>
-                  {/* 어드민이면 /admin, 아니면 마이페이지 */}
-                  <NavLink to={isAdmin ? '/admin' : '/mypage'}>
-                    {isAdmin ? 'Admin' : 'My Page'}
-                  </NavLink>
+                  {/* Admin은 Admin과 My Page 둘 다 보여주기 */}
+                  {isAdmin && <NavLink to="/admin">Admin</NavLink>}
+                  <NavLink to="/mypage">My Page</NavLink>
                   <NavLink onClick={signOut} to={'/'}>
                     Sign Out
                   </NavLink>
@@ -116,7 +116,7 @@ const Header: React.FC<HeaderProps> = ({ mode = 'light', fixed = false }) => {
 
         {/* Mobile Offcanvas */}
         {isMenuOpen && (
-          <>
+            <>
             <div
               className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
               onClick={() => setIsMenuOpen(false)}
@@ -125,52 +125,54 @@ const Header: React.FC<HeaderProps> = ({ mode = 'light', fixed = false }) => {
               className={`
               fixed top-0 right-0 h-full w-80 max-w-[90vw] z-50 lg:hidden
               transform transition-transform duration-300
-              bg-white border-l border-gray-200
-            `}
+              ${mode === 'light'
+                ? 'bg-white border-l border-gray-200'
+                : 'bg-gray-900 border-l border-gray-700'}
+              `}
             >
               <div className="flex flex-col h-full">
-                {/* Offcanvas Header */}
-                <div className="flex justify-between items-center p-4 border-b border-gray-200">
-                  <Logo />
-                  <button
-                    onClick={() => setIsMenuOpen(false)}
-                    className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                  >
-                    <XMarkIcon className="w-6 h-6" />
-                  </button>
-                </div>
+              {/* Offcanvas Header */}
+              <div className={`flex justify-between items-center p-4 border-b ${mode === 'light' ? 'border-gray-200' : 'border-gray-700'}`}>
+                <Logo />
+                <button
+                onClick={() => setIsMenuOpen(false)}
+                className={`p-2 rounded-lg ${mode === 'light' ? 'hover:bg-gray-100' : 'hover:bg-gray-800'} transition-colors`}
+                >
+                <XMarkIcon className={`w-6 h-6 ${mode === 'light' ? 'text-black' : 'text-white'}`} />
+                </button>
+              </div>
 
-                {/* Offcanvas Links */}
-                <div className="flex flex-col p-4 space-y-2">
-                  {/* 공통 링크들 */}
-                  <NavLink to="/dashboard">Dashboard</NavLink>
-                  <NavLink to="/learn">Learn</NavLink>
-                  <NavLink to="/quizzes">Quizzes</NavLink>
-                  <div className="border-t border-gray-200 pt-4 mt-4"></div>
-                  {/* 로그인 전 */}
-                  {!user && (
-                    <>
-                      <NavLink to="/auth/login">Login</NavLink>
-                      <NavLink to="/auth/signup">Sign Up</NavLink>
-                    </>
-                  )}
+              {/* Offcanvas Links */}
+              <div className="flex flex-col p-4 space-y-2">
+                {/* 공통 링크들 */}
+                <NavLink to="/dashboard">Dashboard</NavLink>
+                <NavLink to="/learn">Learn</NavLink>
+                <NavLink to="/quizzes">Quizzes</NavLink>
+                <NavLink to="/challenges">Challenges</NavLink>
+                <div className={`border-t pt-4 mt-4 ${mode === 'light' ? 'border-gray-200' : 'border-gray-700'}`}></div>
+                {/* 로그인 전 */}
+                {!user && (
+                <>
+                  <NavLink to="/auth/login">Login</NavLink>
+                  <NavLink to="/auth/signup">Sign Up</NavLink>
+                </>
+                )}
 
-                  {/* 로그인 후 */}
-                  {user && (
-                    <>
-                      {/* 어드민이면 /admin, 아니면 마이페이지 */}
-                      <NavLink to={isAdmin ? '/admin' : '/mypage'}>
-                        {isAdmin ? 'Admin' : 'My Page'}
-                      </NavLink>
-                      <NavLink onClick={signOut} to={'/'}>
-                        Sign Out
-                      </NavLink>
-                    </>
-                  )}
-                </div>
+                {/* 로그인 후 */}
+                {user && (
+                <>
+                  {/* Admin은 Admin과 My Page 둘 다 보여주기 */}
+                  {isAdmin && <NavLink to="/admin">Admin</NavLink>}
+                  <NavLink to="/mypage">My Page</NavLink>
+                  <NavLink onClick={signOut} to={'/'}>
+                  Sign Out
+                  </NavLink>
+                </>
+                )}
+              </div>
               </div>
             </div>
-          </>
+            </>
         )}
       </>
     );
@@ -194,6 +196,7 @@ const Header: React.FC<HeaderProps> = ({ mode = 'light', fixed = false }) => {
             <NavLink to="/dashboard">Dashboard</NavLink>
             <NavLink to="/learn">Learn</NavLink>
             <NavLink to="/quizzes">Quizzes</NavLink>
+            <NavLink to="/challenges">Challenges</NavLink>
 
             {/* 로그인 전 */}
             {!user && (
@@ -206,10 +209,9 @@ const Header: React.FC<HeaderProps> = ({ mode = 'light', fixed = false }) => {
             {/* 로그인 후 */}
             {user && (
               <>
-                {/* 어드민이면 /admin, 아니면 마이페이지 */}
-                <NavLink to={isAdmin ? '/admin' : '/mypage'}>
-                  {isAdmin ? 'Admin' : 'My Page'}
-                </NavLink>
+                {/* Admin은 Admin과 My Page 둘 다 보여주기 */}
+                {isAdmin && <NavLink to="/admin">Admin</NavLink>}
+                <NavLink to="/mypage">My Page</NavLink>
                 <NavLink onClick={signOut} to={'/'}>
                   Sign Out
                 </NavLink>
@@ -297,6 +299,7 @@ const Header: React.FC<HeaderProps> = ({ mode = 'light', fixed = false }) => {
                 <NavLink to="/dashboard">Dashboard</NavLink>
                 <NavLink to="/learn">Learn</NavLink>
                 <NavLink to="/quizzes">Quizzes</NavLink>
+                <NavLink to="/challenges">Challenges</NavLink>
                 <div className="border-t border-gray-200 pt-4 mt-4"></div>
                 {/* 로그인 전 */}
                 {!user && (
@@ -309,10 +312,9 @@ const Header: React.FC<HeaderProps> = ({ mode = 'light', fixed = false }) => {
                 {/* 로그인 후 */}
                 {user && (
                   <>
-                    {/* 어드민이면 /admin, 아니면 마이페이지 */}
-                    <NavLink to={isAdmin ? '/admin' : '/mypage'}>
-                      {isAdmin ? 'Admin' : 'My Page'}
-                    </NavLink>
+                    {/* Admin은 Admin과 My Page 둘 다 보여주기 */}
+                    {isAdmin && <NavLink to="/admin">Admin</NavLink>}
+                    <NavLink to="/mypage">My Page</NavLink>
                     <NavLink onClick={signOut} to={'/'}>
                       Sign Out
                     </NavLink>

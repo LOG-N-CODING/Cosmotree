@@ -335,7 +335,7 @@ const MyPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Header Section */}
-      <div className="flex justify-center pt-[100px] md:pt-[170px] px-4 md:px-0">
+      <div className="flex justify-center pt-[40px] md:pt-[50px] px-4 md:px-0">
         <div className="w-full max-w-[1128px]">
           <h1 className="text-[24px] md:text-[32px] font-bold text-black leading-[1.3] mb-1">
             My Profile
@@ -347,7 +347,7 @@ const MyPage: React.FC = () => {
       </div>
 
       {/* Profile Section */}
-      <div className="flex justify-center mt-[40px] md:mt-[60px] px-4 md:px-0">
+      <div className="flex justify-center mt-[20px] md:mt-[30px] px-4 md:px-0">
         <div className="w-full max-w-[1128px] flex flex-col lg:flex-row gap-8 lg:gap-[168px]">
           {/* Profile Card (View) */}
           <div className="w-full lg:w-[480px] h-auto lg:h-[485px] bg-white border border-[#BDBDBD] rounded-[20px] shadow-[0px_4px_60px_0px_rgba(0,0,0,0.1)] p-[24px] md:p-[36px]">
@@ -521,7 +521,7 @@ const MyPage: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex justify-center mt-[40px] md:mt-[67px] px-4 md:px-0">
+      <div className="flex justify-center mt-[20px] md:mt-[30px] px-4 md:px-0">
         <div className="w-full max-w-[1128px] h-[64px] md:h-[74px] bg-white border border-[#BDBDBD] rounded-[100px] shadow-[0px_4px_60px_0px_rgba(0,0,0,0.1)] p-2">
           <div className="flex h-full">
             <button
@@ -547,7 +547,7 @@ const MyPage: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="flex justify-center mt-[40px] md:mt-[58px] pb-20 px-4 md:px-0">
+      <div className="flex justify-center mt-[20px] md:mt-[30px] pb-20 px-4 md:px-0">
         <motion.div
           key={activeTab}
           initial={{ opacity: 0, y: 20 }}
