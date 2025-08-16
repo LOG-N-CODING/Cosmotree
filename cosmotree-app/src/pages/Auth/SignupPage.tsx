@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { updateProfile } from 'firebase/auth';
 import { setDoc, doc, serverTimestamp } from 'firebase/firestore';
-import { db, auth } from '../../config/firebase';
+import { db } from '../../config/firebase';
 import { useAuth } from '../../context/AuthContext';
 
 const SignupPage = () => {
