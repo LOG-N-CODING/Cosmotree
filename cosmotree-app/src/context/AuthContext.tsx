@@ -25,14 +25,42 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  // Firebase Auth 상태 구독
+  // Firebase Auth 상태 구독 (통합)
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, firebaseUser => {
+    // 로딩 타임아웃 설정 (5초 후 강제로 로딩 완료)
+    const loadingTimeout = setTimeout(() => {
+      console.warn('Auth loading timeout, forcing completion');
+      setLoading(false);
+    }, 5000);
+
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      console.log('Auth state changed:', firebaseUser);
+      clearTimeout(loadingTimeout); // 타임아웃 취소
       setUser(firebaseUser);
+      
+      if (firebaseUser) {
+        try {
+          // 로그인된 유저 Firestore에서 isAdmin 필드 읽기
+          const snap = await getDoc(doc(db, 'users', firebaseUser.uid));
+          setIsAdmin(snap.exists() && snap.data()?.isAdmin === 1);
+        } catch (error) {
+          console.warn('Firestore access denied in AuthContext:', error);
+          // Firestore 접근이 거부되면 일반 사용자로 간주
+          setIsAdmin(false);
+        }
+      } else {
+        setIsAdmin(false);
+      }
+      
       setLoading(false);
     });
-    return unsubscribe;
+
+    return () => {
+      clearTimeout(loadingTimeout);
+      unsubscribe();
+    };
   }, []);
 
   // 이메일·비밀번호 회원가입
@@ -49,25 +77,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // 로그아웃
   const signOut = () => firebaseSignOut(auth as Auth);
-
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async u => {
-      setUser(u);
-      console.log('Auth state changed:', u);
-
-      if (u) {
-        // 로그인된 유저 Firestore에서 isAdmin 필드 읽기
-        const snap = await getDoc(doc(db, 'users', u.uid));
-
-        setIsAdmin(snap.exists() && snap.data()?.isAdmin === 1);
-      } else {
-        setIsAdmin(false);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
 
   return (
     <AuthContext.Provider value={{ user, loading, signUp, signIn, signOut, isAdmin }}>

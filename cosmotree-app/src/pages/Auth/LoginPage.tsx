@@ -29,21 +29,27 @@ const LoginPage = () => {
     setError('');
 
     try {
-      // ① UserCredential을 직접 받는다
+      // ① 로그인 시도
       const credential = await signIn(formData.email, formData.password);
       const uid = credential.uid;
 
-      // ② Firestore에서 권한 확인
-      const snap = await getDoc(doc(db, 'users', uid));
-      const data = snap.data();
+      // ② Firestore에서 권한 확인 (보안 규칙으로 인해 실패할 수 있음)
+      try {
+        const snap = await getDoc(doc(db, 'users', uid));
+        const data = snap.data();
 
-      if (data?.isAdmin === 1) {
-        navigate('/admin');
-      } else {
+        if (data?.isAdmin === 1) {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
+      } catch (firestoreError) {
+        console.warn('Firestore access denied, using default navigation:', firestoreError);
+        // Firestore 접근이 거부되면 일반 사용자로 간주
         navigate('/');
       }
     } catch (err: any) {
-      console.error(err);
+      console.error('Login error:', err);
       setError('Invalid email or password. Please try again.');
     } finally {
       setIsLoading(false);

@@ -88,34 +88,60 @@ const SignupPage = () => {
       const { firstName, lastName, email, password } = formData;
       const fullName = `${firstName} ${lastName}`.trim();
 
+      console.log('회원가입 시작:', { email, fullName });
+
       // 1) 계정 생성
-      const user = await signUp(email, password); // user: FirebaseUser
+      const user = await signUp(email, password);
+      console.log('Firebase Auth 계정 생성 완료:', user.uid);
 
       // 2) Auth 프로필에 displayName 세팅
-      // (signUp이 userCredential.user를 반환한다고 가정)
-      await updateProfile(user, { displayName: fullName });
+      try {
+        await updateProfile(user, { displayName: fullName });
+        console.log('프로필 업데이트 완료');
+      } catch (profileError) {
+        console.warn('프로필 업데이트 실패:', profileError);
+        // 프로필 업데이트 실패는 치명적이지 않으므로 계속 진행
+      }
 
-      // 필요시 이메일 인증 메일 발송
-      // await sendEmailVerification(user);
+      // 3) Firestore에 사용자 정보 저장 (보안 규칙으로 인해 실패할 수 있음)
+      try {
+        await setDoc(doc(db, 'users', user.uid), {
+          email: user.email,
+          name: fullName,
+          isAdmin: 0,
+          createdAt: serverTimestamp(),
+        });
+        console.log('Firestore 사용자 정보 저장 완료');
+      } catch (firestoreError: any) {
+        console.warn('Firestore 저장 실패 (보안 규칙 문제일 수 있음):', firestoreError);
+        // Firestore 저장이 실패해도 Auth 계정은 생성되었으므로 계속 진행
+        if (firestoreError.code === 'permission-denied') {
+          console.warn('Firestore 권한 거부 - 보안 규칙을 확인하세요');
+        }
+      }
 
-      // 3) Firestore에도 별도로 저장(선택)
-      await setDoc(doc(db, 'users', user.uid), {
-        email: user.email,
-        name: fullName,
-        isAdmin: 0,
-        createdAt: serverTimestamp(),
-      });
+      // 4) 자동 로그인 (signUp이 이미 로그인 상태로 만들어주므로 생략 가능)
+      // await signInWithEmailAndPassword(auth, email, password);
 
-      // 4) 자동 로그인 (이미 signUp이 로그인 상태라면 생략 가능)
-      await signInWithEmailAndPassword(auth, email, password);
-
-      // (옵션) 새로고침 없이 최신 프로필을 확실히 쓰고 싶으면:
-      // await auth.currentUser?.reload();
-
+      console.log('회원가입 완료 - 메인 페이지로 이동');
       navigate('/');
     } catch (err: any) {
-      console.error(err);
-      setError(err.message);
+      console.error('회원가입 에러:', err);
+      
+      // 사용자에게 더 친화적인 에러 메시지 제공
+      if (err.code === 'auth/email-already-in-use') {
+        setError('This email is already registered. Please use a different email or try logging in.');
+      } else if (err.code === 'auth/weak-password') {
+        setError('Password should be at least 6 characters long.');
+      } else if (err.code === 'auth/invalid-email') {
+        setError('Please enter a valid email address.');
+      } else if (err.code === 'permission-denied') {
+        setError('Account created successfully, but some features may be limited due to security settings.');
+        // 권한 문제라도 계정은 생성되었을 수 있으므로 로그인 페이지로 안내
+        setTimeout(() => navigate('/auth/login'), 2000);
+      } else {
+        setError(err.message || 'An error occurred during sign up. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
