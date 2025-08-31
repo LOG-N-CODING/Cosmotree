@@ -248,13 +248,13 @@ const Learn: React.FC = () => {
         idx === 0
           ? true
           : (() => {
-              // 이전 모듈이 완료되었는지 확인
-              const prev = modules[idx - 1];
-              const prevTotal = prev.lessons?.length ?? 0;
-              const prevLast = progressMap[prev.id];
-              const prevCompletedCount =
-                typeof prevLast === 'number' ? Math.min(prevTotal, Math.max(0, prevLast + 1)) : 0;
-              return prevTotal > 0 && prevCompletedCount >= prevTotal;
+              // 모듈1이 완료되었는지 확인 (모든 모듈 활성화 조건)
+              const module1 = modules[0]; // 첫 번째 모듈 (모듈1)
+              const module1Total = module1.lessons?.length ?? 0;
+              const module1Last = progressMap[module1.id];
+              const module1CompletedCount =
+                typeof module1Last === 'number' ? Math.min(module1Total, Math.max(0, module1Last + 1)) : 0;
+              return module1Total > 0 && module1CompletedCount >= module1Total;
             })();
 
       const status: 'available' | 'locked' | 'completed' = isCompleted
