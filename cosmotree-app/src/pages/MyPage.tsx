@@ -1,5 +1,5 @@
 // src/pages/MyPage.tsx
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   collection,
@@ -13,10 +13,9 @@ import {
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
-import { getDownloadURL, ref, uploadBytesResumable, deleteObject } from 'firebase/storage';
-import { storage } from '../config/firebase';
 import { updateProfile } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+import { AVATAR_OPTIONS, getAvatarSrc, DEFAULT_AVATAR_ID, type AvatarId } from '../utils/avatarUtils';
 
 type Difficulty = 'Beginner' | 'Intermediate' | 'Advanced';
 type FirestoreLesson = { title: string; content: string };
@@ -66,17 +65,10 @@ const MyPage: React.FC = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [profileLoading, setProfileLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [deletingPhoto, setDeletingPhoto] = useState(false);
 
   const [name, setName] = useState(''); // editable
   const [email, setEmail] = useState(''); // view-only (재인증 이슈로 수정 화면만 비활성)
-  const [photoURL, setPhotoURL] = useState<string>('');
-  const [photoPath, setPhotoPath] = useState<string>(''); // 삭제용 경로 저장
-
-  const [newFile, setNewFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string>('');
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [avatarId, setAvatarId] = useState<number>(DEFAULT_AVATAR_ID); // 선택된 아바타 ID
 
   // Subscribe to user profile doc
   useEffect(() => {
@@ -86,8 +78,7 @@ const MyPage: React.FC = () => {
       const d = snap.data() as any;
       setName(d?.name || user.displayName || '');
       setEmail(d?.email || user.email || '');
-      setPhotoURL(d?.photoURL || user.photoURL || '');
-      setPhotoPath(d?.photoPath || '');
+      setAvatarId(d?.avatarId || DEFAULT_AVATAR_ID);
       setProfileLoading(false);
     });
     return () => unsub();
@@ -165,84 +156,18 @@ const MyPage: React.FC = () => {
     });
   }, [modules, progressMap]);
 
-  // ---------- Handlers: Profile photo ----------
-  const onPickFile = () => fileInputRef.current?.click();
-
-  const onFileChange: React.ChangeEventHandler<HTMLInputElement> = e => {
-    const f = e.target.files?.[0] || null;
-    setNewFile(f);
-    setUploadProgress(0);
-    if (f) {
-      const url = URL.createObjectURL(f);
-      setPreview(url);
-    } else {
-      setPreview('');
-    }
+  // ---------- Handlers: Avatar selection ----------
+  const handleAvatarSelect = (selectedAvatarId: number) => {
+    setAvatarId(selectedAvatarId);
   };
 
-  const handleDeletePhoto = async () => {
-    if (!user?.uid) return;
-    try {
-      setDeletingPhoto(true);
-      // 기존 스토리지 파일 삭제(경로가 있을 때만)
-      if (photoPath) {
-        const storageRef = ref(storage, photoPath);
-        await deleteObject(storageRef);
-      }
-      // Firestore/ Auth 정리
-      const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, { photoURL: '', photoPath: '' });
-      if (user) await updateProfile(user, { photoURL: '' });
-      setPhotoURL('');
-      setPhotoPath('');
-      setPreview('');
-      setNewFile(null);
-    } finally {
-      setDeletingPhoto(false);
-    }
-  };
-
-  // ---------- Handlers: Save profile (name + photo) ----------
+  // ---------- Handlers: Save profile (name + avatar) ----------
   const handleSaveProfile = async () => {
     if (!user?.uid) return;
     setSaving(true);
     try {
-      let nextPhotoURL = photoURL;
-      let nextPhotoPath = photoPath;
-
-      // 새 파일 업로드
-      if (newFile) {
-        // 새 파일 먼저 업로드
-        const path = `users/${user.uid}/profile/${Date.now()}_${newFile.name}`;
-        const storageRef = ref(storage, path);
-        const task = uploadBytesResumable(storageRef, newFile);
-
-        await new Promise<void>((resolve, reject) => {
-          task.on(
-            'state_changed',
-            snap => {
-              const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
-              setUploadProgress(pct);
-            },
-            reject,
-            async () => {
-              nextPhotoURL = await getDownloadURL(task.snapshot.ref);
-              nextPhotoPath = path;
-              resolve();
-            }
-          );
-        });
-
-        // 이전 파일이 있으면 정리(성공적으로 새 파일 올린 후)
-        if (photoPath && photoPath !== nextPhotoPath) {
-          try {
-            await deleteObject(ref(storage, photoPath));
-          } catch {
-            // 이전 파일이 없어도 무시
-          }
-        }
-      }
-
+      const avatarSrc = getAvatarSrc(avatarId);
+      
       // Firestore 저장
       const userRef = doc(db, 'users', user.uid);
       await setDoc(
@@ -250,8 +175,8 @@ const MyPage: React.FC = () => {
         {
           name: name || '',
           email: email || user.email || '',
-          photoURL: nextPhotoURL || '',
-          photoPath: nextPhotoPath || '',
+          avatarId: avatarId,
+          photoURL: avatarSrc, // 호환성을 위해 유지
         },
         { merge: true }
       );
@@ -259,13 +184,9 @@ const MyPage: React.FC = () => {
       // Auth 프로필 동기화(선택)
       await updateProfile(user, {
         displayName: name || user.displayName || '',
-        photoURL: nextPhotoURL || '',
+        photoURL: avatarSrc,
       });
 
-      setPhotoURL(nextPhotoURL);
-      setPhotoPath(nextPhotoPath);
-      setNewFile(null);
-      setPreview('');
       setIsEditMode(false);
     } finally {
       setSaving(false);
@@ -274,9 +195,11 @@ const MyPage: React.FC = () => {
 
   const handleCancelEdit = () => {
     setIsEditMode(false);
-    setNewFile(null);
-    setPreview('');
-    setUploadProgress(0);
+    // 원래 값으로 복원
+    if (user?.uid) {
+      const refUser = doc(db, 'users', user.uid);
+      // Firestore에서 다시 읽어오거나 기존 값 유지
+    }
   };
 
   const handleEditProfile = () => setIsEditMode(true);
@@ -371,10 +294,12 @@ const MyPage: React.FC = () => {
                   <div className="w-[80px] h-[80px] md:w-[100px] md:h-[100px] bg-[#D9D9D9] rounded-full overflow-hidden flex items-center justify-center">
                     {profileLoading ? (
                       <div className="text-xs text-gray-500">Loading…</div>
-                    ) : photoURL ? (
-                      <img src={photoURL} alt="Profile" className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-xs text-gray-500">No Photo</span>
+                      <img 
+                        src={getAvatarSrc(avatarId)} 
+                        alt="Profile" 
+                        className="w-full h-full object-cover" 
+                      />
                     )}
                   </div>
                 </div>
@@ -386,7 +311,7 @@ const MyPage: React.FC = () => {
                   <div className="bg-white rounded-lg px-4 py-2 w-full h-[56px] flex items-center gap-3">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                       <path
-                        d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 5.5V4H9V5.5L3 7V9H21ZM12 8C10.9 8 10 8.9 10 10V11H14V10C14 8.9 13.1 8 12 8ZM2 20V18H22V20H2Z"
+                        d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
                         fill="black"
                       />
                     </svg>
@@ -418,15 +343,10 @@ const MyPage: React.FC = () => {
                     Edit Profile
                   </button>
                   <button
-                    onClick={handleDeletePhoto}
-                    disabled={deletingPhoto || !photoURL}
-                    className={`h-[56px] px-4 rounded-lg text-[16px] font-medium transition-colors ${
-                      deletingPhoto || !photoURL
-                        ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                        : 'bg-white border border-gray-300 text-black hover:bg-gray-50'
-                    }`}
+                    onClick={() => setAvatarId(DEFAULT_AVATAR_ID)}
+                    className="h-[56px] px-4 rounded-lg text-[16px] font-medium transition-colors bg-white border border-gray-300 text-black hover:bg-gray-50"
                   >
-                    {deletingPhoto ? 'Deleting…' : 'Delete Photo'}
+                    Reset Avatar
                   </button>
                 </div>
               </div>
@@ -437,39 +357,39 @@ const MyPage: React.FC = () => {
           {isEditMode && (
             <div className="w-full lg:w-[480px] h-auto bg-white border border-[#BDBDBD] rounded-[20px] shadow-[0px_4px_60px_0px_rgba(0,0,0,0.1)] p-[24px] md:p-[36px]">
               <div className="flex flex-col gap-6">
-                {/* Photo picker */}
-                <div className="flex items-center gap-4">
-                  <div className="w-[100px] h-[100px] rounded-full overflow-hidden bg-[#D9D9D9] flex items-center justify-center">
-                    {preview ? (
-                      <img src={preview} alt="Preview" className="w-full h-full object-cover" />
-                    ) : photoURL ? (
-                      <img src={photoURL} alt="Profile" className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-xs text-gray-600">No Photo</span>
-                    )}
+                {/* Avatar selector */}
+                <div>
+                  <div className="mt-3 text-center">
+                    <div className="w-[100px] h-[100px] mx-auto rounded-full overflow-hidden bg-[#D9D9D9] flex items-center justify-center border-2 border-blue-500">
+                      <img 
+                        src={getAvatarSrc(avatarId)} 
+                        alt="Selected Avatar" 
+                        className="w-full h-full object-cover" 
+                      />
+                    </div>
+                    <p className="text-sm text-gray-600 mt-2">Selected Avatar</p>
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={onFileChange}
-                      className="hidden"
-                    />
-                    <button
-                      onClick={onPickFile}
-                      className="px-4 h-[40px] bg-black text-white rounded-lg text-sm hover:bg-gray-800"
-                    >
-                      {preview || !photoURL ? 'Upload Photo' : 'Change Photo'}
-                    </button>
-                    {(preview || newFile) && (
-                      <div className="text-xs text-gray-600">
-                        {uploadProgress > 0 && uploadProgress < 100
-                          ? `Uploading ${uploadProgress}%`
-                          : 'Ready to save'}
-                      </div>
-                    )}
+                  <label className="block text-sm text-gray-600 mb-3">Choose Avatar</label>
+                    <div className="grid grid-cols-3 gap-3 justify-items-center">
+                    {AVATAR_OPTIONS.map((avatar) => (
+                      <button
+                        key={avatar.id}
+                        onClick={() => handleAvatarSelect(avatar.id)}
+                        className={`w-[70px] h-[70px] rounded-full overflow-hidden border-2 transition-all ${
+                          avatarId === avatar.id 
+                            ? 'border-blue-500 scale-105' 
+                            : 'border-gray-300 hover:border-gray-400'
+                        }`}
+                      >
+                        <img 
+                          src={avatar.src} 
+                          alt={avatar.name} 
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))}
                   </div>
+                  
                 </div>
 
                 {/* Name (editable) */}
