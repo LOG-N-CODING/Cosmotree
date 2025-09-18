@@ -246,6 +246,12 @@ const Quizzes: React.FC = () => {
     return () => unsub();
   }, []);
 
+  // Module ID에서 숫자 추출하는 헬퍼 함수
+  const extractModuleNumber = (moduleId: string): number => {
+    const match = moduleId.match(/Module-(\d+)/);
+    return match ? parseInt(match[1], 10) : 999; // 매칭 안되면 맨 뒤로
+  };
+
   // 진행도 합치고 정렬
   const mergedSorted = useMemo(() => {
     const withScores = modules.map(m => {
@@ -267,14 +273,11 @@ const Quizzes: React.FC = () => {
       return { ...m, score, status };
     });
 
-    // 1) 난이도 오름차순 → 2) createdAt 내림차순(최신 먼저)
+    // Module 번호 순서대로 정렬 (1, 2, 3, ..., 10)
     return withScores.sort((a, b) => {
-      const dr = (DIFF_RANK[a.difficulty] ?? 99) - (DIFF_RANK[b.difficulty] ?? 99);
-      if (dr !== 0) return dr;
-
-      const at = a.createdAt?.toMillis?.() ?? 0;
-      const bt = b.createdAt?.toMillis?.() ?? 0;
-      return bt - at;
+      const aNum = extractModuleNumber(a.id);
+      const bNum = extractModuleNumber(b.id);
+      return aNum - bNum;
     });
   }, [modules, progress]);
 
