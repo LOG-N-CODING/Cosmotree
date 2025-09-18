@@ -1,5 +1,13 @@
 import React, { useState, useEffect, FormEvent } from 'react';
-import { collection, onSnapshot, updateDoc, doc } from 'firebase/firestore';
+import {
+  collection,
+  onSnapshot,
+  updateDoc,
+  doc,
+  getDocs,
+  serverTimestamp,
+  writeBatch,
+} from 'firebase/firestore';
 import { db } from '../../../config/firebase';
 import { AdminGuideCard } from './AdminGuideCard';
 import Icon from '../../UI/Icon';
@@ -12,6 +20,7 @@ export interface Quiz {
   choices?: string[];
   answer: string;
   explanation?: string;
+  isActived?: boolean;
 }
 
 interface Module {
@@ -32,6 +41,97 @@ export const QuizList: React.FC = () => {
   const [shortAnswer, setShortAnswer] = useState('');
   const [explanation, setExplanation] = useState('');
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [showActiveOnly, setShowActiveOnly] = useState(false);
+
+  // -- 랜덤 샘플러
+  const [mcCount, setMcCount] = useState<number>(0);
+  const [saCount, setSaCount] = useState<number>(0);
+
+  function sampleIndices(count: number, max: number) {
+    // 0..max-1 인덱스에서 count개 뽑기 (중복 없음)
+    const idx = Array.from({ length: max }, (_, i) => i);
+    for (let i = idx.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [idx[i], idx[j]] = [idx[j], idx[i]];
+    }
+    return idx.slice(0, count);
+  }
+
+  const handleRandomize = async () => {
+    if (!selectedModuleId) return;
+
+    const module = modules.find(m => m.id === selectedModuleId);
+    if (!module) return;
+
+    const all = module.quizzes || [];
+    const mc = all.map((q, i) => ({ q, i })).filter(x => x.q.type === 'MultipleChoice');
+    const sa = all.map((q, i) => ({ q, i })).filter(x => x.q.type === 'ShortAnswer');
+
+    // 요청 개수 상한 보정
+    const takeMc = Math.min(mcCount, mc.length);
+    const takeSa = Math.min(saCount, sa.length);
+
+    // 인덱스 랜덤 선택
+    const mcPickIdx = sampleIndices(takeMc, mc.length).map(k => mc[k].i);
+    const saPickIdx = sampleIndices(takeSa, sa.length).map(k => sa[k].i);
+    const activeSet = new Set<number>([...mcPickIdx, ...saPickIdx]);
+
+    // 모든 퀴즈의 isActived 재계산: 선택된 것만 true, 나머지 false
+    const updated = all.map((q, i) => ({
+      ...q,
+      isActived: activeSet.has(i),
+    }));
+
+    await updateDoc(doc(db, 'modules', selectedModuleId), { quizzes: updated });
+
+    await resetAllUsersQuizResults(selectedModuleId);
+
+    await Swal.fire({
+      icon: 'success',
+      title: 'Randomized',
+      text: `Activated ${takeMc} MC and ${takeSa} Short Answer question(s).`,
+    });
+  };
+  // -- 랜덤 샘플러 끝
+
+  // 모든 유저의 특정 모듈 진행도 리셋
+  async function resetAllUsersQuizResults(moduleId: string) {
+    const usersSnap = await getDocs(collection(db, 'users'));
+    const users = usersSnap.docs;
+
+    const BATCH_LIMIT = 500;
+    let batch = writeBatch(db);
+    let ops = 0;
+
+    for (let i = 0; i < users.length; i++) {
+      const uid = users[i].id;
+      const resultRef = doc(db, 'users', uid, 'quizResults', moduleId);
+
+      batch.set(
+        resultRef,
+        {
+          completed: false,
+          correctCount: 0,
+          totalAnswered: 0,
+          scorePercent: 0,
+          lastUpdated: serverTimestamp(),
+        },
+        { merge: true } // 문서가 있어도 덮어쓰기, 다른 필드 보존
+      );
+      ops++;
+
+      if (ops === BATCH_LIMIT) {
+        await batch.commit();
+        batch = writeBatch(db);
+        ops = 0;
+      }
+    }
+
+    if (ops > 0) {
+      await batch.commit();
+    }
+  }
+  //
 
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'modules'), snapshot => {
@@ -84,6 +184,7 @@ export const QuizList: React.FC = () => {
         choices: trimmedChoices,
         answer: trimAnswer,
         explanation: explanation.trim() || undefined,
+        isActived: false,
       };
       if (editingIndex !== null) updated[editingIndex] = quiz;
       else updated.push(quiz);
@@ -93,11 +194,12 @@ export const QuizList: React.FC = () => {
         alert('Answer is required.');
         return;
       }
-      const quiz: Quiz = { 
-        type: 'ShortAnswer', 
-        question: trimmedQ, 
+      const quiz: Quiz = {
+        type: 'ShortAnswer',
+        question: trimmedQ,
         answer: trimSA,
         explanation: explanation.trim() || undefined,
+        isActived: false,
       };
       if (editingIndex !== null) updated[editingIndex] = quiz;
       else updated.push(quiz);
@@ -105,7 +207,7 @@ export const QuizList: React.FC = () => {
     await updateDoc(doc(db, 'modules', selectedModuleId), { quizzes: updated });
     // reset form
     setQuestion('');
-    setChoices(Array(5).fill(''));
+    setChoices(Array(4).fill(''));
     setAnswer('');
     setShortAnswer('');
     setExplanation('');
@@ -113,7 +215,6 @@ export const QuizList: React.FC = () => {
   };
 
   const handleDeleteQuiz = async (index: number) => {
-
     // 퀴즈 삭제 전 사용자에게 확인을 요청합니다
     const result = await Swal.fire({
       title: 'Are you sure?',
@@ -154,23 +255,32 @@ export const QuizList: React.FC = () => {
   };
 
   const filteredQuizzes = selectedModuleId
-    ? modules.find(m => m.id === selectedModuleId)?.quizzes.filter(q => q.type === viewType) || []
+    ? (modules.find(m => m.id === selectedModuleId)?.quizzes || [])
+        .filter(q => q.type === viewType)
+        .filter(q => (showActiveOnly ? q.isActived === true : true))
     : [];
+
+  const currentModule = modules.find(m => m.id === selectedModuleId);
+  const totalByType = currentModule
+    ? currentModule.quizzes.filter(q => q.type === viewType).length
+    : 0;
+  const activeByType = currentModule
+    ? currentModule.quizzes.filter(q => q.type === viewType && q.isActived).length
+    : 0;
 
   return (
     <div className=" mx-auto">
-
       {/* 도움말 카드 */}
       <AdminGuideCard
         icon="seed"
         title="Quiz Management Guide"
         description="Create and manage quizzes for your learning modules with detailed explanations."
         tips={[
-          "Select a module first to view and manage its quizzes",
-          "Use Multiple Choice for questions with specific options",
-          "Use Short Answer for open-ended questions",
-          "Always add explanations to help students understand the correct answers",
-          "Make sure answer text matches exactly with one of the choices for Multiple Choice"
+          'Select a module first to view and manage its quizzes',
+          'Use Multiple Choice for questions with specific options',
+          'Use Short Answer for open-ended questions',
+          'Always add explanations to help students understand the correct answers',
+          'Make sure answer text matches exactly with one of the choices for Multiple Choice',
         ]}
       />
 
@@ -201,6 +311,7 @@ export const QuizList: React.FC = () => {
             <div>
               <label className="block text-sm font-medium">Quiz Type</label>
               <div className="mt-1 flex space-x-4">
+                <h2 className="text-2xl font-semibold mb-2">Manage Module Quizzes</h2>
                 <label>
                   <input
                     type="radio"
@@ -285,24 +396,79 @@ export const QuizList: React.FC = () => {
             </button>
           </form>
 
+          <div className="mb-6 border p-4 rounded">
+            <h3 className="font-semibold mb-3">Random Activation</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium">MC count</label>
+                <input
+                  type="number"
+                  min={0}
+                  className="mt-1 block w-full border rounded p-2"
+                  value={mcCount}
+                  onChange={e => setMcCount(Math.max(0, Number(e.target.value)))}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium">Short Answer count</label>
+                <input
+                  type="number"
+                  min={0}
+                  className="mt-1 block w-full border rounded p-2"
+                  value={saCount}
+                  onChange={e => setSaCount(Math.max(0, Number(e.target.value)))}
+                />
+              </div>
+              <div className="flex items-end">
+                <button
+                  type="button"
+                  onClick={handleRandomize}
+                  className="w-full bg-emerald-600 text-white px-4 py-2 rounded"
+                >
+                  Randomize & Activate
+                </button>
+              </div>
+            </div>
+            <p className="text-sm text-gray-600 mt-2">
+              Randomly selects the requested number of Multiple Choice and Short Answer questions
+              and sets only those to <span className="font-semibold">isActived = true</span>. Others
+              will be set to <span className="font-semibold">false</span>.
+            </p>
+          </div>
           <div className="mb-4">
             <label className="block text-sm font-medium">View Quizzes</label>
-            <div className="mt-1 flex space-x-4">
-              <label>
+            <div className="mt-1 flex flex-wrap items-center gap-6">
+              <label className="inline-flex items-center gap-2">
                 <input
                   type="radio"
                   checked={viewType === 'MultipleChoice'}
                   onChange={() => setViewType('MultipleChoice')}
-                />{' '}
-                Multiple Choice
+                />
+                <span>Multiple Choice</span>
               </label>
-              <label>
+              <label className="inline-flex items-center gap-2">
                 <input
                   type="radio"
                   checked={viewType === 'ShortAnswer'}
                   onChange={() => setViewType('ShortAnswer')}
-                />{' '}
-                Short Answer
+                />
+                <span>Short Answer</span>
+              </label>
+              {selectedModuleId && (
+                <p className="text-sm text-gray-600 ">
+                  Active {viewType}: <span className="font-semibold">{activeByType}</span> /{' '}
+                  {totalByType}
+                </p>
+              )}
+
+              {/* ▶ Show only active toggle */}
+              <label className="inline-flex items-center gap-2 ml-auto">
+                <input
+                  type="checkbox"
+                  checked={showActiveOnly}
+                  onChange={e => setShowActiveOnly(e.target.checked)}
+                />
+                <span>Show only active</span>
               </label>
             </div>
           </div>
@@ -313,6 +479,15 @@ export const QuizList: React.FC = () => {
                 <div>
                   <p className="font-medium">
                     [{q.type}] {q.question}
+                    {q.isActived ? (
+                      <span className="ml-2 inline-block text-xs px-2 py-0.5 rounded bg-green-100 text-green-700 align-middle">
+                        Active
+                      </span>
+                    ) : (
+                      <span className="ml-2 inline-block text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600 align-middle">
+                        Inactive
+                      </span>
+                    )}
                   </p>
                   {q.type === 'MultipleChoice' ? (
                     <ol className="list-decimal list-inside ml-4">

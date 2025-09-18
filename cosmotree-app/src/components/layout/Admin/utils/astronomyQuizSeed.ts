@@ -55,6 +55,7 @@ export type FSQuizQuestion = {
   choices?: string[]; // 객관식만
   answer: string; // 객관식: 정답 텍스트, 주관식: 모범답안 텍스트
   explanation?: string;
+  isActived: boolean;
 };
 
 // type guard
@@ -90,6 +91,7 @@ function normalizeQuestion(q: Question): FSQuizQuestion | null {
       choices,
       answer: answerText,
       explanation: q.explanation,
+      isActived: false,
     };
   }
 
@@ -100,6 +102,7 @@ function normalizeQuestion(q: Question): FSQuizQuestion | null {
       question: q.question,
       answer: answerText,
       explanation: q.explanation,
+      isActived: false,
     };
   }
 

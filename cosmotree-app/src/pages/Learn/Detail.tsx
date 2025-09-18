@@ -315,7 +315,7 @@ const LearnDetail: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="lg:col-span-1"
             >
-              <div className="bg-transparent rounded-3xl border border-gray-200 shadow-lg p-6">
+              <div className="bg-white rounded-3xl border border-gray-200 shadow-lg p-6">
                 <h3 className="text-xl font-bold text-black mb-6">Lessons</h3>
                 <div className="space-y-4">
                   {moduleDoc.lessons.map((lesson, index) => {
@@ -338,7 +338,7 @@ const LearnDetail: React.FC = () => {
                         <span className="font-semibold text-sm line-clamp-1">{lesson.title}</span>
                         <div
                           className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                            isActive ? 'bg-white' : 'bg-gray-100'
+                            isActive ? '' : ''
                           }`}
                           title={isCompleted ? 'Completed' : 'Not completed'}
                         >
@@ -360,7 +360,7 @@ const LearnDetail: React.FC = () => {
             >
               <div className="space-y-8">
                 {/* Lesson Content */}
-                <div className="bg-transparent rounded-3xl border border-gray-200 shadow-lg p-8">
+                <div className="bg-white rounded-3xl border border-gray-200 shadow-lg p-8">
                   <h2 className="text-2xl font-bold text-black mb-6">
                     {currentLesson?.title || 'Lesson'}
                   </h2>
