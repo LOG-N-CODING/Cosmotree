@@ -161,6 +161,7 @@ const Home = () => {
             className="bg-cover bg-center bg-gray-200 rounded-t-2xl lg:rounded-l-2xl lg:rounded-tr-none h-64 lg:h-auto"
             style={{
               backgroundImage: `url('/images/main-sec-01.png')`,
+              borderRadius: '14px',
             }}
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}

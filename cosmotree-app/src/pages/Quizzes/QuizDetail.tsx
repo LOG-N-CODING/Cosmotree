@@ -983,7 +983,7 @@ Do not provide any explanation or additional text.
                         </div>
 
                         {!currentAnswer.isCorrect && (
-                          <div className="bg-gray-400 border border-gray-400 rounded-xl p-4">
+                          <div className="bg-green-50 border border-green-400 rounded-xl p-4">
                             <h3 className="font-medium text-gray-700 mb-2">Correct Answer:</h3>
                             <p className="text-gray-700">{String(currentQuestion.correctAnswer)}</p>
                           </div>

@@ -12,6 +12,16 @@ service cloud.firestore {
     // 사용자는 자신의 데이터만 읽기/쓰기 가능
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // 사용자별 모듈 진행도 데이터
+      match /moduleProgress/{moduleId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // 사용자별 퀴즈 결과 데이터
+      match /quizResults/{quizId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
     }
     
     // 공개적으로 읽기만 허용할 데이터 (관리자는 모든 권한)
@@ -19,6 +29,13 @@ service cloud.firestore {
       allow read: if true; // 누구나 읽기 가능
       allow write: if request.auth != null; // 로그인한 사용자만 쓰기 가능
       allow delete: if isAdmin(); // 관리자만 삭제 가능
+      
+      // 모듈별 챌린지 데이터
+      match /challenges/{challengeId} {
+        allow read: if true; // 누구나 읽기 가능
+        allow write: if request.auth != null; // 로그인한 사용자만 쓰기 가능
+        allow delete: if isAdmin(); // 관리자만 삭제 가능
+      }
     }
     
     match /modules/{moduleId}/lessons/{lessonId} {
@@ -35,6 +52,13 @@ service cloud.firestore {
     
     // 퀴즈 관련 데이터
     match /quizzes/{quizId} {
+      allow read: if true; // 누구나 읽기 가능
+      allow write: if request.auth != null; // 로그인한 사용자만 쓰기 가능
+      allow delete: if isAdmin(); // 관리자만 삭제 가능
+    }
+    
+    // 챌린지 템플릿 데이터
+    match /challengeTemplates/{templateId} {
       allow read: if true; // 누구나 읽기 가능
       allow write: if request.auth != null; // 로그인한 사용자만 쓰기 가능
       allow delete: if isAdmin(); // 관리자만 삭제 가능

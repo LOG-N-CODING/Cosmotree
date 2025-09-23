@@ -253,7 +253,7 @@ const LearnDetail: React.FC = () => {
 
               {/* Topics (optional, 그냥 토글 UI 유지) */}
               <div className="w-80">
-                <button
+                {/* <button
                   onClick={() => setIsTopicsExpanded(v => !v)}
                   className="w-full flex items-center justify-between gap-2 bg-transparent border border-gray-300 px-4 py-3 rounded-lg font-medium text-black hover:bg-gray-50 transition-colors"
                 >
@@ -286,7 +286,7 @@ const LearnDetail: React.FC = () => {
                       <li>• Suggested next lessons</li>
                     </ul>
                   </motion.div>
-                )}
+                )} */}
               </div>
             </div>
 

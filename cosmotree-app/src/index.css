@@ -4,6 +4,8 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Roboto:wght@400;500;600;700&display=swap');
 
+
+html { overflow-x: hidden; }
 body {
   margin: 0;
   font-family:
@@ -47,7 +49,7 @@ code {
 /* Swiper styles */
 .resource-swiper {
   padding: 10px 0 !important;
-  background: transparent !important;
+  background: white !important;
   overflow-y: visible !important;
 }
 
@@ -57,7 +59,7 @@ code {
 }
 
 .resource-swiper .swiper-wrapper {
-  background: transparent !important;
+  /* background: white !important; */
 }
 
 
@@ -108,7 +110,7 @@ code {
 
 /* Scrollbar styling */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 0px;
 }
 
 ::-webkit-scrollbar-track {

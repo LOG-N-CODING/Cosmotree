@@ -137,12 +137,12 @@ const Dashboard = () => {
     if (isModalOpen) {
       document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = '';
     }
     
     // 클린업 함수
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = '';
     };
   }, [isModalOpen]);
 
@@ -534,7 +534,7 @@ const Dashboard = () => {
             <div className="space-y-4">
               <motion.button
                 onClick={handleContinueLearning}
-                className="w-full bg-white p-4 flex justify-between items-center hover:bg-gray-50 transition-colors"
+                className="w-full bg-white p-4 flex justify-between items-center hover:bg-gray-50 transition-colors rounded-xl"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -546,7 +546,7 @@ const Dashboard = () => {
 
               <motion.button
                 onClick={handleTakeQuiz}
-                className="w-full bg-white p-4 flex justify-between items-center hover:bg-gray-50 transition-colors"
+                className="w-full bg-white p-4 flex justify-between items-center hover:bg-gray-50 transition-colors rounded-xl"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -581,9 +581,9 @@ const Dashboard = () => {
             <h2 className="text-xl font-semibold text-white">Resource Library</h2>
             <button 
               onClick={() => setRandomFacts(getRandomFacts(10))}
-              className="text-blue-600 hover:text-blue-800 font-medium text-2xl transition-colors"
+              className="text-blue-600 hover:text-blue-800 font-medium text-2xl transition-colors p-4 bg-white rounded-2xl"
             >
-              🔄
+              <img src="/images/shuffle.png" alt="Shuffle" className="w-5 h-5" />
             </button>
           </div>
 

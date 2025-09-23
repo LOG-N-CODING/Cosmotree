@@ -70,15 +70,31 @@ const MyPage: React.FC = () => {
   const [email, setEmail] = useState(''); // view-only (재인증 이슈로 수정 화면만 비활성)
   const [avatarId, setAvatarId] = useState<number>(DEFAULT_AVATAR_ID); // 선택된 아바타 ID
 
+  // 원래 값들을 저장 (Cancel 시 복원용)
+  const [originalName, setOriginalName] = useState('');
+  const [originalEmail, setOriginalEmail] = useState('');
+  const [originalAvatarId, setOriginalAvatarId] = useState<number>(DEFAULT_AVATAR_ID);
+
   // Subscribe to user profile doc
   useEffect(() => {
     if (!user?.uid) return;
     const refUser = doc(db, 'users', user.uid);
     const unsub = onSnapshot(refUser, snap => {
       const d = snap.data() as any;
-      setName(d?.name || user.displayName || '');
-      setEmail(d?.email || user.email || '');
-      setAvatarId(d?.avatarId || DEFAULT_AVATAR_ID);
+      const userName = d?.name || user.displayName || '';
+      const userEmail = d?.email || user.email || '';
+      const userAvatarId = d?.avatarId || DEFAULT_AVATAR_ID;
+      
+      // 현재 값 설정
+      setName(userName);
+      setEmail(userEmail);
+      setAvatarId(userAvatarId);
+      
+      // 원래 값 저장 (Cancel 시 복원용)
+      setOriginalName(userName);
+      setOriginalEmail(userEmail);
+      setOriginalAvatarId(userAvatarId);
+      
       setProfileLoading(false);
     });
     return () => unsub();
@@ -194,15 +210,22 @@ const MyPage: React.FC = () => {
   };
 
   const handleCancelEdit = () => {
-    setIsEditMode(false);
     // 원래 값으로 복원
-    if (user?.uid) {
-      const refUser = doc(db, 'users', user.uid);
-      // Firestore에서 다시 읽어오거나 기존 값 유지
-    }
+    setName(originalName);
+    setEmail(originalEmail);
+    setAvatarId(originalAvatarId);
+    
+    // 편집 모드 종료
+    setIsEditMode(false);
   };
 
-  const handleEditProfile = () => setIsEditMode(true);
+  const handleEditProfile = () => {
+    // 편집 시작 시 현재 값을 원래 값으로 저장
+    setOriginalName(name);
+    setOriginalEmail(email);
+    setOriginalAvatarId(avatarId);
+    setIsEditMode(true);
+  };
 
   const handleQuizAction = (action: 'retake' | 'start', moduleId: string) => {
     if (action === 'retake' || action === 'start') {

@@ -55,7 +55,7 @@ const Header: React.FC<HeaderProps> = ({ mode = 'light', fixed = false }) => {
           }`}
         >
           <div className="flex justify-between items-center py-3 md:py-5 px-4 max-w-7xl">
-            <Logo />
+            <Logo mode={mode} />
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-6">
@@ -133,7 +133,7 @@ const Header: React.FC<HeaderProps> = ({ mode = 'light', fixed = false }) => {
               <div className="flex flex-col h-full">
               {/* Offcanvas Header */}
               <div className={`flex justify-between items-center p-4 border-b ${mode === 'light' ? 'border-gray-200' : 'border-gray-700'}`}>
-                <Logo />
+                <Logo mode={mode} />
                 <button
                 onClick={() => setIsMenuOpen(false)}
                 className={`p-2 rounded-lg ${mode === 'light' ? 'hover:bg-gray-100' : 'hover:bg-gray-800'} transition-colors`}
@@ -183,12 +183,12 @@ const Header: React.FC<HeaderProps> = ({ mode = 'light', fixed = false }) => {
     <>
       <nav
         className={`${fixed ? 'fixed' : ''} top-4 md:top-10 left-4 md:left-10 right-4 md:right-10 z-50 backdrop-blur rounded-xl ${
-          mode === 'light' ? 'bg-gray-200 bg-opacity-50' : 'bg-black bg-opacity-50 backdrop-blur-lg'
+          mode === 'light' ? 'bg-[#EEEEEE] bg-opacity-80' : 'bg-black bg-opacity-80 backdrop-blur-lg'
         }`}
       >
-        <div className="flex justify-between items-center py-3 md:py-5 px-4 max-w-7xl mx-auto">
+        <div className="flex justify-between items-center py-3 md:py-4 px-4 max-w-7xl mx-auto">
           {/* Logo */}
-          <Logo />
+          <Logo mode={mode} />
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-6">
@@ -270,7 +270,7 @@ const Header: React.FC<HeaderProps> = ({ mode = 'light', fixed = false }) => {
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex justify-between items-center p-4 border-b border-gray-200">
-                <Logo />
+                <Logo mode={mode} />
                 <button
                   onClick={() => setIsMenuOpen(false)}
                   className="p-2 rounded-lg hover:bg-gray-100 transition-colors"

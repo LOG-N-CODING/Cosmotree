@@ -39,14 +39,14 @@ const LoginPage = () => {
         const data = snap.data();
 
         if (data?.isAdmin === 1) {
-          navigate('/admin');
+          navigate('/dashboard'); // 관리자도 대시보드로
         } else {
-          navigate('/');
+          navigate('/dashboard'); // 일반 사용자도 대시보드로
         }
       } catch (firestoreError) {
         console.warn('Firestore access denied, using default navigation:', firestoreError);
-        // Firestore 접근이 거부되면 일반 사용자로 간주
-        navigate('/');
+        // Firestore 접근이 거부되면 일반 사용자로 간주하고 대시보드로
+        navigate('/dashboard');
       }
     } catch (err: any) {
       console.error('Login error:', err);
@@ -65,7 +65,7 @@ const LoginPage = () => {
     >
       {/* Logo positioned top-left */}
       <div className="absolute top-4 md:top-8 left-4 md:left-5">
-        <Logo />
+        <Logo mode='dark' />
       </div>
 
       {/* Main Form Container */}

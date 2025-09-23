@@ -11,7 +11,7 @@ const Footer = () => {
             </h4>
             <div>
               <p className="text-lg md:text-2xl font-gowun text-black leading-relaxed tracking-tight break-all md:break-normal">
-                hello@cosmotree.com
+                leejinmo354@gmail.com
               </p>
             </div>
           </div>
