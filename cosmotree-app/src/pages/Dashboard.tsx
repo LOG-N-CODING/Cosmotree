@@ -347,7 +347,7 @@ const Dashboard = () => {
         <div className="shooting-star" style={{ top: '70%', animationDelay: '6s' }}></div>
       </div>
       
-      <div className="relative z-10 p-4 md:p-6 lg:p-10 space-y-6 md:space-y-8">
+      <div className="relative z-10 p-4 md:p-6 lg:p-10 space-y-6 md:space-y-8 mt-16">
         {/* Top Section - Learning Progress and Quick Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
           {/* Learning Progress Summary */}

@@ -51,7 +51,7 @@ type QuizHistoryRow = {
   topic: string; // module title
   moduleLabel: string; // e.g. moduleId
   score: string; // "85%"
-  status: 'complete' | 'pending';
+  status: 'complete' | 'in-progress' | 'pending';
   action: 'retake' | 'start';
   lastUpdatedMs: number; // for sorting
 };
@@ -258,15 +258,30 @@ const MyPage: React.FC = () => {
               ? Math.round(((data.correctCount || 0) / (data.totalAnswered || 1)) * 100)
               : 0;
 
-        const completed = !!data.completed || score === 100;
+        // 상태 판단: 점수에 따른 세분화된 상태
+        const hasAttempted = data && ((data.totalAnswered && data.totalAnswered > 0) || data.scorePercent != null);
+        
+        let status: QuizHistoryRow['status'] = 'pending';
+        let action: 'retake' | 'start' = 'start';
+        
+        if (hasAttempted) {
+          action = 'retake';
+          if (score === 0) {
+            status = 'pending';
+          } else if (score >= 10 && score <= 50) {
+            status = 'in-progress';
+          } else {
+            status = 'complete';
+          }
+        }
 
         rows.push({
           id: moduleId,
           topic: moduleTitleMap[moduleId] || moduleId,
           moduleLabel: moduleId,
           score: `${score}%`,
-          status: completed ? 'complete' : 'pending',
-          action: completed ? 'retake' : 'start',
+          status: status,
+          action: action,
           lastUpdatedMs: data.lastUpdated?.toMillis?.() ?? 0,
         });
       });
@@ -279,7 +294,7 @@ const MyPage: React.FC = () => {
   }, [user?.uid, moduleTitleMap]);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white mt-16">
       {/* Header Section */}
       <div className="flex justify-center pt-[40px] md:pt-[50px] px-4 md:px-0">
         <div className="w-full max-w-[1128px]">
@@ -689,6 +704,34 @@ const MyPage: React.FC = () => {
                                 </svg>
                                 <span className="text-[12px] md:text-[14px] text-[#00A336] hidden md:inline">
                                   Complete
+                                </span>
+                              </>
+                            ) : row.status === 'in-progress' ? (
+                              <>
+                                <svg
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 20 20"
+                                  fill="none"
+                                  className="md:w-5 md:h-5"
+                                >
+                                  <circle
+                                    cx="10"
+                                    cy="10"
+                                    r="8.33"
+                                    stroke="#FF8C00"
+                                    strokeWidth="1.67"
+                                    fill="none"
+                                  />
+                                  <path
+                                    d="M10 6.67V10L12.5 12.5"
+                                    stroke="#FF8C00"
+                                    strokeWidth="1.67"
+                                    strokeLinecap="round"
+                                  />
+                                </svg>
+                                <span className="text-[10px] md:text-[12px] text-[#FF8C00] hidden md:inline">
+                                  In Progress
                                 </span>
                               </>
                             ) : (

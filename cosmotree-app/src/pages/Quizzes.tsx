@@ -129,7 +129,9 @@ const QuizCard: React.FC<{ quiz: ModuleCardData; index: number }> = ({ quiz, ind
           <div className="w-10 h-10 rounded-lg flex items-center justify-center">
             <Icon name="neurology" size={24} />
           </div>
-          {/* difficulty 태그는 비노출(정렬만 사용) */}
+          <span className="bg-purple-100 border border-purple-300 px-2 py-1 rounded text-xs font-semibold text-purple-800">
+            {quiz.difficulty}
+          </span>
         </div>
       </div>
 
@@ -156,7 +158,7 @@ const QuizCard: React.FC<{ quiz: ModuleCardData; index: number }> = ({ quiz, ind
         {isCompleted ? (
           <Link
             to={`/quiz/${quiz.id}`}
-            className="w-full bg-transparent border-2 border-black text-black py-4 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors hover:bg-black hover:text-white"
+            className="w-full bg-transparent border-2 border-purple-600 text-purple-600 py-4 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors hover:bg-purple-600 hover:text-white"
           >
             Retake Quiz
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -169,7 +171,7 @@ const QuizCard: React.FC<{ quiz: ModuleCardData; index: number }> = ({ quiz, ind
         ) : (
           <Link
             to={`/quiz/${quiz.id}`}
-            className="w-full bg-black text-white py-4 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors hover:bg-gray-800"
+            className="w-full bg-purple-600 text-white py-4 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors hover:bg-purple-700"
           >
             Start Quiz
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -266,9 +268,9 @@ const Quizzes: React.FC = () => {
         score = Math.round((correct / p.totalAnswered) * 100);
       }
 
-      // 완료 판단: completed 저장값 또는 score === 100
-      const status: ModuleCardData['status'] =
-        p?.completed || score === 100 ? 'completed' : 'available';
+      // 상태 판단: 한번이라도 시도했으면 completed (점수 0이라도)
+      const hasAttempted = p && ((p.totalAnswered && p.totalAnswered > 0) || p.scorePercent != null);
+      const status: ModuleCardData['status'] = hasAttempted ? 'completed' : 'available';
 
       return { ...m, score, status };
     });

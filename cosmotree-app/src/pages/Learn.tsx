@@ -288,7 +288,7 @@ const Learn: React.FC = () => {
   }, [modules, progressMap]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 mt-16">
       {/* Background Planet */}
       <motion.div
         className="fixed top-0 right-0 w-1/3 md:w-1/2 h-screen overflow-hidden pointer-events-none opacity-20 md:opacity-30"

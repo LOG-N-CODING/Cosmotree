@@ -38,7 +38,7 @@ function AppContent() {
         element={
           <>
             <div className="px-4 sm:px-6 md:px-8 lg:px-10 pt-6 sm:pt-8 md:pt-10 space-y-6 sm:space-y-8">
-              <Header mode="dark" fixed={false} />
+              <Header mode="dark" fixed={true} />
             </div>
             <Dashboard />
           </>
@@ -51,7 +51,7 @@ function AppContent() {
         element={
           <>
             <div className="px-4 sm:px-6 md:px-8 lg:px-10 pt-6 sm:pt-8 md:pt-10 space-y-6 sm:space-y-8">
-              <Header mode="dark" fixed={false} />
+              <Header mode="dark" fixed={true} />
             </div>
             <Learn />
           </>
@@ -99,7 +99,7 @@ function AppContent() {
         element={
           <>
             <div className="px-4 sm:px-6 md:px-8 lg:px-10 pt-6 sm:pt-8 md:pt-10 space-y-6 sm:space-y-8">
-              <Header mode="dark" fixed={false} />
+              <Header mode="dark" fixed={true} />
             </div>
             <MyPage />
           </>
